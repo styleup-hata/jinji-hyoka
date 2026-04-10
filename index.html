@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>人事評価 自己入力システム</title>
+<style>
+  :root {
+    --ug-black: #1a1a1a;
+    --ug-navy: #0d1b2a;
+    --ug-yellow: #f5c400;
+    --ug-yellow-dark: #d4a900;
+    --ug-yellow-light: #fff8d6;
+    --ug-white: #ffffff;
+    --ug-gray-100: #f5f5f5;
+    --ug-gray-200: #e8e8e8;
+    --ug-gray-400: #aaaaaa;
+    --ug-gray-600: #666666;
+    --ug-gray-800: #333333;
+    --ug-green: #2e7d32;
+    --ug-red: #c0392b;
+    --ug-blue: #1565c0;
+    --radius: 10px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: var(--ug-navy);
+    color: var(--ug-black);
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  .app-header {
+    background: var(--ug-black);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--ug-yellow);
+  }
+  .app-logo {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--ug-yellow);
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .app-logo span { display: block; font-size: 15px; }
+  .app-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ug-white);
+    margin-left: auto;
+  }
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--ug-gray-600);
+    color: var(--ug-gray-400);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--ug-white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 12px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ug-navy);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--ug-yellow);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 18px; }
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(160deg, var(--ug-navy) 0%, #0a2540 100%);
+  }
+  #loginScreen.active { display: flex; }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .login-logo-badge {
+    background: var(--ug-yellow);
+    color: var(--ug-black);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    padding: 6px 14px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .login-logo h1 {
+    color: var(--ug-white);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .login-logo p { color: var(--ug-gray-400); font-size: 12px; margin-top: 4px; }
+  .login-box {
+    background: var(--ug-white);
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .form-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ug-gray-600);
+    margin-bottom: 6px;
+    display: block;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .form-select, .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--ug-gray-200);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ug-black);
+    background: var(--ug-gray-100);
+    appearance: none;
+    -webkit-appearance: none;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-select:focus, .form-input:focus { border-color: var(--ug-yellow); background: var(--ug-white); }
+  .pin-display {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .pin-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--ug-gray-200);
+    border: 2px solid var(--ug-gray-300);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900;
+    color: var(--ug-navy);
+    transition: background 0.15s;
+  }
+  .pin-dot.filled { background: var(--ug-yellow); border-color: var(--ug-yellow-dark); }
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .pin-key {
+    background: var(--ug-gray-100);
+    border: 2px solid var(--ug-gray-200);
+    border-radius: 10px;
+    height: 52px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--ug-navy);
+    transition: all 0.1s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pin-key:active { background: var(--ug-yellow); border-color: var(--ug-yellow-dark); transform: scale(0.95); }
+  .pin-key.del { font-size: 16px; color: var(--ug-red); }
+  .pin-key.empty { background: transparent; border-color: transparent; cursor: default; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--ug-yellow); color: var(--ug-black); }
+  .btn-primary:hover { background: var(--ug-yellow-dark); }
+  .btn-danger { background: var(--ug-red); color: white; }
+  .btn-secondary { background: var(--ug-gray-200); color: var(--ug-gray-800); }
+  .btn-navy { background: var(--ug-navy); color: white; }
+  .btn-green { background: var(--ug-green); color: white; }
+  .btn-sm {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--ug-yellow);
+    color: var(--ug-navy);
+  }
+
+  /* ===== HOME ===== */
+  .home-greeting {
+    background: linear-gradient(135deg, var(--ug-black) 0%, #2a2a2a 100%);
+    padding: 20px;
+    margin: 12px;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--ug-yellow);
+    color: var(--ug-white);
+  }
+  .home-greeting .name { font-size: 20px; font-weight: 800; }
+  .home-greeting .role { font-size: 12px; color: var(--ug-yellow); font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .home-greeting .store { font-size: 12px; color: var(--ug-gray-400); }
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  .status-draft { background: #fff3cd; color: #856404; }
+  .status-submitted { background: #d4edda; color: #155724; }
+  .status-not-started { background: var(--ug-gray-200); color: var(--ug-gray-600); }
+
+  .deadline-banner {
+    background: var(--ug-yellow-light);
+    border: 1px solid var(--ug-yellow);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 12px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ug-black);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .deadline-banner.overdue { background: #fdecea; border-color: var(--ug-red); color: var(--ug-red); }
+
+  /* ===== PROGRESS ===== */
+  .progress-bar-wrap { background: var(--ug-gray-200); border-radius: 6px; height: 8px; margin: 8px 0 4px; }
+  .progress-bar { height: 8px; border-radius: 6px; background: var(--ug-yellow); transition: width 0.3s; }
+  .progress-label { font-size: 11px; color: var(--ug-gray-600); text-align: right; }
+
+  /* ===== CATEGORY SECTION ===== */
+  .category-header {
+    background: var(--ug-navy);
+    color: var(--ug-white);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .category-score { background: var(--ug-yellow); color: var(--ug-black); padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 800; }
+
+  /* ===== ITEM CARD ===== */
+  .item-card {
+    background: var(--ug-white);
+    border: 2px solid var(--ug-gray-200);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .item-card.selected { border-color: var(--ug-yellow); background: var(--ug-yellow-light); }
+  .item-name { font-size: 14px; font-weight: 800; color: var(--ug-navy); margin-bottom: 4px; }
+  .item-criteria { font-size: 12px; color: var(--ug-gray-600); line-height: 1.5; margin-bottom: 10px; }
+
+  .score-buttons { display: flex; gap: 6px; }
+  .score-btn {
+    flex: 1;
+    height: 42px;
+    border: 2px solid var(--ug-gray-200);
+    border-radius: 8px;
+    background: var(--ug-gray-100);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ug-gray-600);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .score-btn:active { transform: scale(0.9); }
+  .score-btn.selected-1 { background: #c0392b; border-color: #c0392b; color: white; }
+  .score-btn.selected-2 { background: #e67e22; border-color: #e67e22; color: white; }
+  .score-btn.selected-3 { background: #2980b9; border-color: #2980b9; color: white; }
+  .score-btn.selected-4 { background: #27ae60; border-color: #27ae60; color: white; }
+  .score-btn.selected-5 { background: #8e44ad; border-color: #8e44ad; color: white; }
+
+  /* ===== MODAL (criteria popup) ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    display: flex; align-items: flex-end;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal-sheet {
+    background: var(--ug-white);
+    border-radius: 18px 18px 0 0;
+    padding: 20px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 40px; height: 4px; background: var(--ug-gray-200); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--ug-navy); margin-bottom: 14px; }
+  .criteria-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ug-gray-200);
+  }
+  .criteria-row:last-child { border-bottom: none; }
+  .criteria-score-badge {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: white;
+  }
+  .badge-1 { background: #c0392b; }
+  .badge-2 { background: #e67e22; }
+  .badge-3 { background: #2980b9; }
+  .badge-4 { background: #27ae60; }
+  .badge-5 { background: #8e44ad; }
+  .criteria-text { font-size: 13px; color: var(--ug-gray-800); line-height: 1.5; }
+  .criteria-label { font-size: 11px; font-weight: 700; color: var(--ug-gray-600); margin-bottom: 2px; }
+  .modal-select-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .modal-score-btn {
+    flex: 1;
+    height: 48px;
+    border: 2px solid var(--ug-gray-200);
+    border-radius: 10px;
+    font-size: 18px; font-weight: 900;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--ug-gray-100);
+    color: var(--ug-gray-600);
+  }
+  .modal-score-btn:active { transform: scale(0.92); }
+  .modal-score-btn.picked-1 { background: #c0392b; border-color: #c0392b; color: white; }
+  .modal-score-btn.picked-2 { background: #e67e22; border-color: #e67e22; color: white; }
+  .modal-score-btn.picked-3 { background: #2980b9; border-color: #2980b9; color: white; }
+  .modal-score-btn.picked-4 { background: #27ae60; border-color: #27ae60; color: white; }
+  .modal-score-btn.picked-5 { background: #8e44ad; border-color: #8e44ad; color: white; }
+
+  /* ===== COMMENT ===== */
+  .comment-section { margin-top: 8px; }
+  .comment-label { font-size: 12px; font-weight: 700; color: var(--ug-navy); margin-bottom: 6px; }
+  .comment-textarea {
+    width: 100%;
+    border: 2px solid var(--ug-gray-200);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    color: var(--ug-black);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .comment-textarea:focus { border-color: var(--ug-yellow); }
+  .comment-textarea.large { min-height: 120px; }
+
+  /* ===== ADMIN ===== */
+  .admin-tabs {
+    display: flex;
+    background: var(--ug-gray-100);
+    border-radius: 10px;
+    padding: 4px;
+    margin: 12px;
+    gap: 4px;
+  }
+  .admin-tab {
+    flex: 1;
+    padding: 9px 4px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ug-gray-600);
+    transition: all 0.15s;
+  }
+  .admin-tab.active { background: var(--ug-white); color: var(--ug-navy); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  .member-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ug-gray-200);
+    gap: 10px;
+  }
+  .member-row:last-child { border-bottom: none; }
+  .member-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--ug-navy);
+    color: var(--ug-yellow);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900;
+    flex-shrink: 0;
+  }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 14px; font-weight: 700; color: var(--ug-navy); }
+  .member-meta { font-size: 11px; color: var(--ug-gray-600); }
+  .member-score { font-size: 18px; font-weight: 900; color: var(--ug-navy); flex-shrink: 0; }
+  .member-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .btn-icon {
+    width: 34px; height: 34px;
+    border: 1px solid var(--ug-gray-200);
+    border-radius: 8px;
+    background: var(--ug-white);
+    cursor: pointer;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-icon:active { background: var(--ug-gray-100); }
+
+  .form-group { margin-bottom: 14px; }
+  .form-row { display: flex; gap: 10px; }
+  .form-row > * { flex: 1; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ug-black);
+    color: var(--ug-white);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+    border-left: 4px solid var(--ug-yellow);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--ug-black);
+    border-top: 2px solid var(--ug-yellow);
+    display: flex;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--ug-gray-400);
+    padding: 10px 4px 8px;
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: color 0.15s;
+  }
+  .nav-btn .nav-icon { font-size: 20px; }
+  .nav-btn.active { color: var(--ug-yellow); }
+  .pb-nav { padding-bottom: 72px; }
+
+  /* ===== MISC ===== */
+  .section-heading {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ug-gray-400);
+    padding: 16px 20px 6px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ug-gray-400);
+    font-size: 14px;
+  }
+  .divider { height: 1px; background: var(--ug-gray-200); margin: 12px 0; }
+  .text-xs { font-size: 11px; }
+  .text-sm { font-size: 13px; }
+  .text-muted { color: var(--ug-gray-600); }
+  .fw-bold { font-weight: 700; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+  .detail-score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ug-gray-200);
+    font-size: 13px;
+  }
+  .detail-score-row:last-child { border-bottom: none; }
+  .score-chip {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: white;
+    flex-shrink: 0;
+  }
+
+  .rank-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+  }
+  .rank-S { background: #8e44ad; color: white; }
+  .rank-A { background: #27ae60; color: white; }
+  .rank-B { background: #2980b9; color: white; }
+  .rank-C { background: #e67e22; color: white; }
+  .rank-D { background: #c0392b; color: white; }
+  .rank-unknown { background: var(--ug-gray-200); color: var(--ug-gray-600); }
+
+  /* スクロール修正 */
+  .scroll-area { overflow-y: auto; }
+
+  /* 設定フォーム */
+  .settings-card { background: white; border-radius: var(--radius); padding: 16px; margin: 8px 12px; box-shadow: var(--shadow); }
+  .settings-card h3 { font-size: 14px; font-weight: 800; color: var(--ug-navy); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ug-yellow); }
+
+  /* 警告バナー */
+  .warning-banner {
+    background: #fdecea;
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0 12px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #c0392b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== CRITERIA MODAL ===== -->
+<div class="modal-overlay hidden" id="criteriaModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalItemName"></div>
+    <div class="text-sm text-muted" style="margin-bottom:12px;" id="modalItemCriteria"></div>
+    <div id="modalCriteriaRows"></div>
+    <div class="modal-select-row" id="modalSelectRow"></div>
+    <button class="btn btn-secondary mt-12" onclick="closeCriteriaModal()">閉じる</button>
+  </div>
+</div>
+
+<!-- ===== APP HEADER ===== -->
+<div class="app-header" id="appHeader" style="display:none;">
+  <div class="app-logo"><span>UP GARAGE</span>人事評価システム</div>
+  <div class="app-title" id="headerTitle"></div>
+  <button class="btn-logout" id="btnLogout" onclick="logout()">ログアウト</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: LOGIN -->
+<!-- ============================================================ -->
+<div class="screen active" id="loginScreen">
+  <div class="login-logo">
+    <div class="login-logo-badge">UP GARAGE GROUP</div>
+    <h1>人事評価システム</h1>
+    <p>株式会社スタイルアップ</p>
+  </div>
+  <div class="login-box">
+    <div class="form-group">
+      <label class="form-label">ログイン種別</label>
+      <select class="form-select" id="loginType" onchange="onLoginTypeChange()">
+        <option value="staff">スタッフ</option>
+        <option value="admin">管理者</option>
+      </select>
+    </div>
+    <div id="staffLoginArea">
+      <div class="form-group">
+        <label class="form-label">名前を選んでください</label>
+        <select class="form-select" id="staffSelect">
+          <option value="">-- 選択してください --</option>
+        </select>
+      </div>
+    </div>
+    <div id="adminLoginArea" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">管理者専用</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PINコード（4桁）</label>
+      <div class="pin-display" id="pinDisplay">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinInput('1')">1</button>
+      <button class="pin-key" onclick="pinInput('2')">2</button>
+      <button class="pin-key" onclick="pinInput('3')">3</button>
+      <button class="pin-key" onclick="pinInput('4')">4</button>
+      <button class="pin-key" onclick="pinInput('5')">5</button>
+      <button class="pin-key" onclick="pinInput('6')">6</button>
+      <button class="pin-key" onclick="pinInput('7')">7</button>
+      <button class="pin-key" onclick="pinInput('8')">8</button>
+      <button class="pin-key" onclick="pinInput('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinInput('0')">0</button>
+      <button class="pin-key del" onclick="pinDelete()">⌫</button>
+    </div>
+    <div id="loginError" style="color:#c0392b;font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;display:none;">PINが正しくありません</div>
+    <button class="btn btn-primary" onclick="doLogin()">ログイン</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: STAFF HOME -->
+<!-- ============================================================ -->
+<div class="screen" id="staffHomeScreen">
+  <div class="home-greeting">
+    <div class="role" id="homeRole"></div>
+    <div class="name" id="homeName"></div>
+    <div class="store" id="homeStore"></div>
+    <div id="homeStatus"></div>
+  </div>
+  <div id="deadlineBanner"></div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span>自己評価の進捗</div>
+    <div id="homeProgress"></div>
+    <button class="btn btn-primary mt-12" id="btnStartEval" onclick="startEvaluation()">
+      評価を入力する
+    </button>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📤</span>Excelデータ出力</div>
+    <p class="text-sm text-muted" style="margin-bottom:12px;">入力内容をCSV形式でダウンロードして、Excelの自己評価欄に貼り付けてください。</p>
+    <button class="btn btn-navy" onclick="downloadCSV()">CSVダウンロード</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: EVALUATION INPUT -->
+<!-- ============================================================ -->
+<div class="screen" id="evalScreen">
+  <div id="evalContent" class="pb-nav"></div>
+  <div class="bottom-nav" id="evalNav">
+    <button class="nav-btn" onclick="showScreen('staffHomeScreen'); setHeader('ホーム');">
+      <span class="nav-icon">🏠</span>ホーム
+    </button>
+    <button class="nav-btn active">
+      <span class="nav-icon">✏️</span>入力
+    </button>
+    <button class="nav-btn" onclick="saveEvalDraft()">
+      <span class="nav-icon">💾</span>途中保存
+    </button>
+    <button class="nav-btn" onclick="submitEval()">
+      <span class="nav-icon">✅</span>提出
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: ADMIN HOME -->
+<!-- ============================================================ -->
+<div class="screen" id="adminScreen">
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="adminTab('overview', this)">一覧</button>
+    <button class="admin-tab" onclick="adminTab('members', this)">メンバー</button>
+    <button class="admin-tab" onclick="adminTab('settings', this)">設定</button>
+  </div>
+  <div id="adminOverview" class="pb-nav"></div>
+  <div id="adminMembers" style="display:none;" class="pb-nav"></div>
+  <div id="adminSettings" style="display:none;" class="pb-nav"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: DETAIL VIEW (admin) -->
+<!-- ============================================================ -->
+<div class="screen" id="detailScreen">
+  <div id="detailContent" class="pb-nav"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showAdminOverview(); showScreen('adminScreen'); setHeader('管理者ダッシュボード');">
+      <span class="nav-icon">◀</span>一覧へ戻る
+    </button>
+    <button class="nav-btn" onclick="downloadCSVForMember(currentDetailMember)">
+      <span class="nav-icon">📤</span>CSV出力
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const ADMIN_PIN = '1234'; // 管理者PINは設定画面で変更可能
+
+// 評価基準（職種別）
+const SCORE_CRITERIA = {
+  SM: [
+    { score: 5, label: '模範となるレベル', text: '自店での成功事例や仕組みを他店舗に共有し、全社の向上に貢献した。' },
+    { score: 4, label: '期待を上回るレベル', text: '基準を達成するだけでなく、店舗の構造を見直し改善させる事が出来る。' },
+    { score: 3, label: '現職能ランクの期待レベル', text: 'SVや本部のフォローなしで基準以上の運営が出来る。' },
+    { score: 2, label: '期待を下回るレベル', text: '店舗は回っているが、上層部の介入やフォローがないと基準値に満たない。' },
+    { score: 1, label: '大幅に期待を下回るレベル', text: '部下からの信頼がなく、指示が通らない。SM(店長)として不適格。' },
+  ],
+  VSM: [
+    { score: 5, label: '模範となるレベル', text: '店舗のルール・仕組みを変えた。SM(店長)がいなくても実行し結果を出せる。' },
+    { score: 4, label: '期待を上回るレベル', text: '店舗全体を巻き込んで改善した。自発的に提案、行動出来る。' },
+    { score: 3, label: '現職能ランクの期待レベル', text: 'SM(店長)の指示や確認なしで、一人で確実に行えている。' },
+    { score: 2, label: '期待を下回るレベル', text: '指示・確認されないと動けない、またはムラがある。' },
+    { score: 1, label: '大幅に期待を下回るレベル', text: 'VSM(副店長)としての役割がはたせず、店舗の士気を下げている。' },
+  ],
+  STAFF: [
+    { score: 5, label: '模範となるレベル', text: '自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。' },
+    { score: 4, label: '期待を上回るレベル', text: '言われたこと＋αの気遣いや、やり方の改善を行った。' },
+    { score: 3, label: '現職能ランクの期待レベル', text: '行動基準に書いてあることを、指示されずに一人でミスなく完了した。' },
+    { score: 2, label: '期待を下回るレベル', text: '行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。' },
+    { score: 1, label: '大幅に期待を下回るレベル', text: 'やろうとしない、約束を破る、ルール違反がある。' },
+  ],
+  PART: [
+    { score: 5, label: '模範となるレベル', text: '自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。' },
+    { score: 4, label: '期待を上回るレベル', text: '言われたこと＋αの気遣いや、やり方の改善を行った。' },
+    { score: 3, label: '現職能ランクの期待レベル', text: '行動基準に書いてあることを、指示されずに一人でミスなく完了した。' },
+    { score: 2, label: '期待を下回るレベル', text: '行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。' },
+    { score: 1, label: '大幅に期待を下回るレベル', text: 'やろうとしない、約束を破る、ルール違反がある。' },
+  ],
+};
+
+// SM評価項目
+const SM_ITEMS = {
+  categories: [
+    {
+      name: 'スタンス・規律', maxScore: 10,
+      items: [
+        { id: 'stance_1', name: '理念・ポリシー', criteria: '理念を自らの言葉で語り、店舗の判断基準として浸透させ、部下の行動変容を促している。', weight: 2 },
+        { id: 'stance_2', name: '協調性', criteria: '店舗全体のチームビルディングを行い、全部門が協力し合う体制と風土を構築している。', weight: 2 },
+        { id: 'stance_3', name: '前向き', criteria: 'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。', weight: 2 },
+        { id: 'stance_4', name: '挨拶・言葉遣い', criteria: '店舗全体の活気（声出し）をコントロールし、お客様が入店しやすい雰囲気を作り出している。', weight: 1 },
+        { id: 'stance_5', name: '時間管理・勤務態度', criteria: '残業時間の管理を行い、特定のスタッフに負荷が偏らないよう業務配分を調整している。', weight: 1 },
+        { id: 'stance_6', name: '報・連・相', criteria: '店舗内の重要事項を漏らさず把握し、本部やSV、上司に対して、予測や対策を含めた質の高い報告を行っている。', weight: 1 },
+        { id: 'stance_7', name: '積極性・自己管理', criteria: '自らのモチベーションを一定に保ち、店舗がどんな状況でもポジティブな態度で組織を牽引している。', weight: 1 },
+      ]
+    },
+    {
+      name: '接客・販売スキル', maxScore: 5,
+      items: [
+        { id: 'sales_1', name: '基本接客(レジ・電話)', criteria: '接客マニュアルの更新や、スタッフへのロールプレイング指導を行い、店舗全体の接客レベルを底上げしている。', weight: 1 },
+        { id: 'sales_2', name: 'ゲストトーク', criteria: '顧客満足度（CS）向上のための施策を立案し、Google口コミ等の評価向上に直結する行動を指導している。', weight: 1 },
+        { id: 'sales_3', name: '買取・査定', criteria: '市場相場と自店の在庫状況を鑑みて、買取強化ジャンルやキャンペーン戦略を決定している。', weight: 1 },
+        { id: 'sales_4', name: '商品知識・説明', criteria: '競合他店舗や雑誌、インターネットなどから情報を収集・分析し、店舗全体の専門知識レベルと提案力を向上させている。', weight: 1 },
+        { id: 'sales_5', name: '商品化・品出し', criteria: '商品化の生産性（1時間あたりの処理数）を管理し、バックヤードの滞留在庫をゼロにする仕組みを作っている。', weight: 1 },
+        { id: 'sales_6', name: '取付・作業', criteria: 'ピット作業の稼働率を分析し、作業待ち時間の短縮や工賃売上の最大化に向けた人員配置を行っている。', weight: 1 },
+      ]
+    },
+    {
+      name: '売場・店舗管理', maxScore: 5,
+      items: [
+        { id: 'store_1', name: '売場づくり', criteria: '店舗全体のゾーニング（売場配置）を見直し、顧客動線と滞在時間を最大化するレイアウトを決定している。', weight: 1 },
+        { id: 'store_2', name: '在庫管理・棚卸し', criteria: '在庫回転率と粗利率のバランスを管理し、不良在庫化する前の早期対策ルールを運用している。', weight: 1 },
+        { id: 'store_3', name: '現金・伝票管理', criteria: '監査基準に基づき、すべての帳票・現金・個人情報の保管状況を定期チェックし、コンプライアンスを遵守している。', weight: 1 },
+        { id: 'store_4', name: '清掃・衛生', criteria: 'お客様視点で店舗内外（駐車場含む）を巡回し、老朽化箇所の修繕や業者手配を行っている。', weight: 1 },
+        { id: 'store_5', name: '安全・危機管理', criteria: '事故・災害発生時の責任者として、人命優先の指揮を執り、二次被害を防ぐための迅速な判断を行っている。', weight: 1 },
+      ]
+    }
+  ]
+};
+
+// VSM評価項目
+const VSM_ITEMS = {
+  categories: [
+    {
+      name: 'スタンス・規律', maxScore: 20,
+      items: [
+        { id: 'stance_1', name: '理念・ポリシー', criteria: '理念の意味を理解し、後輩に対して「なぜこの行動が必要か」を理念に基づいて説明できる。', weight: 2 },
+        { id: 'stance_2', name: '協調性', criteria: 'SMに協力的でスタッフ間の人間関係に気を配り、不協和音があれば間に入って調整・解決している。', weight: 2 },
+        { id: 'stance_3', name: '前向き', criteria: 'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。', weight: 2 },
+        { id: 'stance_4', name: '挨拶・言葉遣い', criteria: 'スタッフ全員の挨拶の質をチェックし、声が小さいスタッフにはその場で指導・修正させている。', weight: 1 },
+        { id: 'stance_5', name: '時間管理・勤務態度', criteria: '遅刻・欠勤がなく、休憩回しの管理を行い、業務の繁閑に合わせてスタッフの休憩時間を調整している。', weight: 1 },
+        { id: 'stance_6', name: '報・連・相', criteria: '部下からの報告を受け止め、次のアクション（指示）を即座に出し、店長へ要約して報告している。', weight: 1 },
+        { id: 'stance_7', name: '責任感・自己管理', criteria: '既存の業務フローの無駄を見つけ、より効率的なやり方を提案・実行している。', weight: 1 },
+      ]
+    },
+    {
+      name: '接客・販売スキル', maxScore: 10,
+      items: [
+        { id: 'sales_1', name: '感謝', criteria: '他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。', weight: 2 },
+        { id: 'sales_2', name: '基本接客(レジ・電話)', criteria: 'トラブル時のレジ対応や、複雑な問い合わせ電話（適合確認等）を代行し、解決している。', weight: 1 },
+        { id: 'sales_3', name: 'ゲストトーク', criteria: 'お客様の潜在ニーズ（買い替え理由等）を聞き出し、リピーターになってもらうための関係構築ができる。', weight: 1 },
+        { id: 'sales_4', name: '買取・査定', criteria: '特殊な商品や高額品の査定判断ができ、お客様に納得感のある価格提示と交渉ができる。', weight: 1 },
+        { id: 'sales_5', name: '商品化・品出し', criteria: '売れ筋商品を見極め、ゴールデンゾーン（見やすい位置）への陳列変更を指示・実行している。', weight: 1 },
+        { id: 'sales_6', name: '取付・作業', criteria: '難易度の高い作業やトラブルシューティングに対応し、後輩の作業最終チェックを行っている。', weight: 1 },
+      ]
+    },
+    {
+      name: '売場・店舗管理', maxScore: 10,
+      items: [
+        { id: 'store_1', name: '売場づくり', criteria: '売上データや季節トレンドに基づき、特集コーナーの企画・設置の提案を上司に行っている。', weight: 1 },
+        { id: 'store_2', name: '在庫管理・棚卸し', criteria: '長期在庫（デッドストック）をリストアップし、値下げや配置転換による処分・現金化を進めている。', weight: 1 },
+        { id: 'store_3', name: '現金・伝票管理', criteria: '日々の売上入金確認、小口現金の管理を行い、経理処理上のミスを未然に防いでいる。', weight: 1 },
+        { id: 'store_4', name: '清掃・衛生', criteria: '汚れが目立つ箇所や、スタッフの手が回っていない箇所に気づき、スポット清掃を指示・実施している。', weight: 1 },
+        { id: 'store_5', name: '安全・危機管理', criteria: '万引き防止の巡回や、災害時の避難誘導手順を把握し、スタッフに周知徹底している。', weight: 1 },
+      ]
+    }
+  ]
+};
+
+// 一般スタッフ評価項目
+const STAFF_ITEMS = {
+  categories: [
+    {
+      name: 'スタンス・規律', maxScore: 30,
+      items: [
+        { id: 'stance_1', name: '理念・ポリシー', criteria: '企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。', weight: 2 },
+        { id: 'stance_2', name: '協調性', criteria: '共通の目標達成に向けて、役割分担・連携・相互補完を行いながら共同作業をする姿勢はあるか。', weight: 2 },
+        { id: 'stance_3', name: '前向き', criteria: '物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。', weight: 2 },
+        { id: 'stance_4', name: '挨拶・言葉遣い', criteria: '相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。', weight: 1 },
+        { id: 'stance_5', name: '時間管理・勤務態度', criteria: '遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。', weight: 1 },
+        { id: 'stance_6', name: '報・連・相', criteria: '事実を正確に伝え、対応策に対する自分の意見や考えも入れながら、報・連・相ができる。', weight: 1 },
+        { id: 'stance_7', name: '責任感・自己管理', criteria: '自分に与えられた役割、任務、約束を最後までやり遂げようとする意志や姿勢はあるか。', weight: 1 },
+      ]
+    },
+    {
+      name: '接客・販売スキル', maxScore: 15,
+      items: [
+        { id: 'sales_1', name: '感謝', criteria: '他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。', weight: 2 },
+        { id: 'sales_2', name: '明るさ', criteria: '笑顔が多く、ポジティブで前向きな思考を持ち、人懐っこく誰にでも明るく接することができるか。', weight: 2 },
+        { id: 'sales_3', name: 'ゲストトーク', criteria: '挨拶に加え口コミ獲得やC査定等の声かけができ、お客様と会話のキャッチボールができる。', weight: 2 },
+        { id: 'sales_4', name: '買取・査定', criteria: 'マニュアル通りに商品の状態を確認し、適正な値入で成約率を落とさずに仕入れができる。', weight: 2 },
+        { id: 'sales_5', name: '商品化・品出し', criteria: '未商品化在庫を把握しスピーディに商品化を行い、売場に隙間を作らず補充している。', weight: 1 },
+        { id: 'sales_6', name: '取付・作業', criteria: '安全手順を守り、工具を正しく使用して、ミスなく取付・取外し作業ができる。', weight: 1 },
+      ]
+    },
+    {
+      name: '売場・店舗管理', maxScore: 10,
+      items: [
+        { id: 'store_1', name: '売場づくり', criteria: '顧客目線に立ち商品を並べ、POPの剥がれや汚れを自ら見つけて直している。', weight: 1 },
+        { id: 'store_2', name: '在庫管理・棚卸し', criteria: '担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。', weight: 1 },
+        { id: 'store_3', name: '現金・伝票管理', criteria: 'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。', weight: 1 },
+        { id: 'store_4', name: '清掃・衛生', criteria: '店内、トイレ、駐車場の清掃状況を把握し清潔な状態を保っている。', weight: 1 },
+        { id: 'store_5', name: '安全・危機管理', criteria: '危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。', weight: 1 },
+      ]
+    }
+  ]
+};
+
+// アルバイト評価項目
+const PART_ITEMS = {
+  categories: [
+    {
+      name: 'スタンス・規律', maxScore: 30,
+      items: [
+        { id: 'stance_1', name: '理念・ポリシー', criteria: '企業理念、アップガレージ魂を暗記しており、朝礼等の唱和で大きな声を出している。', weight: 2 },
+        { id: 'stance_2', name: '協調性', criteria: '自分の担当業務が終わったら、忙しい他部門（レジ・ピット等）のヘルプを自発的に申し出ている。', weight: 2 },
+        { id: 'stance_3', name: '挨拶・言葉遣い', criteria: '相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。', weight: 2 },
+        { id: 'stance_4', name: '身だしなみ', criteria: '制服・名札・髪型などが規定通り清潔に保たれており、指摘される前に整えている。', weight: 1 },
+        { id: 'stance_5', name: '時間管理・勤務態度', criteria: '遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。', weight: 1 },
+        { id: 'stance_6', name: '報・連・相', criteria: '悪い情報（ミス・トラブル）ほど隠さずに、直属の上司へ即座に事実を報告している。', weight: 1 },
+        { id: 'stance_7', name: '積極性・自己管理', criteria: '未経験の業務にも「やってみたい」と手を挙げ、教わったことをメモして習得している。', weight: 1 },
+      ]
+    },
+    {
+      name: '接客・販売スキル', maxScore: 15,
+      items: [
+        { id: 'sales_1', name: '基本接客(レジ・電話)', criteria: '正確なレジ操作、明るい電話応対ができ、お客様を待たせずにスムーズに処理している。', weight: 2 },
+        { id: 'sales_2', name: 'ゲストトーク', criteria: '挨拶に加え「またお願いします」等のプラスαの声かけができ、お客様と会話のキャッチボールができる。', weight: 2 },
+        { id: 'sales_3', name: '買取・査定', criteria: 'マニュアル通りに商品の状態を確認し、適正なランク付けとシステム入力ができる。', weight: 2 },
+        { id: 'sales_4', name: '商品知識・説明', criteria: 'お客様の質問に対し、商品タグやカタログを用いて正確な情報を案内できる。', weight: 1 },
+        { id: 'sales_5', name: '商品化・品出し', criteria: '洗浄・パッキングを手順通りスピーディに行い、売場に隙間を作らず補充している。', weight: 1 },
+        { id: 'sales_6', name: '取付・作業', criteria: '安全手順を守り、工具を正しく使用して、ミスなく取付・取外しの作業補助ができる。', weight: 1 },
+      ]
+    },
+    {
+      name: '売場・店舗管理', maxScore: 15,
+      items: [
+        { id: 'store_1', name: '売場づくり', criteria: '指示されたレイアウト通りに商品を並べ、POPの剥がれや汚れを自ら見つけて直している。', weight: 1 },
+        { id: 'store_2', name: '在庫管理・棚卸し', criteria: '担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。', weight: 1 },
+        { id: 'store_3', name: '現金・伝票管理', criteria: 'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。', weight: 1 },
+        { id: 'store_4', name: '清掃・衛生', criteria: '毎日のルーティン清掃（床、トイレ、棚）をサボらず丁寧に行い、清潔な状態を保っている。', weight: 1 },
+        { id: 'store_5', name: '安全・危機管理', criteria: '危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。', weight: 1 },
+      ]
+    }
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let currentPin = '';
+let currentDetailMember = null;
+
+// localStorage キー
+const KEY_MEMBERS = 'ug_eval_members';
+const KEY_EVALS = 'ug_eval_data';
+const KEY_SETTINGS = 'ug_eval_settings';
+
+function getMembers() {
+  const d = localStorage.getItem(KEY_MEMBERS);
+  if (d) return JSON.parse(d);
+  // デフォルトメンバー
+  const defaults = [
+    { id: 'isaka', name: '伊坂 邦明', role: 'SM', store: '埼玉入間店', pin: '1111' },
+    { id: 'takano', name: '高野 彪瑠', role: 'VSM', store: '埼玉入間店', pin: '2222' },
+    { id: 'fukunishi', name: '福西 海人', role: 'STAFF', store: '埼玉入間店', pin: '3333' },
+    { id: 'kajisa', name: '加治佐 魁人', role: 'STAFF', store: '埼玉入間店', pin: '4444' },
+    { id: 'yaegashi', name: '八重樫 裕美', role: 'PART', store: '埼玉入間店', pin: '5555' },
+    { id: 'hara', name: '原 昂平', role: 'SM', store: '川越インター店', pin: '6666' },
+    { id: 'ito', name: '伊藤 祐輝', role: 'VSM', store: '川越インター店', pin: '7777' },
+    { id: 'yoshizawa', name: '吉澤 陽輝', role: 'STAFF', store: '川越インター店', pin: '8888' },
+    { id: 'inoue', name: '井上 京一', role: 'PART', store: '川越インター店', pin: '9999' },
+    { id: 'shimizu', name: '清水 天音', role: 'PART', store: '川越インター店', pin: '1234' },
+    { id: 'yamamatsu', name: '山松 泰', role: 'PART', store: '川越インター店', pin: '4321' },
+  ];
+  saveMembers(defaults);
+  return defaults;
+}
+function saveMembers(m) { localStorage.setItem(KEY_MEMBERS, JSON.stringify(m)); }
+
+function getEvals() {
+  const d = localStorage.getItem(KEY_EVALS);
+  return d ? JSON.parse(d) : {};
+}
+function saveEvals(e) { localStorage.setItem(KEY_EVALS, JSON.stringify(e)); }
+
+function getSettings() {
+  const d = localStorage.getItem(KEY_SETTINGS);
+  return d ? JSON.parse(d) : { deadline: '', adminPin: ADMIN_PIN, period: '2025.10〜2026.3' };
+}
+function saveSettings(s) { localStorage.setItem(KEY_SETTINGS, JSON.stringify(s)); }
+
+function getItemsForRole(role) {
+  if (role === 'SM') return SM_ITEMS;
+  if (role === 'VSM') return VSM_ITEMS;
+  if (role === 'STAFF') return STAFF_ITEMS;
+  if (role === 'PART') return PART_ITEMS;
+  return STAFF_ITEMS;
+}
+function getCriteriaForRole(role) {
+  return SCORE_CRITERIA[role] || SCORE_CRITERIA.STAFF;
+}
+function getRoleLabel(role) {
+  const m = { SM: 'SM（店長）', VSM: 'VSM（副店長）', STAFF: '一般スタッフ', PART: 'アルバイト' };
+  return m[role] || role;
+}
+
+// ============================================================
+// PIN INPUT
+// ============================================================
+function pinInput(d) {
+  if (currentPin.length >= 4) return;
+  currentPin += d;
+  updatePinDisplay();
+  if (currentPin.length === 4) setTimeout(doLogin, 200);
+}
+function pinDelete() {
+  currentPin = currentPin.slice(0, -1);
+  updatePinDisplay();
+}
+function updatePinDisplay() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('pd' + i);
+    dot.classList.toggle('filled', i < currentPin.length);
+    dot.textContent = i < currentPin.length ? '●' : '';
+  }
+}
+function onLoginTypeChange() {
+  const t = document.getElementById('loginType').value;
+  document.getElementById('staffLoginArea').style.display = t === 'staff' ? '' : 'none';
+  document.getElementById('adminLoginArea').style.display = t === 'admin' ? '' : 'none';
+  currentPin = '';
+  updatePinDisplay();
+  document.getElementById('loginError').style.display = 'none';
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function initStaffSelect() {
+  const sel = document.getElementById('staffSelect');
+  const members = getMembers();
+  sel.innerHTML = '<option value="">-- 選択してください --</option>';
+  members.forEach(m => {
+    sel.innerHTML += `<option value="${m.id}">${m.name}（${m.store}）</option>`;
+  });
+}
+
+function doLogin() {
+  const type = document.getElementById('loginType').value;
+  const settings = getSettings();
+  document.getElementById('loginError').style.display = 'none';
+
+  if (type === 'admin') {
+    if (currentPin === (settings.adminPin || ADMIN_PIN)) {
+      currentUser = { type: 'admin', name: '管理者（秦 慈宏）' };
+      afterLogin();
+    } else {
+      showLoginError();
+    }
+  } else {
+    const memberId = document.getElementById('staffSelect').value;
+    if (!memberId) { showToast('名前を選んでください'); currentPin = ''; updatePinDisplay(); return; }
+    const members = getMembers();
+    const member = members.find(m => m.id === memberId);
+    if (!member) { showLoginError(); return; }
+    if (currentPin === member.pin) {
+      currentUser = { type: 'staff', ...member };
+      afterLogin();
+    } else {
+      showLoginError();
+    }
+  }
+}
+
+function showLoginError() {
+  document.getElementById('loginError').style.display = 'block';
+  currentPin = '';
+  updatePinDisplay();
+  setTimeout(() => { document.getElementById('loginError').style.display = 'none'; }, 2000);
+}
+
+function afterLogin() {
+  document.getElementById('appHeader').style.display = 'flex';
+  if (currentUser.type === 'admin') {
+    setHeader('管理者ダッシュボード');
+    showScreen('adminScreen');
+    showAdminOverview();
+  } else {
+    setHeader('自己評価入力');
+    showScreen('staffHomeScreen');
+    renderStaffHome();
+  }
+}
+
+function logout() {
+  currentUser = null;
+  currentPin = '';
+  updatePinDisplay();
+  document.getElementById('appHeader').style.display = 'none';
+  document.getElementById('staffSelect').value = '';
+  document.getElementById('loginType').value = 'staff';
+  onLoginTypeChange();
+  initStaffSelect();
+  showScreen('loginScreen');
+}
+
+// ============================================================
+// SCREEN NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function setHeader(title) {
+  document.getElementById('headerTitle').textContent = title;
+}
+
+// ============================================================
+// STAFF HOME
+// ============================================================
+function renderStaffHome() {
+  const user = currentUser;
+  document.getElementById('homeRole').textContent = getRoleLabel(user.role);
+  document.getElementById('homeName').textContent = user.name;
+  document.getElementById('homeStore').textContent = user.store + ' ｜ 評価期間: ' + (getSettings().period || '2025.10〜2026.3');
+
+  const evals = getEvals();
+  const ev = evals[user.id] || {};
+  let statusHtml = '';
+  if (ev.submitted) {
+    statusHtml = '<span class="status-badge status-submitted">✅ 提出済み</span>';
+    document.getElementById('btnStartEval').textContent = '内容を修正する';
+  } else if (ev.scores && Object.keys(ev.scores).length > 0) {
+    statusHtml = '<span class="status-badge status-draft">✏️ 入力途中（途中保存）</span>';
+    document.getElementById('btnStartEval').textContent = '続きから入力する';
+  } else {
+    statusHtml = '<span class="status-badge status-not-started">未入力</span>';
+    document.getElementById('btnStartEval').textContent = '評価を入力する';
+  }
+  document.getElementById('homeStatus').innerHTML = statusHtml;
+
+  // 進捗
+  const items = getItemsForRole(user.role);
+  const allItems = items.categories.flatMap(c => c.items);
+  const scores = ev.scores || {};
+  const done = allItems.filter(i => scores[i.id] !== undefined).length;
+  const total = allItems.length;
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('homeProgress').innerHTML = `
+    <div class="flex-between text-sm fw-bold" style="margin-bottom:4px;">
+      <span>定性評価</span><span>${done} / ${total} 項目</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="progress-label">${pct}% 完了</div>
+  `;
+
+  // deadline
+  const settings = getSettings();
+  const dlBanner = document.getElementById('deadlineBanner');
+  if (settings.deadline) {
+    const dl = new Date(settings.deadline);
+    const now = new Date();
+    const diff = Math.ceil((dl - now) / 86400000);
+    if (diff < 0) {
+      dlBanner.innerHTML = `<div class="deadline-banner overdue">⚠️ 提出期限を過ぎています（${settings.deadline}）</div>`;
+    } else {
+      dlBanner.innerHTML = `<div class="deadline-banner">📅 提出期限：${settings.deadline}（あと ${diff} 日）</div>`;
+    }
+  } else {
+    dlBanner.innerHTML = '';
+  }
+}
+
+// ============================================================
+// EVALUATION INPUT
+// ============================================================
+function startEvaluation() {
+  showScreen('evalScreen');
+  setHeader('自己評価入力');
+  renderEvalForm();
+}
+
+function renderEvalForm() {
+  const user = currentUser;
+  const items = getItemsForRole(user.role);
+  const evals = getEvals();
+  const ev = evals[user.id] || {};
+  const scores = ev.scores || {};
+  const comments = ev.categoryComments || {};
+
+  let html = `
+    <div class="card" style="border-top:4px solid var(--ug-yellow);">
+      <div class="card-title"><span class="icon">📝</span>${getRoleLabel(user.role)} 評価シート</div>
+      <div class="text-sm text-muted">各項目の点数ボタンをタップすると評価基準が表示されます。基準を確認してから点数を選んでください。</div>
+    </div>
+  `;
+
+  items.categories.forEach((cat, ci) => {
+    const catDone = cat.items.filter(i => scores[i.id] !== undefined).length;
+    html += `
+      <div style="padding:0 12px;">
+        <div class="category-header">
+          <span>${cat.name}（配点 ${cat.maxScore}点）</span>
+          <span class="category-score">${catDone}/${cat.items.length}</span>
+        </div>
+      </div>
+    `;
+    cat.items.forEach(item => {
+      const sel = scores[item.id];
+      html += `
+        <div class="item-card ${sel !== undefined ? 'selected' : ''}" style="margin:0 12px 10px;" id="icard_${item.id}">
+          <div class="item-name">${item.name}</div>
+          <div class="item-criteria">${item.criteria}</div>
+          <div class="score-buttons">
+            ${[1,2,3,4,5].map(s => `
+              <button class="score-btn ${sel === s ? 'selected-' + s : ''}"
+                onclick="openCriteriaModal('${item.id}', '${item.name}', '${item.criteria.replace(/'/g,"\\'")}', ${s}, '${user.role}')">
+                ${s}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+  });
+
+  // 振り返り・報告
+  const q1 = ev.q1 || '';
+  const q2 = ev.q2 || '';
+  html += `
+    <div class="card" style="margin-top:4px;">
+      <div class="card-title"><span class="icon">💬</span>本人の振り返り・報告</div>
+      <div class="comment-section">
+        <div class="comment-label">Q1. この半年で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+        <textarea class="comment-textarea large" id="q1Text" placeholder="具体的なエピソードを入力してください...">${q1}</textarea>
+      </div>
+      <div class="comment-section" style="margin-top:14px;">
+        <div class="comment-label">Q2. 次の半年で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+        <textarea class="comment-textarea large" id="q2Text" placeholder="目標や課題を入力してください...">${q2}</textarea>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('evalContent').innerHTML = html;
+}
+
+// modal
+let modalPendingItem = null;
+
+function openCriteriaModal(itemId, itemName, itemCriteria, preScore, role) {
+  modalPendingItem = { itemId, role };
+  const criteria = getCriteriaForRole(role);
+  const evals = getEvals();
+  const ev = evals[currentUser.id] || {};
+  const scores = ev.scores || {};
+  const currentScore = scores[itemId];
+
+  document.getElementById('modalItemName').textContent = itemName;
+  document.getElementById('modalItemCriteria').textContent = '行動基準: ' + itemCriteria;
+
+  const colors = ['', 'badge-1','badge-2','badge-3','badge-4','badge-5'];
+  let rowsHtml = '';
+  criteria.slice().reverse().forEach(c => {
+    rowsHtml += `
+      <div class="criteria-row">
+        <div class="criteria-score-badge ${colors[c.score]}">${c.score}</div>
+        <div>
+          <div class="criteria-label">${c.label}</div>
+          <div class="criteria-text">${c.text}</div>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('modalCriteriaRows').innerHTML = rowsHtml;
+
+  const picked = currentScore !== undefined ? currentScore : preScore;
+  let btnsHtml = '';
+  [1,2,3,4,5].forEach(s => {
+    btnsHtml += `<button class="modal-score-btn ${s === picked ? 'picked-' + s : ''}" id="msb_${s}" onclick="selectModalScore(${s})">${s}</button>`;
+  });
+  document.getElementById('modalSelectRow').innerHTML = btnsHtml;
+
+  document.getElementById('criteriaModal').classList.remove('hidden');
+}
+
+function selectModalScore(s) {
+  [1,2,3,4,5].forEach(n => {
+    const b = document.getElementById('msb_' + n);
+    if (b) { b.className = 'modal-score-btn' + (n === s ? ' picked-' + n : ''); }
+  });
+  if (modalPendingItem) {
+    setScore(modalPendingItem.itemId, s);
+  }
+  setTimeout(closeCriteriaModal, 300);
+}
+
+function closeCriteriaModal() {
+  document.getElementById('criteriaModal').classList.add('hidden');
+  modalPendingItem = null;
+}
+
+function setScore(itemId, score) {
+  const evals = getEvals();
+  if (!evals[currentUser.id]) evals[currentUser.id] = {};
+  if (!evals[currentUser.id].scores) evals[currentUser.id].scores = {};
+  evals[currentUser.id].scores[itemId] = score;
+  saveEvals(evals);
+
+  // UIを更新
+  const card = document.getElementById('icard_' + itemId);
+  if (card) {
+    card.classList.add('selected');
+    card.querySelectorAll('.score-btn').forEach((btn, i) => {
+      btn.className = 'score-btn' + (i + 1 === score ? ' selected-' + score : '');
+    });
+  }
+  renderStaffHome();
+}
+
+function saveEvalDraft() {
+  const evals = getEvals();
+  if (!evals[currentUser.id]) evals[currentUser.id] = {};
+  evals[currentUser.id].q1 = document.getElementById('q1Text')?.value || '';
+  evals[currentUser.id].q2 = document.getElementById('q2Text')?.value || '';
+  evals[currentUser.id].lastSaved = new Date().toISOString();
+  saveEvals(evals);
+  showToast('💾 途中保存しました');
+}
+
+function submitEval() {
+  const evals = getEvals();
+  if (!evals[currentUser.id]) evals[currentUser.id] = {};
+  const scores = evals[currentUser.id].scores || {};
+  const items = getItemsForRole(currentUser.role);
+  const allItems = items.categories.flatMap(c => c.items);
+  const missing = allItems.filter(i => scores[i.id] === undefined).length;
+
+  evals[currentUser.id].q1 = document.getElementById('q1Text')?.value || '';
+  evals[currentUser.id].q2 = document.getElementById('q2Text')?.value || '';
+
+  if (missing > 0) {
+    if (!confirm(`まだ ${missing} 項目が未入力です。このまま提出しますか？`)) return;
+  }
+
+  evals[currentUser.id].submitted = true;
+  evals[currentUser.id].submittedAt = new Date().toISOString();
+  saveEvals(evals);
+  showToast('✅ 提出しました！');
+  showScreen('staffHomeScreen');
+  setHeader('自己評価入力');
+  renderStaffHome();
+}
+
+// ============================================================
+// CSV DOWNLOAD
+// ============================================================
+function downloadCSV(memberId) {
+  const id = memberId || currentUser?.id;
+  if (!id) return;
+  const members = getMembers();
+  const member = members.find(m => m.id === id);
+  if (!member) return;
+  const evals = getEvals();
+  const ev = evals[id] || {};
+  const scores = ev.scores || {};
+  const items = getItemsForRole(member.role);
+
+  let rows = [['カテゴリ', '評価項目', '行動基準', '自己評価点']];
+  items.categories.forEach(cat => {
+    cat.items.forEach(item => {
+      rows.push([cat.name, item.name, item.criteria, scores[item.id] ?? '']);
+    });
+  });
+  rows.push(['振り返りQ1', '', '', ev.q1 || '']);
+  rows.push(['振り返りQ2', '', '', ev.q2 || '']);
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `自己評価_${member.name}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📤 CSVをダウンロードしました');
+}
+
+function downloadCSVForMember(id) { downloadCSV(id); }
+
+// ============================================================
+// ADMIN
+// ============================================================
+function adminTab(tab, btn) {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('adminOverview').style.display = tab === 'overview' ? '' : 'none';
+  document.getElementById('adminMembers').style.display = tab === 'members' ? '' : 'none';
+  document.getElementById('adminSettings').style.display = tab === 'settings' ? '' : 'none';
+  if (tab === 'overview') showAdminOverview();
+  if (tab === 'members') showAdminMembers();
+  if (tab === 'settings') showAdminSettings();
+}
+
+function showAdminOverview() {
+  const members = getMembers();
+  const evals = getEvals();
+  const settings = getSettings();
+
+  const submitted = members.filter(m => evals[m.id]?.submitted).length;
+  const draft = members.filter(m => !evals[m.id]?.submitted && evals[m.id]?.scores && Object.keys(evals[m.id].scores).length > 0).length;
+  const notStarted = members.length - submitted - draft;
+
+  // deadline warnings
+  let warningHtml = '';
+  if (settings.deadline) {
+    const dl = new Date(settings.deadline);
+    const now = new Date();
+    if (now > dl) {
+      const unsubmitted = members.filter(m => !evals[m.id]?.submitted);
+      if (unsubmitted.length > 0) {
+        warningHtml = `<div class="warning-banner">⚠️ 期限超過：未提出 ${unsubmitted.length}名（${unsubmitted.map(m=>m.name).join('、')}）</div>`;
+      }
+    }
+  }
+
+  let storeGroups = {};
+  members.forEach(m => {
+    if (!storeGroups[m.store]) storeGroups[m.store] = [];
+    storeGroups[m.store].push(m);
+  });
+
+  let membersHtml = '';
+  Object.keys(storeGroups).forEach(store => {
+    membersHtml += `<div class="section-heading">${store}</div>`;
+    storeGroups[store].forEach(m => {
+      const ev = evals[m.id] || {};
+      const items = getItemsForRole(m.role);
+      const allItems = items.categories.flatMap(c => c.items);
+      const scores = ev.scores || {};
+      const done = allItems.filter(i => scores[i.id] !== undefined).length;
+      const pct = allItems.length > 0 ? Math.round(done / allItems.length * 100) : 0;
+
+      let statusBadge = '';
+      if (ev.submitted) statusBadge = '<span class="status-badge status-submitted">✅提出済</span>';
+      else if (done > 0) statusBadge = '<span class="status-badge status-draft">✏️途中</span>';
+      else statusBadge = '<span class="status-badge status-not-started">未入力</span>';
+
+      membersHtml += `
+        <div class="member-row" onclick="showMemberDetail('${m.id}')" style="cursor:pointer;">
+          <div class="member-avatar">${m.name[0]}</div>
+          <div class="member-info">
+            <div class="member-name">${m.name}</div>
+            <div class="member-meta">${getRoleLabel(m.role)} ${statusBadge}</div>
+            <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div>
+          </div>
+          <div style="font-size:11px;color:var(--ug-gray-400);">▶</div>
+        </div>
+      `;
+    });
+  });
+
+  document.getElementById('adminOverview').innerHTML = `
+    ${warningHtml}
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span>提出状況</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:#d4edda;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#155724;">${submitted}</div>
+          <div style="font-size:11px;color:#155724;font-weight:700;">提出済み</div>
+        </div>
+        <div style="flex:1;background:#fff3cd;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#856404;">${draft}</div>
+          <div style="font-size:11px;color:#856404;font-weight:700;">入力途中</div>
+        </div>
+        <div style="flex:1;background:var(--ug-gray-100);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--ug-gray-600);">${notStarted}</div>
+          <div style="font-size:11px;color:var(--ug-gray-600);font-weight:700;">未入力</div>
+        </div>
+      </div>
+      <button class="btn btn-navy" onclick="downloadAllCSV()">📤 全員分CSVダウンロード</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">👥</span>メンバー別状況</div>
+      ${membersHtml}
+    </div>
+  `;
+}
+
+function showMemberDetail(memberId) {
+  currentDetailMember = memberId;
+  const members = getMembers();
+  const member = members.find(m => m.id === memberId);
+  if (!member) return;
+  const evals = getEvals();
+  const ev = evals[memberId] || {};
+  const scores = ev.scores || {};
+  const items = getItemsForRole(member.role);
+
+  const colors = ['','#c0392b','#e67e22','#2980b9','#27ae60','#8e44ad'];
+
+  let html = `
+    <div class="home-greeting">
+      <div class="role">${getRoleLabel(member.role)}</div>
+      <div class="name">${member.name}</div>
+      <div class="store">${member.store}</div>
+      ${ev.submitted ? '<span class="status-badge status-submitted">✅ 提出済み</span>' : '<span class="status-badge status-not-started">未提出</span>'}
+      ${ev.submittedAt ? `<div style="font-size:11px;color:var(--ug-gray-400);margin-top:4px;">提出日時: ${new Date(ev.submittedAt).toLocaleString('ja-JP')}</div>` : ''}
+    </div>
+  `;
+
+  items.categories.forEach(cat => {
+    let catHtml = '';
+    cat.items.forEach(item => {
+      const s = scores[item.id];
+      catHtml += `
+        <div class="detail-score-row">
+          <span style="flex:1;">${item.name}</span>
+          ${s !== undefined
+            ? `<div class="score-chip" style="background:${colors[s]}">${s}</div>`
+            : `<div class="score-chip" style="background:var(--ug-gray-200);color:var(--ug-gray-600);">-</div>`}
+        </div>
+      `;
+    });
+    html += `
+      <div class="card">
+        <div class="card-title" style="font-size:13px;"><span class="icon">📋</span>${cat.name}（配点${cat.maxScore}点）</div>
+        ${catHtml}
+      </div>
+    `;
+  });
+
+  // Q1 Q2
+  html += `
+    <div class="card">
+      <div class="card-title"><span class="icon">💬</span>振り返り・報告</div>
+      <div class="comment-label" style="margin-bottom:6px;">Q1. アピールポイント</div>
+      <div style="background:var(--ug-gray-100);border-radius:8px;padding:12px;font-size:13px;color:var(--ug-gray-800);min-height:60px;margin-bottom:14px;white-space:pre-wrap;">${ev.q1 || '（未入力）'}</div>
+      <div class="comment-label" style="margin-bottom:6px;">Q2. 課題・チャレンジ</div>
+      <div style="background:var(--ug-gray-100);border-radius:8px;padding:12px;font-size:13px;color:var(--ug-gray-800);min-height:60px;white-space:pre-wrap;">${ev.q2 || '（未入力）'}</div>
+    </div>
+  `;
+
+  document.getElementById('detailContent').innerHTML = html;
+  showScreen('detailScreen');
+  setHeader(member.name + ' の詳細');
+}
+
+function downloadAllCSV() {
+  const members = getMembers();
+  const evals = getEvals();
+  let rows = [['氏名', '店舗', '役職', 'カテゴリ', '評価項目', '行動基準', '自己評価点']];
+  members.forEach(member => {
+    const ev = evals[member.id] || {};
+    const scores = ev.scores || {};
+    const items = getItemsForRole(member.role);
+    items.categories.forEach(cat => {
+      cat.items.forEach(item => {
+        rows.push([member.name, member.store, getRoleLabel(member.role), cat.name, item.name, item.criteria, scores[item.id] ?? '']);
+      });
+    });
+    rows.push([member.name, member.store, getRoleLabel(member.role), '振り返りQ1', '', '', ev.q1 || '']);
+    rows.push([member.name, member.store, getRoleLabel(member.role), '振り返りQ2', '', '', ev.q2 || '']);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `全員自己評価_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📤 全員分CSVをダウンロードしました');
+}
+
+// ============================================================
+// ADMIN MEMBERS
+// ============================================================
+function showAdminMembers() {
+  const members = getMembers();
+  let html = `<div class="card">
+    <div class="card-title"><span class="icon">👥</span>メンバー管理</div>
+    <button class="btn btn-primary btn-sm" style="margin-bottom:14px;" onclick="showAddMemberForm()">＋ メンバー追加</button>
+    <div id="addMemberFormArea"></div>
+  `;
+  members.forEach((m, i) => {
+    html += `
+      <div class="member-row">
+        <div class="member-avatar">${m.name[0]}</div>
+        <div class="member-info">
+          <div class="member-name">${m.name}</div>
+          <div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div>
+          <div class="text-xs text-muted">PIN: ${'●'.repeat(m.pin.length)}</div>
+        </div>
+        <div class="member-actions">
+          <button class="btn-icon" onclick="editMember(${i})" title="編集">✏️</button>
+          <button class="btn-icon" onclick="deleteMember(${i})" title="削除">🗑️</button>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  document.getElementById('adminMembers').innerHTML = html;
+}
+
+function showAddMemberForm(editIndex) {
+  const members = getMembers();
+  const m = editIndex !== undefined ? members[editIndex] : null;
+  const title = m ? 'メンバー編集' : 'メンバー追加';
+  const html = `
+    <div style="background:var(--ug-yellow-light);border:1px solid var(--ug-yellow);border-radius:10px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:800;color:var(--ug-navy);margin-bottom:10px;">${title}</div>
+      <div class="form-group">
+        <label class="form-label">氏名</label>
+        <input class="form-input" id="mf_name" value="${m?.name || ''}" placeholder="例：山田 太郎">
+      </div>
+      <div class="form-group">
+        <label class="form-label">役職</label>
+        <select class="form-select" id="mf_role">
+          <option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option>
+          <option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option>
+          <option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option>
+          <option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">所属店舗</label>
+        <select class="form-select" id="mf_store">
+          <option value="埼玉入間店" ${m?.store==='埼玉入間店'?'selected':''}>埼玉入間店</option>
+          <option value="川越インター店" ${m?.store==='川越インター店'?'selected':''}>川越インター店</option>
+          <option value="その他" ${m?.store==='その他'?'selected':''}>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PINコード（4桁）</label>
+        <input class="form-input" id="mf_pin" type="tel" maxlength="4" value="${m?.pin || ''}" placeholder="例：1234">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="saveMember(${editIndex})">保存</button>
+        <button class="btn btn-secondary btn-sm" onclick="cancelMemberForm()">キャンセル</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('addMemberFormArea').innerHTML = html;
+  document.getElementById('mf_name').focus();
+}
+
+function editMember(i) {
+  showAddMemberForm(i);
+  document.getElementById('addMemberFormArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveMember(editIndex) {
+  const name = document.getElementById('mf_name').value.trim();
+  const role = document.getElementById('mf_role').value;
+  const store = document.getElementById('mf_store').value;
+  const pin = document.getElementById('mf_pin').value.trim();
+
+  if (!name || !pin) { showToast('氏名とPINを入力してください'); return; }
+  if (pin.length !== 4 || !/^\d+$/.test(pin)) { showToast('PINは4桁の数字です'); return; }
+
+  const members = getMembers();
+  if (editIndex !== undefined) {
+    members[editIndex] = { ...members[editIndex], name, role, store, pin };
+  } else {
+    members.push({ id: 'member_' + Date.now(), name, role, store, pin });
+  }
+  saveMembers(members);
+  showToast('✅ 保存しました');
+  showAdminMembers();
+}
+
+function cancelMemberForm() {
+  document.getElementById('addMemberFormArea').innerHTML = '';
+}
+
+function deleteMember(i) {
+  if (!confirm('このメンバーを削除しますか？')) return;
+  const members = getMembers();
+  members.splice(i, 1);
+  saveMembers(members);
+  showToast('🗑️ 削除しました');
+  showAdminMembers();
+}
+
+// ============================================================
+// ADMIN SETTINGS
+// ============================================================
+function showAdminSettings() {
+  const settings = getSettings();
+  document.getElementById('adminSettings').innerHTML = `
+    <div class="settings-card">
+      <h3>📅 提出期限設定</h3>
+      <div class="form-group">
+        <label class="form-label">締め切り日</label>
+        <input class="form-input" type="date" id="st_deadline" value="${settings.deadline || ''}">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button>
+    </div>
+    <div class="settings-card">
+      <h3>📋 評価期間</h3>
+      <div class="form-group">
+        <label class="form-label">表示テキスト</label>
+        <input class="form-input" id="st_period" value="${settings.period || '2025.10〜2026.3'}" placeholder="例：2025.10〜2026.3">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="savePeriod()">保存</button>
+    </div>
+    <div class="settings-card">
+      <h3>🔑 管理者PIN変更</h3>
+      <div class="form-group">
+        <label class="form-label">新しいPIN（4桁）</label>
+        <input class="form-input" type="tel" maxlength="4" id="st_adminPin" placeholder="例：0000">
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="saveAdminPin()">PIN変更</button>
+    </div>
+    <div class="settings-card">
+      <h3>⚠️ データ管理</h3>
+      <p class="text-sm text-muted" style="margin-bottom:10px;">提出済みデータをリセットします（メンバー情報は保持されます）</p>
+      <button class="btn btn-danger btn-sm" onclick="resetAllEvals()">全評価データをリセット</button>
+    </div>
+  `;
+}
+
+function saveDeadline() {
+  const s = getSettings();
+  s.deadline = document.getElementById('st_deadline').value;
+  saveSettings(s);
+  showToast('✅ 締め切り日を保存しました');
+}
+function savePeriod() {
+  const s = getSettings();
+  s.period = document.getElementById('st_period').value;
+  saveSettings(s);
+  showToast('✅ 評価期間を保存しました');
+}
+function saveAdminPin() {
+  const pin = document.getElementById('st_adminPin').value.trim();
+  if (pin.length !== 4 || !/^\d+$/.test(pin)) { showToast('PINは4桁の数字で入力してください'); return; }
+  const s = getSettings();
+  s.adminPin = pin;
+  saveSettings(s);
+  showToast('✅ 管理者PINを変更しました');
+}
+function resetAllEvals() {
+  if (!confirm('本当に全評価データをリセットしますか？この操作は元に戻せません。')) return;
+  localStorage.removeItem(KEY_EVALS);
+  showToast('🗑️ リセットしました');
+  showAdminOverview();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function() {
+  initStaffSelect();
+};
+</script>
+</body>
+</html>
