@@ -762,7 +762,7 @@
 // DATA
 // ============================================================
 
-const ADMIN_PIN = '1234'; // 管理者PINは設定画面で変更可能
+const ADMIN_PIN = '1008'; // 管理者PIN（秦 慈宏）
 
 // 評価基準（職種別）
 const SCORE_CRITERIA = {
@@ -969,17 +969,17 @@ function getMembers() {
   if (d) return JSON.parse(d);
   // デフォルトメンバー
   const defaults = [
-    { id: 'isaka', name: '伊坂 邦明', role: 'SM', store: '埼玉入間店', pin: '1111' },
-    { id: 'takano', name: '高野 彪瑠', role: 'VSM', store: '埼玉入間店', pin: '2222' },
-    { id: 'fukunishi', name: '福西 海人', role: 'STAFF', store: '埼玉入間店', pin: '3333' },
-    { id: 'kajisa', name: '加治佐 魁人', role: 'STAFF', store: '埼玉入間店', pin: '4444' },
-    { id: 'yaegashi', name: '八重樫 裕美', role: 'PART', store: '埼玉入間店', pin: '5555' },
-    { id: 'hara', name: '原 昂平', role: 'SM', store: '川越インター店', pin: '6666' },
-    { id: 'ito', name: '伊藤 祐輝', role: 'VSM', store: '川越インター店', pin: '7777' },
-    { id: 'yoshizawa', name: '吉澤 陽輝', role: 'STAFF', store: '川越インター店', pin: '8888' },
-    { id: 'inoue', name: '井上 京一', role: 'PART', store: '川越インター店', pin: '9999' },
-    { id: 'shimizu', name: '清水 天音', role: 'PART', store: '川越インター店', pin: '1234' },
-    { id: 'yamamatsu', name: '山松 泰', role: 'PART', store: '川越インター店', pin: '4321' },
+    { id: 'isaka', name: '伊坂 邦明', role: 'SM', store: '埼玉入間店', pin: '0810' },
+    { id: 'takano', name: '高野 彪瑠', role: 'VSM', store: '埼玉入間店', pin: '0325' },
+    { id: 'fukunishi', name: '福西 海人', role: 'STAFF', store: '埼玉入間店', pin: '0116' },
+    { id: 'kajisa', name: '加治佐 魁人', role: 'STAFF', store: '埼玉入間店', pin: '0124' },
+    { id: 'yaegashi', name: '八重樫 裕美', role: 'PART', store: '埼玉入間店', pin: '1019' },
+    { id: 'hara', name: '原 昂平', role: 'SM', store: '川越インター店', pin: '1008' },
+    { id: 'ito', name: '伊藤 祐輝', role: 'VSM', store: '川越インター店', pin: '1015' },
+    { id: 'yoshizawa', name: '吉澤 陽輝', role: 'STAFF', store: '川越インター店', pin: '0205' },
+    { id: 'inoue', name: '井上 京一', role: 'PART', store: '川越インター店', pin: '0106' },
+    { id: 'shimizu', name: '清水 天音', role: 'PART', store: '川越インター店', pin: '0603' },
+    { id: 'yamamatsu', name: '山松 泰', role: 'PART', store: '川越インター店', pin: '0812' },
   ];
   saveMembers(defaults);
   return defaults;
