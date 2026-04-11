@@ -6,41 +6,30 @@
 <title>人事評価 自己入力システム | スタイルアップ</title>
 <style>
   :root {
-    --c-bg: #f7f6f3;
-    --c-dark: #2c2c2c;
-    --c-gray: #8a8582;
-    --c-gray-light: #e8e5e0;
-    --c-gray-pale: #f0ede8;
-    --c-salmon: #e8967a;
-    --c-salmon-dark: #d4785e;
-    --c-sage: #8fb89a;
-    --c-sage-dark: #6d9e7a;
-    --c-blue: #7aa5c8;
-    --c-yellow-pale: #f0e8c0;
-    --c-white: #ffffff;
-    --c-text: #2c2c2c;
-    --c-muted: #8a8582;
-    --radius: 12px;
-    --shadow: 0 2px 12px rgba(44,44,44,0.08);
-    --shadow-lg: 0 4px 24px rgba(44,44,44,0.12);
+    --c-bg: #f7f6f3; --c-dark: #2c2c2c; --c-gray: #8a8582; --c-gray-light: #e8e5e0;
+    --c-gray-pale: #f0ede8; --c-salmon: #e8967a; --c-salmon-dark: #d4785e;
+    --c-sage: #8fb89a; --c-sage-dark: #6d9e7a; --c-blue: #7aa5c8;
+    --c-yellow-pale: #f0e8c0; --c-white: #ffffff; --c-text: #2c2c2c; --c-muted: #8a8582;
+    --radius: 12px; --shadow: 0 2px 12px rgba(44,44,44,0.08); --shadow-lg: 0 4px 24px rgba(44,44,44,0.12);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--c-bg); color: var(--c-text); min-height: 100vh; }
 
   .app-header { background: var(--c-dark); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .app-logo-img { height: 32px; width: auto; }
-  .app-header-title { font-size: 13px; font-weight: 700; color: var(--c-white); flex: 1; letter-spacing: 0.03em; }
+  .app-header-title { font-size: 13px; font-weight: 700; color: var(--c-white); flex: 1; }
   .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: inherit; }
 
   .screen { display: none; }
   .screen.active { display: block; }
 
+  /* LOGIN */
   #loginScreen { min-height: 100vh; background: var(--c-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
   #loginScreen.active { display: flex; }
   .login-logo-area { text-align: center; margin-bottom: 28px; }
   .login-logo-area img { height: 80px; width: auto; display: block; margin: 0 auto 14px; }
   .login-logo-area h1 { color: var(--c-white); font-size: 18px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .login-logo-area .company { color: var(--c-gray); font-size: 12px; letter-spacing: 0.08em; }
+  .login-logo-area .company { color: var(--c-gray); font-size: 12px; }
   .login-box { background: var(--c-white); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; box-shadow: var(--shadow-lg); }
   .form-label { font-size: 11px; font-weight: 700; color: var(--c-muted); margin-bottom: 6px; display: block; letter-spacing: 0.08em; text-transform: uppercase; }
   .form-select, .form-input { width: 100%; padding: 12px 14px; border: 2px solid var(--c-gray-light); border-radius: 10px; font-size: 15px; font-family: inherit; color: var(--c-text); background: var(--c-gray-pale); appearance: none; -webkit-appearance: none; margin-bottom: 16px; outline: none; transition: border-color 0.2s; }
@@ -54,6 +43,7 @@
   .pin-key.del { font-size: 16px; color: #c0392b; }
   .pin-key.empty { background: transparent; border-color: transparent; cursor: default; }
 
+  /* BUTTONS */
   .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; letter-spacing: 0.03em; transition: all 0.15s; }
   .btn:active { transform: scale(0.97); }
   .btn-primary { background: var(--c-salmon); color: white; }
@@ -67,58 +57,78 @@
   .card-title { font-size: 14px; font-weight: 800; color: var(--c-dark); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--c-gray-light); display: flex; align-items: center; gap: 8px; }
 
   .home-greeting { background: var(--c-dark); padding: 20px; margin: 10px 12px; border-radius: var(--radius); color: var(--c-white); border-left: 4px solid var(--c-salmon); }
-  .home-greeting .hg-role { font-size: 11px; color: var(--c-salmon); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
-  .home-greeting .hg-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-  .home-greeting .hg-store { font-size: 12px; color: var(--c-gray); }
+  .hg-role { font-size: 11px; color: var(--c-salmon); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .hg-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .hg-store { font-size: 12px; color: var(--c-gray); }
   .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
   .s-draft { background: var(--c-yellow-pale); color: #7a6500; }
   .s-done { background: #d4edda; color: #155724; }
   .s-none { background: var(--c-gray-light); color: var(--c-gray); }
-  .deadline-banner { background: var(--c-yellow-pale); border: 1px solid #d4b800; border-radius: 10px; padding: 10px 14px; margin: 0 12px 8px; font-size: 13px; font-weight: 600; color: var(--c-dark); display: flex; align-items: center; gap: 8px; }
+  .deadline-banner { background: var(--c-yellow-pale); border: 1px solid #d4b800; border-radius: 10px; padding: 10px 14px; margin: 0 12px 8px; font-size: 13px; font-weight: 600; color: var(--c-dark); }
   .deadline-banner.overdue { background: #fdecea; border-color: #c0392b; color: #c0392b; }
   .progress-bar-wrap { background: var(--c-gray-light); border-radius: 6px; height: 8px; margin: 8px 0 4px; }
   .progress-bar { height: 8px; border-radius: 6px; background: var(--c-salmon); transition: width 0.3s; }
   .progress-label { font-size: 11px; color: var(--c-muted); text-align: right; }
 
-  .eval-step-card { background: var(--c-white); border-radius: 16px; padding: 24px 20px; margin: 10px 12px; box-shadow: var(--shadow-lg); }
-  .step-badge { background: var(--c-salmon); color: white; border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 800; display: inline-block; margin-bottom: 10px; letter-spacing: 0.05em; }
-  .step-category { font-size: 11px; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
-  .step-item-name { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 10px; line-height: 1.3; }
-  .step-criteria { background: var(--c-gray-pale); border-radius: 10px; padding: 12px; font-size: 13px; color: var(--c-muted); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--c-sage); }
-  .step-criteria-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--c-sage-dark); text-transform: uppercase; margin-bottom: 4px; }
+  /* EVAL STEP - コンパクト・スクロール最小化 */
+  .eval-step-card { background: var(--c-white); border-radius: 16px; padding: 18px 16px; margin: 8px 10px; box-shadow: var(--shadow-lg); }
+  .step-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .step-badge { background: var(--c-salmon); color: white; border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
+  .step-category { font-size: 11px; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .step-item-name { font-size: 22px; font-weight: 800; color: var(--c-dark); margin-bottom: 10px; line-height: 1.3; }
 
-  .criteria-list { margin-bottom: 16px; }
-  .criteria-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--c-gray-light); }
-  .criteria-item:last-child { border-bottom: none; }
-  .c-score-badge { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: white; }
-  .cs-1 { background: #c0392b; } .cs-2 { background: #e67e22; } .cs-3 { background: var(--c-blue); } .cs-4 { background: var(--c-sage-dark); } .cs-5 { background: #8e44ad; }
-  .criteria-text-wrap .c-label { font-size: 11px; font-weight: 700; color: var(--c-muted); margin-bottom: 2px; }
-  .criteria-text-wrap .c-text { font-size: 13px; color: var(--c-text); line-height: 1.5; }
+  /* 期待される行動 - 大きく見やすく */
+  .step-criteria-box {
+    background: linear-gradient(135deg, #eef6f0 0%, #e8f4eb 100%);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--c-sage-dark);
+  }
+  .step-criteria-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--c-sage-dark); text-transform: uppercase; margin-bottom: 6px; }
+  .step-criteria-text { font-size: 16px; font-weight: 600; color: #1a3d25; line-height: 1.65; }
 
-  .score-buttons-large { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
-  .score-btn-lg { height: 56px; border-radius: 12px; border: 2px solid var(--c-gray-light); background: var(--c-gray-pale); font-size: 22px; font-weight: 900; color: var(--c-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
-  .score-btn-lg:active { transform: scale(0.9); }
-  .score-btn-lg.sel-1 { background: #c0392b; border-color: #c0392b; color: white; }
-  .score-btn-lg.sel-2 { background: #e67e22; border-color: #e67e22; color: white; }
-  .score-btn-lg.sel-3 { background: var(--c-blue); border-color: var(--c-blue); color: white; }
-  .score-btn-lg.sel-4 { background: var(--c-sage-dark); border-color: var(--c-sage-dark); color: white; }
-  .score-btn-lg.sel-5 { background: #8e44ad; border-color: #8e44ad; color: white; }
+  /* 評価基準テーブル - コンパクト横並び */
+  .criteria-compact { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+  .criteria-compact-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 8px; background: var(--c-gray-pale); }
+  .criteria-compact-row.highlight { background: #fff; border: 1px solid var(--c-gray-light); }
+  .cc-badge { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: white; margin-top: 1px; }
+  .cc-1 { background: #c0392b; } .cc-2 { background: #e67e22; } .cc-3 { background: var(--c-blue); } .cc-4 { background: var(--c-sage-dark); } .cc-5 { background: #8e44ad; }
+  .cc-content { flex: 1; }
+  .cc-label { font-size: 10px; font-weight: 700; color: var(--c-muted); margin-bottom: 2px; }
+  .cc-text { font-size: 12px; color: var(--c-text); line-height: 1.4; }
 
-  .step-nav { display: flex; gap: 10px; margin-top: 8px; }
-  .step-nav .btn { flex: 1; padding: 13px; font-size: 14px; }
-  .step-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .step-progress-bar-wrap { flex: 1; background: var(--c-gray-light); border-radius: 4px; height: 6px; }
-  .step-progress-bar { height: 6px; border-radius: 4px; background: var(--c-salmon); transition: width 0.4s; }
-  .step-progress-text { font-size: 12px; font-weight: 700; color: var(--c-muted); white-space: nowrap; }
+  /* 点数ボタン - 大きく・タップしたら自動次へ */
+  .score-section-label { font-size: 13px; font-weight: 800; color: var(--c-dark); margin-bottom: 10px; }
+  .score-buttons-large { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
+  .score-btn-lg { height: 60px; border-radius: 12px; border: 2px solid var(--c-gray-light); background: var(--c-gray-pale); font-size: 24px; font-weight: 900; color: var(--c-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+  .score-btn-lg:active { transform: scale(0.88); }
+  .score-btn-lg.sel-1 { background: #c0392b; border-color: #c0392b; color: white; box-shadow: 0 3px 12px rgba(192,57,43,0.4); }
+  .score-btn-lg.sel-2 { background: #e67e22; border-color: #e67e22; color: white; box-shadow: 0 3px 12px rgba(230,126,34,0.4); }
+  .score-btn-lg.sel-3 { background: var(--c-blue); border-color: var(--c-blue); color: white; box-shadow: 0 3px 12px rgba(122,165,200,0.4); }
+  .score-btn-lg.sel-4 { background: var(--c-sage-dark); border-color: var(--c-sage-dark); color: white; box-shadow: 0 3px 12px rgba(109,158,122,0.4); }
+  .score-btn-lg.sel-5 { background: #8e44ad; border-color: #8e44ad; color: white; box-shadow: 0 3px 12px rgba(142,68,173,0.4); }
+  .auto-next-hint { text-align: center; font-size: 11px; color: var(--c-muted); margin-bottom: 4px; }
 
-  .comment-textarea { width: 100%; border: 2px solid var(--c-gray-light); border-radius: 10px; padding: 12px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 100px; color: var(--c-text); outline: none; transition: border-color 0.2s; background: var(--c-gray-pale); }
+  /* 手動ナビ（前へのみ） */
+  .step-prev-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; background: var(--c-gray-light); color: var(--c-dark); transition: all 0.15s; margin-top: 6px; }
+  .step-prev-btn:disabled { opacity: 0.4; cursor: default; }
+  .step-prev-btn:active { transform: scale(0.97); }
+
+  /* ステッププログレス */
+  .step-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .step-progress-bar-wrap { flex: 1; background: var(--c-gray-light); border-radius: 4px; height: 5px; }
+  .step-progress-bar { height: 5px; border-radius: 4px; background: var(--c-salmon); transition: width 0.4s; }
+  .step-progress-text { font-size: 11px; font-weight: 700; color: var(--c-muted); white-space: nowrap; }
+
+  .comment-textarea { width: 100%; border: 2px solid var(--c-gray-light); border-radius: 10px; padding: 12px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 110px; color: var(--c-text); outline: none; transition: border-color 0.2s; background: var(--c-gray-pale); }
   .comment-textarea:focus { border-color: var(--c-salmon); background: var(--c-white); }
-  .q-label { font-size: 13px; font-weight: 700; color: var(--c-dark); margin-bottom: 8px; line-height: 1.4; }
+  .q-label { font-size: 15px; font-weight: 700; color: var(--c-dark); margin-bottom: 10px; line-height: 1.5; }
 
+  /* ADMIN */
   .admin-tabs { display: flex; background: var(--c-gray-pale); border-radius: 12px; padding: 4px; margin: 10px 12px; gap: 4px; }
   .admin-tab { flex: 1; padding: 9px 4px; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; background: transparent; color: var(--c-muted); transition: all 0.15s; }
   .admin-tab.active { background: var(--c-white); color: var(--c-dark); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-
   .member-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--c-gray-light); gap: 10px; }
   .member-row:last-child { border-bottom: none; }
   .member-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--c-dark); color: var(--c-salmon); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; flex-shrink: 0; }
@@ -130,24 +140,20 @@
 
   .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--c-dark); color: var(--c-white); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 999; transition: transform 0.3s; white-space: nowrap; border-left: 4px solid var(--c-salmon); box-shadow: var(--shadow-lg); }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--c-dark); border-top: 1px solid rgba(255,255,255,0.1); display: flex; z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
   .nav-btn { flex: 1; background: transparent; border: none; color: var(--c-gray); padding: 10px 4px 8px; font-size: 10px; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.15s; }
   .nav-btn .nav-icon { font-size: 20px; }
   .nav-btn.active { color: var(--c-salmon); }
   .pb-nav { padding-bottom: 72px; }
-
   .section-heading { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); padding: 14px 20px 6px; }
   .flex-between { display: flex; justify-content: space-between; align-items: center; }
-  .text-sm { font-size: 13px; } .text-xs { font-size: 11px; } .text-muted { color: var(--c-muted); } .fw-bold { font-weight: 700; } .mt-12 { margin-top: 12px; } .form-group { margin-bottom: 14px; }
-
+  .text-sm { font-size: 13px; } .text-muted { color: var(--c-muted); } .fw-bold { font-weight: 700; } .mt-12 { margin-top: 12px; } .form-group { margin-bottom: 14px; }
   .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44,44,44,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; }
   .loading-overlay.hidden { display: none; }
   .loading-box { background: var(--c-white); border-radius: 16px; padding: 24px 32px; text-align: center; font-weight: 700; color: var(--c-dark); font-size: 14px; }
   .loading-spin { width: 36px; height: 36px; border: 3px solid var(--c-gray-light); border-top-color: var(--c-salmon); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .warning-banner { background: #fdecea; border: 1px solid #c0392b; border-radius: 10px; padding: 8px 12px; margin: 0 12px 8px; font-size: 12px; font-weight: 700; color: #c0392b; display: flex; align-items: center; gap: 6px; }
+  .warning-banner { background: #fdecea; border: 1px solid #c0392b; border-radius: 10px; padding: 8px 12px; margin: 0 12px 8px; font-size: 12px; font-weight: 700; color: #c0392b; }
   .detail-score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--c-gray-light); font-size: 13px; }
   .detail-score-row:last-child { border-bottom: none; }
   .score-chip { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: white; flex-shrink: 0; }
@@ -226,7 +232,7 @@
   </div>
   <div class="card">
     <div class="card-title">📤 Excelデータ出力</div>
-    <p class="text-sm text-muted" style="margin-bottom:12px;">入力内容をCSV形式でダウンロードして、Excelの自己評価欄に貼り付けてください。</p>
+    <p class="text-sm text-muted" style="margin-bottom:12px;">入力内容をCSVでダウンロードして、Excelの自己評価欄に貼り付けてください。</p>
     <button class="btn btn-dark" onclick="downloadCSV()">CSVダウンロード</button>
   </div>
   <div style="height:20px;"></div>
@@ -237,7 +243,7 @@
   <div id="evalStepContent" class="pb-nav"></div>
   <div class="bottom-nav">
     <button class="nav-btn" onclick="goHome()"><span class="nav-icon">🏠</span>ホーム</button>
-    <button class="nav-btn active"><span class="nav-icon">✏️</span>入力</button>
+    <button class="nav-btn active"><span class="nav-icon">✏️</span>入力中</button>
     <button class="nav-btn" onclick="saveEvalDraft()"><span class="nav-icon">💾</span>途中保存</button>
     <button class="nav-btn" onclick="submitEval()"><span class="nav-icon">✅</span>提出</button>
   </div>
@@ -275,591 +281,535 @@ const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 async function fetchEvals() {
   showLoading(true);
   try {
-    const res = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_API_KEY, 'X-Bin-Meta': 'false' } });
-    const data = await res.json();
-    showLoading(false);
-    return data.evals || {};
-  } catch(e) {
-    showLoading(false);
-    showToast('⚠️ データ取得エラー。ローカルを使用します');
-    const d = localStorage.getItem('ug_eval_data');
-    return d ? JSON.parse(d) : {};
-  }
+    const res = await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
+    const data = await res.json(); showLoading(false); return data.evals||{};
+  } catch(e) { showLoading(false); const d=localStorage.getItem('ug_eval_data'); return d?JSON.parse(d):{}; }
 }
-
 async function saveEvals(evals) {
   showLoading(true);
   try {
-    const res = await fetch(JSONBIN_URL, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY }, body: JSON.stringify({ evals }) });
-    showLoading(false);
-    if (!res.ok) throw new Error('Save failed');
-    localStorage.setItem('ug_eval_data', JSON.stringify(evals));
-    return true;
-  } catch(e) {
-    showLoading(false);
-    localStorage.setItem('ug_eval_data', JSON.stringify(evals));
-    showToast('⚠️ クラウド保存失敗。ローカルに保存しました');
-    return false;
-  }
+    const res = await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},body:JSON.stringify({evals})});
+    showLoading(false); if(!res.ok) throw new Error();
+    localStorage.setItem('ug_eval_data',JSON.stringify(evals)); return true;
+  } catch(e) { showLoading(false); localStorage.setItem('ug_eval_data',JSON.stringify(evals)); showToast('⚠️ クラウド保存失敗。ローカルに保存しました'); return false; }
 }
-
-function showLoading(v) { document.getElementById('loadingOverlay').classList.toggle('hidden', !v); }
+function showLoading(v){document.getElementById('loadingOverlay').classList.toggle('hidden',!v);}
 
 // ============================================================
 // SETTINGS / MEMBERS
 // ============================================================
-const ADMIN_PIN_DEFAULT = '1008';
+const ADMIN_PIN_DEFAULT='1008';
+function getSettings(){const d=localStorage.getItem('ug_eval_settings');return d?JSON.parse(d):{deadline:'',adminPin:ADMIN_PIN_DEFAULT,period:'2025.10〜2026.3'};}
+function saveSettings(s){localStorage.setItem('ug_eval_settings',JSON.stringify(s));}
 
-function getSettings() {
-  const d = localStorage.getItem('ug_eval_settings');
-  return d ? JSON.parse(d) : { deadline: '', adminPin: ADMIN_PIN_DEFAULT, period: '2025.10〜2026.3' };
-}
-function saveSettings(s) { localStorage.setItem('ug_eval_settings', JSON.stringify(s)); }
-
-const DEFAULT_MEMBERS = [
-  { id: 'isaka',      name: '伊坂 邦明',  role: 'SM',    store: '埼玉入間店',    pin: '0810' },
-  { id: 'takano',     name: '高野 彪瑠',  role: 'VSM',   store: '埼玉入間店',    pin: '0325' },
-  { id: 'fukunishi',  name: '福西 海人',  role: 'STAFF', store: '埼玉入間店',    pin: '0116' },
-  { id: 'kajisa',     name: '加治佐 魁人',role: 'STAFF', store: '埼玉入間店',    pin: '0124' },
-  { id: 'yaegashi',   name: '八重樫 裕美',role: 'PART',  store: '埼玉入間店',    pin: '1019' },
-  { id: 'hara',       name: '原 昂平',    role: 'SM',    store: '川越インター店', pin: '1008' },
-  { id: 'ito',        name: '伊藤 祐輝',  role: 'VSM',   store: '川越インター店', pin: '1015' },
-  { id: 'yoshizawa',  name: '吉澤 陽輝',  role: 'STAFF', store: '川越インター店', pin: '0205' },
-  { id: 'inoue',      name: '井上 京一',  role: 'PART',  store: '川越インター店', pin: '0106' },
-  { id: 'shimizu',    name: '清水 天音',  role: 'PART',  store: '川越インター店', pin: '0603' },
-  { id: 'yamamatsu',  name: '山松 泰',    role: 'PART',  store: '川越インター店', pin: '0812' },
+const DEFAULT_MEMBERS=[
+  {id:'isaka',name:'伊坂 邦明',role:'SM',store:'埼玉入間店',pin:'0810'},
+  {id:'takano',name:'高野 彪瑠',role:'VSM',store:'埼玉入間店',pin:'0325'},
+  {id:'fukunishi',name:'福西 海人',role:'STAFF',store:'埼玉入間店',pin:'0116'},
+  {id:'kajisa',name:'加治佐 魁人',role:'STAFF',store:'埼玉入間店',pin:'0124'},
+  {id:'yaegashi',name:'八重樫 裕美',role:'PART',store:'埼玉入間店',pin:'1019'},
+  {id:'hara',name:'原 昂平',role:'SM',store:'川越インター店',pin:'1008'},
+  {id:'ito',name:'伊藤 祐輝',role:'VSM',store:'川越インター店',pin:'1015'},
+  {id:'yoshizawa',name:'吉澤 陽輝',role:'STAFF',store:'川越インター店',pin:'0205'},
+  {id:'inoue',name:'井上 京一',role:'PART',store:'川越インター店',pin:'0106'},
+  {id:'shimizu',name:'清水 天音',role:'PART',store:'川越インター店',pin:'0603'},
+  {id:'yamamatsu',name:'山松 泰',role:'PART',store:'川越インター店',pin:'0812'},
 ];
-
-function getMembers() {
-  const d = localStorage.getItem('ug_eval_members');
-  if (d) return JSON.parse(d);
-  localStorage.setItem('ug_eval_members', JSON.stringify(DEFAULT_MEMBERS));
-  return DEFAULT_MEMBERS;
-}
-function saveMembers(m) { localStorage.setItem('ug_eval_members', JSON.stringify(m)); }
-function getRoleLabel(r) { return { SM:'SM（店長）', VSM:'VSM（副店長）', STAFF:'一般スタッフ', PART:'アルバイト' }[r]||r; }
+function getMembers(){const d=localStorage.getItem('ug_eval_members');if(d)return JSON.parse(d);localStorage.setItem('ug_eval_members',JSON.stringify(DEFAULT_MEMBERS));return DEFAULT_MEMBERS;}
+function saveMembers(m){localStorage.setItem('ug_eval_members',JSON.stringify(m));}
+function getRoleLabel(r){return{SM:'SM（店長）',VSM:'VSM（副店長）',STAFF:'一般スタッフ',PART:'アルバイト'}[r]||r;}
 
 // ============================================================
-// EVALUATION DATA (新シートに対応)
+// EVAL DATA
 // ============================================================
-const SCORE_CRITERIA = {
-  SM: [
-    { score:5, label:'模範となるレベル', text:'自店での成功事例や仕組みを他店舗に共有し、全社の向上に貢献した。' },
-    { score:4, label:'期待を上回るレベル', text:'基準を達成するだけでなく、店舗の構造を見直し改善させる事が出来る。' },
-    { score:3, label:'現職能ランクの期待レベル', text:'SVや本部のフォローなしで基準以上の運営が出来る。' },
-    { score:2, label:'期待を下回るレベル', text:'上層部の介入やフォローがないと基準値に満たない部分がある。' },
-    { score:1, label:'大幅に期待を下回るレベル', text:'部下からの信頼がなく、指示が通らない。一般スタッフレベル。' },
+const SCORE_CRITERIA={
+  SM:[
+    {score:5,label:'模範となるレベル',text:'自店での成功事例や仕組みを他店舗に共有し、全社の向上に貢献した。'},
+    {score:4,label:'期待を上回るレベル',text:'基準を達成するだけでなく、店舗の構造を見直し改善させる事が出来る。'},
+    {score:3,label:'現職能ランクの期待レベル',text:'SVや本部のフォローなしで基準以上の運営が出来る。'},
+    {score:2,label:'期待を下回るレベル',text:'上層部の介入やフォローがないと基準値に満たない部分がある。'},
+    {score:1,label:'大幅に期待を下回るレベル',text:'部下からの信頼がなく、指示が通らない。一般スタッフレベル。'},
   ],
-  VSM: [
-    { score:5, label:'模範となるレベル', text:'店舗のルール・仕組みを変えた。SM(店長)がいなくても実行し結果を出せる。' },
-    { score:4, label:'期待を上回るレベル', text:'店舗全体を巻き込んで改善した。自発的に提案、行動出来る。' },
-    { score:3, label:'現職能ランクの期待レベル', text:'SM(店長)の指示や確認なしで、一人で確実に行えている。' },
-    { score:2, label:'期待を下回るレベル', text:'指示・確認されないと動けない、またはムラがある。' },
-    { score:1, label:'大幅に期待を下回るレベル', text:'VSM(副店長)としての役割がはたせず、店舗の士気を下げている。' },
+  VSM:[
+    {score:5,label:'模範となるレベル',text:'店舗のルール・仕組みを変えた。SM(店長)がいなくても実行し結果を出せる。'},
+    {score:4,label:'期待を上回るレベル',text:'店舗全体を巻き込んで改善した。自発的に提案、行動出来る。'},
+    {score:3,label:'現職能ランクの期待レベル',text:'SM(店長)の指示や確認なしで、一人で確実に行えている。'},
+    {score:2,label:'期待を下回るレベル',text:'指示・確認されないと動けない、またはムラがある。'},
+    {score:1,label:'大幅に期待を下回るレベル',text:'VSM(副店長)としての役割がはたせず、店舗の士気を下げている。'},
   ],
-  STAFF: [
-    { score:5, label:'模範となるレベル', text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。' },
-    { score:4, label:'期待を上回るレベル', text:'言われたこと＋αの気遣いや、やり方の改善を行った。' },
-    { score:3, label:'現職能ランクの期待レベル', text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。' },
-    { score:2, label:'期待を下回るレベル', text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。' },
-    { score:1, label:'大幅に期待を下回るレベル', text:'やろうとしない、約束を破る、ルール違反がある。' },
+  STAFF:[
+    {score:5,label:'模範となるレベル',text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。'},
+    {score:4,label:'期待を上回るレベル',text:'言われたこと＋αの気遣いや、やり方の改善を行った。'},
+    {score:3,label:'現職能ランクの期待レベル',text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。'},
+    {score:2,label:'期待を下回るレベル',text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。'},
+    {score:1,label:'大幅に期待を下回るレベル',text:'やろうとしない、約束を破る、ルール違反がある。'},
   ],
-  PART: [
-    { score:5, label:'模範となるレベル', text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。' },
-    { score:4, label:'期待を上回るレベル', text:'言われたこと＋αの気遣いや、やり方の改善を行った。' },
-    { score:3, label:'現職能ランクの期待レベル', text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。' },
-    { score:2, label:'期待を下回るレベル', text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。' },
-    { score:1, label:'大幅に期待を下回るレベル', text:'やろうとしない、約束を破る、ルール違反がある。' },
+  PART:[
+    {score:5,label:'模範となるレベル',text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。'},
+    {score:4,label:'期待を上回るレベル',text:'言われたこと＋αの気遣いや、やり方の改善を行った。'},
+    {score:3,label:'現職能ランクの期待レベル',text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。'},
+    {score:2,label:'期待を下回るレベル',text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。'},
+    {score:1,label:'大幅に期待を下回るレベル',text:'やろうとしない、約束を破る、ルール違反がある。'},
   ],
 };
 
-const ALL_ITEMS = {
-  SM: { categories: [
-    { name:'スタンス・規律', items:[
-      { id:'st1', name:'理念・ポリシー', criteria:'理念を自らの言葉で語り、店舗の判断基準として浸透させ、部下の行動変容を促している。' },
-      { id:'st2', name:'協調性', criteria:'店舗全体のチームビルディングを行い、全部門が協力し合う体制と風土を構築している。' },
-      { id:'st3', name:'前向き', criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。' },
-      { id:'st4', name:'挨拶・言葉遣い', criteria:'店舗全体の活気（声出し）をコントロールし、お客様が入店しやすい雰囲気を作り出している。' },
-      { id:'st5', name:'時間管理・勤務態度', criteria:'残業時間の管理を行い、特定のスタッフに負荷が偏らないよう業務配分を調整している。' },
-      { id:'st6', name:'報・連・相', criteria:'店舗内の重要事項を漏らさず把握し、本部やSV、上司に対して、予測や対策を含めた質の高い報告を行っている。' },
-      { id:'st7', name:'積極性・自己管理', criteria:'自らのモチベーションを一定に保ち、店舗がどんな状況でもポジティブな態度で組織を牽引している。' },
+const ALL_ITEMS={
+  SM:{categories:[
+    {name:'スタンス・規律',items:[
+      {id:'st1',name:'理念・ポリシー',criteria:'理念を自らの言葉で語り、店舗の判断基準として浸透させ、部下の行動変容を促している。'},
+      {id:'st2',name:'協調性',criteria:'店舗全体のチームビルディングを行い、全部門が協力し合う体制と風土を構築している。'},
+      {id:'st3',name:'前向き',criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+      {id:'st4',name:'挨拶・言葉遣い',criteria:'店舗全体の活気（声出し）をコントロールし、お客様が入店しやすい雰囲気を作り出している。'},
+      {id:'st5',name:'時間管理・勤務態度',criteria:'残業時間の管理を行い、特定のスタッフに負荷が偏らないよう業務配分を調整している。'},
+      {id:'st6',name:'報・連・相',criteria:'店舗内の重要事項を漏らさず把握し、本部やSV、上司に対して、予測や対策を含めた質の高い報告を行っている。'},
+      {id:'st7',name:'積極性・自己管理',criteria:'自らのモチベーションを一定に保ち、店舗がどんな状況でもポジティブな態度で組織を牽引している。'},
     ]},
-    { name:'接客・販売スキル', items:[
-      { id:'sa1', name:'基本接客(レジ・電話)', criteria:'接客マニュアルの更新や、スタッフへのロールプレイング指導を行い、店舗全体の接客レベルを底上げしている。' },
-      { id:'sa2', name:'ゲストトーク', criteria:'顧客満足度（CS）向上のための施策を立案し、Google口コミ等の評価向上に直結する行動を指導している。' },
-      { id:'sa3', name:'買取・査定', criteria:'市場相場と自店の在庫状況を鑑みて、買取強化ジャンルやキャンペーン戦略を決定している。' },
-      { id:'sa4', name:'商品知識・説明', criteria:'競合他店舗や雑誌、インターネットなどから情報を収集・分析し、店舗全体の専門知識レベルと提案力を向上させている。' },
-      { id:'sa5', name:'商品化・品出し', criteria:'商品化の生産性（1時間あたりの処理数）を管理し、バックヤードの滞留在庫をゼロにする仕組みを作っている。' },
-      { id:'sa6', name:'取付・作業', criteria:'ピット作業の稼働率を分析し、作業待ち時間の短縮や工賃売上の最大化に向けた人員配置を行っている。' },
+    {name:'接客・販売スキル',items:[
+      {id:'sa1',name:'基本接客(レジ・電話)',criteria:'接客マニュアルの更新や、スタッフへのロールプレイング指導を行い、店舗全体の接客レベルを底上げしている。'},
+      {id:'sa2',name:'ゲストトーク',criteria:'顧客満足度（CS）向上のための施策を立案し、Google口コミ等の評価向上に直結する行動を指導している。'},
+      {id:'sa3',name:'買取・査定',criteria:'市場相場と自店の在庫状況を鑑みて、買取強化ジャンルやキャンペーン戦略を決定している。'},
+      {id:'sa4',name:'商品知識・説明',criteria:'競合他店舗や雑誌、インターネットなどから情報を収集・分析し、店舗全体の専門知識レベルと提案力を向上させている。'},
+      {id:'sa5',name:'商品化・品出し',criteria:'商品化の生産性（1時間あたりの処理数）を管理し、バックヤードの滞留在庫をゼロにする仕組みを作っている。'},
+      {id:'sa6',name:'取付・作業',criteria:'ピット作業の稼働率を分析し、作業待ち時間の短縮や工賃売上の最大化に向けた人員配置を行っている。'},
     ]},
-    { name:'売場・店舗管理', items:[
-      { id:'sh1', name:'売場づくり', criteria:'店舗全体のゾーニング（売場配置）を見直し、顧客動線と滞在時間を最大化するレイアウトを決定している。' },
-      { id:'sh2', name:'在庫管理・棚卸し', criteria:'在庫回転率と粗利率のバランスを管理し、不良在庫化する前の早期対策ルールを運用している。' },
-      { id:'sh3', name:'現金・伝票管理', criteria:'監査基準に基づき、すべての帳票・現金・個人情報の保管状況を定期チェックし、コンプライアンスを遵守している。' },
-      { id:'sh4', name:'清掃・衛生', criteria:'お客様視点で店舗内外（駐車場含む）を巡回し、老朽化箇所の修繕や業者手配を行っている。' },
-      { id:'sh5', name:'安全・危機管理', criteria:'事故・災害発生時の責任者として、人命優先の指揮を執り、二次被害を防ぐための迅速な判断を行っている。' },
+    {name:'売場・店舗管理',items:[
+      {id:'sh1',name:'売場づくり',criteria:'店舗全体のゾーニング（売場配置）を見直し、顧客動線と滞在時間を最大化するレイアウトを決定している。'},
+      {id:'sh2',name:'在庫管理・棚卸し',criteria:'在庫回転率と粗利率のバランスを管理し、不良在庫化する前の早期対策ルールを運用している。'},
+      {id:'sh3',name:'現金・伝票管理',criteria:'監査基準に基づき、すべての帳票・現金・個人情報の保管状況を定期チェックし、コンプライアンスを遵守している。'},
+      {id:'sh4',name:'清掃・衛生',criteria:'お客様視点で店舗内外（駐車場含む）を巡回し、老朽化箇所の修繕や業者手配を行っている。'},
+      {id:'sh5',name:'安全・危機管理',criteria:'事故・災害発生時の責任者として、人命優先の指揮を執り、二次被害を防ぐための迅速な判断を行っている。'},
     ]},
-    { name:'マネジメント・組織貢献', items:[
-      { id:'mg1', name:'予算・数値管理', criteria:'月間・半期のPL（損益）責任を持ち、売上・粗利・営業利益のすべてで予算達成に向けた戦略を実行している。' },
-      { id:'mg2', name:'節約・経費意識', criteria:'販管費（人件費、修繕費等）の予算内コントロールを行い、無駄な支出を削減して利益率を高めている。' },
-      { id:'mg3', name:'人材育成', criteria:'次期リーダー候補を選抜・育成し、本人のキャリアプランに合わせた目標設定と動機付けを行っている。' },
-      { id:'mg4', name:'シフト管理', criteria:'労働法規（有休取得、労働時間上限）を遵守した上で、スタッフの働きやすさと店舗運営を両立させている。' },
-      { id:'mg5', name:'クレーム対応', criteria:'重大クレームや困難な事案の最終責任者として対応し、再発防止策を策定して全社共有を行っている。' },
-      { id:'mg6', name:'折衝・改善提案', criteria:'本部や取引業者に対し、自店の利益や要望を論理的に伝え、必要なリソース（商品・予算・人）を獲得している。' },
-    ]},
-  ]},
-  VSM: { categories: [
-    { name:'スタンス・規律', items:[
-      { id:'st1', name:'理念・ポリシー', criteria:'理念の意味を理解し、後輩に対して「なぜこの行動が必要か」を理念に基づいて説明できる。' },
-      { id:'st2', name:'協調性', criteria:'SMに協力的でスタッフ間の人間関係に気を配り、不協和音があれば間に入って調整・解決している。' },
-      { id:'st3', name:'前向き', criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。' },
-      { id:'st4', name:'挨拶・言葉遣い', criteria:'スタッフ全員の挨拶の質をチェックし、声が小さいスタッフにはその場で指導・修正させている。' },
-      { id:'st5', name:'時間管理・勤務態度', criteria:'遅刻・欠勤がなく、休憩回しの管理を行い、業務の繁閑に合わせてスタッフの休憩時間を調整している。' },
-      { id:'st6', name:'報・連・相', criteria:'部下からの報告を受け止め、次のアクション（指示）を即座に出し、店長へ要約して報告している。' },
-      { id:'st7', name:'責任感・自己管理', criteria:'既存の業務フローの無駄を見つけ、より効率的なやり方を提案・実行している。' },
-    ]},
-    { name:'接客・販売スキル', items:[
-      { id:'sa1', name:'感謝', criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。' },
-      { id:'sa2', name:'基本接客(レジ・電話)', criteria:'トラブル時のレジ対応や、複雑な問い合わせ電話（適合確認等）を代行し、解決している。' },
-      { id:'sa3', name:'ゲストトーク', criteria:'お客様の潜在ニーズ（買い替え理由等）を聞き出し、リピーターになってもらうための関係構築ができる。' },
-      { id:'sa4', name:'買取・査定', criteria:'特殊な商品や高額品の査定判断ができ、お客様に納得感のある価格提示と交渉ができる。' },
-      { id:'sa5', name:'商品化・品出し', criteria:'売れ筋商品を見極め、ゴールデンゾーン（見やすい位置）への陳列変更を指示・実行している。' },
-      { id:'sa6', name:'取付・作業', criteria:'難易度の高い作業やトラブルシューティングに対応し、後輩の作業最終チェックを行っている。' },
-    ]},
-    { name:'売場・店舗管理', items:[
-      { id:'sh1', name:'売場づくり', criteria:'売上データや季節トレンドに基づき、特集コーナーの企画・設置の提案を上司に行っている。' },
-      { id:'sh2', name:'在庫管理・棚卸し', criteria:'長期在庫（デッドストック）をリストアップし、値下げや配置転換による処分・現金化を進めている。' },
-      { id:'sh3', name:'現金・伝票管理', criteria:'日々の売上入金確認、小口現金の管理を行い、経理処理上のミスを未然に防いでいる。' },
-      { id:'sh4', name:'清掃・衛生', criteria:'汚れが目立つ箇所や、スタッフの手が回っていない箇所に気づき、スポット清掃を指示・実施している。' },
-      { id:'sh5', name:'安全・危機管理', criteria:'万引き防止の巡回や、災害時の避難誘導手順を把握し、スタッフに周知徹底している。' },
-    ]},
-    { name:'マネジメント・組織貢献', items:[
-      { id:'mg1', name:'予算・数値管理', criteria:'部門別・日別の進捗を管理し、未達ペースの場合に具体的なリカバリー策（買取強化、目標の再設定等）を打っている。' },
-      { id:'mg2', name:'節約・経費意識', criteria:'消耗品の発注管理を行い、在庫過多や欠品を防ぎつつ、代替品によるコストダウンを検討している。' },
-      { id:'mg3', name:'人材育成', criteria:'スタッフ個々のスキルマップを作成し、OJT計画を立てて、戦力化までのスピードを早めている。' },
-      { id:'mg4', name:'シフト管理', criteria:'SM不在時に業務量予測に基づき、無駄のないシフト調整を行い、人件費率を適正範囲に収めている。' },
-      { id:'mg5', name:'クレーム対応', criteria:'初期対応後の二次対応を行い、お客様の言い分を傾聴し、事実関係を確認して解決策を提示している。' },
-      { id:'mg6', name:'折衝・改善提案', criteria:'他店との在庫移動や応援要請をスムーズに行い、会社全体の利益になるよう連携している。' },
+    {name:'マネジメント・組織貢献',items:[
+      {id:'mg1',name:'予算・数値管理',criteria:'月間・半期のPL（損益）責任を持ち、売上・粗利・営業利益のすべてで予算達成に向けた戦略を実行している。'},
+      {id:'mg2',name:'節約・経費意識',criteria:'販管費（人件費、修繕費等）の予算内コントロールを行い、無駄な支出を削減して利益率を高めている。'},
+      {id:'mg3',name:'人材育成',criteria:'次期リーダー候補を選抜・育成し、本人のキャリアプランに合わせた目標設定と動機付けを行っている。'},
+      {id:'mg4',name:'シフト管理',criteria:'労働法規（有休取得、労働時間上限）を遵守した上で、スタッフの働きやすさと店舗運営を両立させている。'},
+      {id:'mg5',name:'クレーム対応',criteria:'重大クレームや困難な事案の最終責任者として対応し、再発防止策を策定して全社共有を行っている。'},
+      {id:'mg6',name:'折衝・改善提案',criteria:'本部や取引業者に対し、自店の利益や要望を論理的に伝え、必要なリソース（商品・予算・人）を獲得している。'},
     ]},
   ]},
-  STAFF: { categories: [
-    { name:'スタンス・規律', items:[
-      { id:'st1', name:'理念・ポリシー', criteria:'企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。' },
-      { id:'st2', name:'協調性', criteria:'共通の目標達成に向けて、役割分担・連携・相互補完を行いながら共同作業をする姿勢はあるか。' },
-      { id:'st3', name:'前向き', criteria:'物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。' },
-      { id:'st4', name:'挨拶・言葉遣い', criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。' },
-      { id:'st5', name:'時間管理・勤務態度', criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。' },
-      { id:'st6', name:'報・連・相', criteria:'事実を正確に伝え、対応策に対する自分の意見や考えも入れながら、報・連・相ができる。' },
-      { id:'st7', name:'責任感・自己管理', criteria:'自分に与えられた役割、任務、約束を最後までやり遂げようとする意志や姿勢はあるか。' },
+  VSM:{categories:[
+    {name:'スタンス・規律',items:[
+      {id:'st1',name:'理念・ポリシー',criteria:'理念の意味を理解し、後輩に対して「なぜこの行動が必要か」を理念に基づいて説明できる。'},
+      {id:'st2',name:'協調性',criteria:'SMに協力的でスタッフ間の人間関係に気を配り、不協和音があれば間に入って調整・解決している。'},
+      {id:'st3',name:'前向き',criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+      {id:'st4',name:'挨拶・言葉遣い',criteria:'スタッフ全員の挨拶の質をチェックし、声が小さいスタッフにはその場で指導・修正させている。'},
+      {id:'st5',name:'時間管理・勤務態度',criteria:'遅刻・欠勤がなく、休憩回しの管理を行い、業務の繁閑に合わせてスタッフの休憩時間を調整している。'},
+      {id:'st6',name:'報・連・相',criteria:'部下からの報告を受け止め、次のアクション（指示）を即座に出し、店長へ要約して報告している。'},
+      {id:'st7',name:'責任感・自己管理',criteria:'既存の業務フローの無駄を見つけ、より効率的なやり方を提案・実行している。'},
     ]},
-    { name:'接客・販売スキル', items:[
-      { id:'sa1', name:'感謝', criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。' },
-      { id:'sa2', name:'明るさ', criteria:'笑顔が多く、ポジティブで前向きな思考を持ち、人懐っこく誰にでも明るく接することができるか。' },
-      { id:'sa3', name:'ゲストトーク', criteria:'挨拶に加え口コミ獲得やC査定等の声かけができ、お客様と会話のキャッチボールができる。' },
-      { id:'sa4', name:'買取・査定', criteria:'マニュアル通りに商品の状態を確認し、適正な値入で成約率を落とさずに仕入れができる。' },
-      { id:'sa5', name:'商品化・品出し', criteria:'未商品化在庫を把握しスピーディに商品化を行い、売場に隙間を作らず補充している。' },
-      { id:'sa6', name:'取付・作業', criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外し作業ができる。' },
+    {name:'接客・販売スキル',items:[
+      {id:'sa1',name:'感謝',criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。'},
+      {id:'sa2',name:'基本接客(レジ・電話)',criteria:'トラブル時のレジ対応や、複雑な問い合わせ電話（適合確認等）を代行し、解決している。'},
+      {id:'sa3',name:'ゲストトーク',criteria:'お客様の潜在ニーズ（買い替え理由等）を聞き出し、リピーターになってもらうための関係構築ができる。'},
+      {id:'sa4',name:'買取・査定',criteria:'特殊な商品や高額品の査定判断ができ、お客様に納得感のある価格提示と交渉ができる。'},
+      {id:'sa5',name:'商品化・品出し',criteria:'売れ筋商品を見極め、ゴールデンゾーン（見やすい位置）への陳列変更を指示・実行している。'},
+      {id:'sa6',name:'取付・作業',criteria:'難易度の高い作業やトラブルシューティングに対応し、後輩の作業最終チェックを行っている。'},
     ]},
-    { name:'売場・店舗管理', items:[
-      { id:'sh1', name:'売場づくり', criteria:'顧客目線に立ち商品を並べ、POPの剥がれや汚れを自ら見つけて直している。' },
-      { id:'sh2', name:'在庫管理・棚卸し', criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。' },
-      { id:'sh3', name:'現金・伝票管理', criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。' },
-      { id:'sh4', name:'清掃・衛生', criteria:'店内、トイレ、駐車場の清掃状況を把握し清潔な状態を保っている。' },
-      { id:'sh5', name:'安全・危機管理', criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。' },
+    {name:'売場・店舗管理',items:[
+      {id:'sh1',name:'売場づくり',criteria:'売上データや季節トレンドに基づき、特集コーナーの企画・設置の提案を上司に行っている。'},
+      {id:'sh2',name:'在庫管理・棚卸し',criteria:'長期在庫（デッドストック）をリストアップし、値下げや配置転換による処分・現金化を進めている。'},
+      {id:'sh3',name:'現金・伝票管理',criteria:'日々の売上入金確認、小口現金の管理を行い、経理処理上のミスを未然に防いでいる。'},
+      {id:'sh4',name:'清掃・衛生',criteria:'汚れが目立つ箇所や、スタッフの手が回っていない箇所に気づき、スポット清掃を指示・実施している。'},
+      {id:'sh5',name:'安全・危機管理',criteria:'万引き防止の巡回や、災害時の避難誘導手順を把握し、スタッフに周知徹底している。'},
     ]},
-    { name:'マネジメント・組織貢献', items:[
-      { id:'mg1', name:'予算・数値管理', criteria:'自分の店舗の売上・粗利・取り組み目標を把握し、達成に向けて声出しや追加提案をしている。' },
-      { id:'mg2', name:'節約・経費意識', criteria:'無駄な残業の削減、電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。' },
-      { id:'mg3', name:'人材育成', criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。' },
-      { id:'mg4', name:'シフト管理', criteria:'店舗のシフト作成に協力し、急な欠員が出た際はシフト変更に協力している。' },
-      { id:'mg5', name:'クレーム対応', criteria:'クレームの内容を理解し、上司に指示を仰ぎながら適切な処理ができる。お客様を満足させてお帰り頂くことができる。' },
-      { id:'mg6', name:'折衝・改善提案', criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・改善に協力している。' },
+    {name:'マネジメント・組織貢献',items:[
+      {id:'mg1',name:'予算・数値管理',criteria:'部門別・日別の進捗を管理し、未達ペースの場合に具体的なリカバリー策（買取強化、目標の再設定等）を打っている。'},
+      {id:'mg2',name:'節約・経費意識',criteria:'消耗品の発注管理を行い、在庫過多や欠品を防ぎつつ、代替品によるコストダウンを検討している。'},
+      {id:'mg3',name:'人材育成',criteria:'スタッフ個々のスキルマップを作成し、OJT計画を立てて、戦力化までのスピードを早めている。'},
+      {id:'mg4',name:'シフト管理',criteria:'SM不在時に業務量予測に基づき、無駄のないシフト調整を行い、人件費率を適正範囲に収めている。'},
+      {id:'mg5',name:'クレーム対応',criteria:'初期対応後の二次対応を行い、お客様の言い分を傾聴し、事実関係を確認して解決策を提示している。'},
+      {id:'mg6',name:'折衝・改善提案',criteria:'他店との在庫移動や応援要請をスムーズに行い、会社全体の利益になるよう連携している。'},
     ]},
   ]},
-  PART: { categories: [
-    { name:'スタンス・規律', items:[
-      { id:'st1', name:'理念・ポリシー', criteria:'企業理念、アップガレージ魂を暗記しており、朝礼等の唱和で大きな声を出している。' },
-      { id:'st2', name:'協調性', criteria:'自分の担当業務が終わったら、忙しい他部門（レジ・ピット等）のヘルプを自発的に申し出ている。' },
-      { id:'st3', name:'挨拶・言葉遣い', criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。' },
-      { id:'st4', name:'身だしなみ', criteria:'制服・名札・髪型などが規定通り清潔に保たれており、指摘される前に整えている。' },
-      { id:'st5', name:'時間管理・勤務態度', criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。' },
-      { id:'st6', name:'報・連・相', criteria:'悪い情報（ミス・トラブル）ほど隠さずに、直属の上司へ即座に事実を報告している。' },
-      { id:'st7', name:'積極性・自己管理', criteria:'未経験の業務にも「やってみたい」と手を挙げ、教わったことをメモして習得している。' },
+  STAFF:{categories:[
+    {name:'スタンス・規律',items:[
+      {id:'st1',name:'理念・ポリシー',criteria:'企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。'},
+      {id:'st2',name:'協調性',criteria:'共通の目標達成に向けて、役割分担・連携・相互補完を行いながら共同作業をする姿勢はあるか。'},
+      {id:'st3',name:'前向き',criteria:'物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+      {id:'st4',name:'挨拶・言葉遣い',criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。'},
+      {id:'st5',name:'時間管理・勤務態度',criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。'},
+      {id:'st6',name:'報・連・相',criteria:'事実を正確に伝え、対応策に対する自分の意見や考えも入れながら、報・連・相ができる。'},
+      {id:'st7',name:'責任感・自己管理',criteria:'自分に与えられた役割、任務、約束を最後までやり遂げようとする意志や姿勢はあるか。'},
     ]},
-    { name:'接客・販売スキル', items:[
-      { id:'sa1', name:'基本接客(レジ・電話)', criteria:'正確なレジ操作、明るい電話応対ができ、お客様を待たせずにスムーズに処理している。' },
-      { id:'sa2', name:'ゲストトーク', criteria:'挨拶に加え「またお願いします」等のプラスαの声かけができ、お客様と会話のキャッチボールができる。' },
-      { id:'sa3', name:'買取・査定', criteria:'マニュアル通りに商品の状態を確認し、適正なランク付けとシステム入力ができる。' },
-      { id:'sa4', name:'商品知識・説明', criteria:'お客様の質問に対し、商品タグやカタログを用いて正確な情報を案内できる。' },
-      { id:'sa5', name:'商品化・品出し', criteria:'洗浄・パッキングを手順通りスピーディに行い、売場に隙間を作らず補充している。' },
-      { id:'sa6', name:'取付・作業', criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外しの作業補助ができる。' },
+    {name:'接客・販売スキル',items:[
+      {id:'sa1',name:'感謝',criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。'},
+      {id:'sa2',name:'明るさ',criteria:'笑顔が多く、ポジティブで前向きな思考を持ち、人懐っこく誰にでも明るく接することができるか。'},
+      {id:'sa3',name:'ゲストトーク',criteria:'挨拶に加え口コミ獲得やC査定等の声かけができ、お客様と会話のキャッチボールができる。'},
+      {id:'sa4',name:'買取・査定',criteria:'マニュアル通りに商品の状態を確認し、適正な値入で成約率を落とさずに仕入れができる。'},
+      {id:'sa5',name:'商品化・品出し',criteria:'未商品化在庫を把握しスピーディに商品化を行い、売場に隙間を作らず補充している。'},
+      {id:'sa6',name:'取付・作業',criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外し作業ができる。'},
     ]},
-    { name:'売場・店舗管理', items:[
-      { id:'sh1', name:'売場づくり', criteria:'指示されたレイアウト通りに商品を並べ、POPの剥がれや汚れを自ら見つけて直している。' },
-      { id:'sh2', name:'在庫管理・棚卸し', criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。' },
-      { id:'sh3', name:'現金・伝票管理', criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。' },
-      { id:'sh4', name:'清掃・衛生', criteria:'毎日のルーティン清掃（床、トイレ、棚）をサボらず丁寧に行い、清潔な状態を保っている。' },
-      { id:'sh5', name:'安全・危機管理', criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。' },
+    {name:'売場・店舗管理',items:[
+      {id:'sh1',name:'売場づくり',criteria:'顧客目線に立ち商品を並べ、POPの剥がれや汚れを自ら見つけて直している。'},
+      {id:'sh2',name:'在庫管理・棚卸し',criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。'},
+      {id:'sh3',name:'現金・伝票管理',criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。'},
+      {id:'sh4',name:'清掃・衛生',criteria:'店内、トイレ、駐車場の清掃状況を把握し清潔な状態を保っている。'},
+      {id:'sh5',name:'安全・危機管理',criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。'},
     ]},
-    { name:'マネジメント・組織貢献', items:[
-      { id:'mg1', name:'予算・数値管理', criteria:'自分の店舗の「今日の売上目標」を知っており、達成に向けて声出しや追加提案をしている。' },
-      { id:'mg2', name:'節約・経費意識', criteria:'電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。' },
-      { id:'mg3', name:'人材育成', criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。' },
-      { id:'mg4', name:'シフト管理', criteria:'希望休の提出期限を守り、急な欠員が出た際はシフト変更に協力している。' },
-      { id:'mg5', name:'クレーム対応', criteria:'お客様の不満を察知したら、自分だけで判断せず、速やかに上席者へバトンタッチしている。' },
-      { id:'mg6', name:'折衝・改善提案', criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・提案している。' },
+    {name:'マネジメント・組織貢献',items:[
+      {id:'mg1',name:'予算・数値管理',criteria:'自分の店舗の売上・粗利・取り組み目標を把握し、達成に向けて声出しや追加提案をしている。'},
+      {id:'mg2',name:'節約・経費意識',criteria:'無駄な残業の削減、電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。'},
+      {id:'mg3',name:'人材育成',criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。'},
+      {id:'mg4',name:'シフト管理',criteria:'店舗のシフト作成に協力し、急な欠員が出た際はシフト変更に協力している。'},
+      {id:'mg5',name:'クレーム対応',criteria:'クレームの内容を理解し、上司に指示を仰ぎながら適切な処理ができる。お客様を満足させてお帰り頂くことができる。'},
+      {id:'mg6',name:'折衝・改善提案',criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・改善に協力している。'},
+    ]},
+  ]},
+  PART:{categories:[
+    {name:'スタンス・規律',items:[
+      {id:'st1',name:'理念・ポリシー',criteria:'企業理念、アップガレージ魂を暗記しており、朝礼等の唱和で大きな声を出している。'},
+      {id:'st2',name:'協調性',criteria:'自分の担当業務が終わったら、忙しい他部門（レジ・ピット等）のヘルプを自発的に申し出ている。'},
+      {id:'st3',name:'挨拶・言葉遣い',criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。'},
+      {id:'st4',name:'身だしなみ',criteria:'制服・名札・髪型などが規定通り清潔に保たれており、指摘される前に整えている。'},
+      {id:'st5',name:'時間管理・勤務態度',criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。'},
+      {id:'st6',name:'報・連・相',criteria:'悪い情報（ミス・トラブル）ほど隠さずに、直属の上司へ即座に事実を報告している。'},
+      {id:'st7',name:'積極性・自己管理',criteria:'未経験の業務にも「やってみたい」と手を挙げ、教わったことをメモして習得している。'},
+    ]},
+    {name:'接客・販売スキル',items:[
+      {id:'sa1',name:'基本接客(レジ・電話)',criteria:'正確なレジ操作、明るい電話応対ができ、お客様を待たせずにスムーズに処理している。'},
+      {id:'sa2',name:'ゲストトーク',criteria:'挨拶に加え「またお願いします」等のプラスαの声かけができ、お客様と会話のキャッチボールができる。'},
+      {id:'sa3',name:'買取・査定',criteria:'マニュアル通りに商品の状態を確認し、適正なランク付けとシステム入力ができる。'},
+      {id:'sa4',name:'商品知識・説明',criteria:'お客様の質問に対し、商品タグやカタログを用いて正確な情報を案内できる。'},
+      {id:'sa5',name:'商品化・品出し',criteria:'洗浄・パッキングを手順通りスピーディに行い、売場に隙間を作らず補充している。'},
+      {id:'sa6',name:'取付・作業',criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外しの作業補助ができる。'},
+    ]},
+    {name:'売場・店舗管理',items:[
+      {id:'sh1',name:'売場づくり',criteria:'指示されたレイアウト通りに商品を並べ、POPの剥がれや汚れを自ら見つけて直している。'},
+      {id:'sh2',name:'在庫管理・棚卸し',criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。'},
+      {id:'sh3',name:'現金・伝票管理',criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。'},
+      {id:'sh4',name:'清掃・衛生',criteria:'毎日のルーティン清掃（床、トイレ、棚）をサボらず丁寧に行い、清潔な状態を保っている。'},
+      {id:'sh5',name:'安全・危機管理',criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。'},
+    ]},
+    {name:'マネジメント・組織貢献',items:[
+      {id:'mg1',name:'予算・数値管理',criteria:'自分の店舗の「今日の売上目標」を知っており、達成に向けて声出しや追加提案をしている。'},
+      {id:'mg2',name:'節約・経費意識',criteria:'電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。'},
+      {id:'mg3',name:'人材育成',criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。'},
+      {id:'mg4',name:'シフト管理',criteria:'希望休の提出期限を守り、急な欠員が出た際はシフト変更に協力している。'},
+      {id:'mg5',name:'クレーム対応',criteria:'お客様の不満を察知したら、自分だけで判断せず、速やかに上席者へバトンタッチしている。'},
+      {id:'mg6',name:'折衝・改善提案',criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・提案している。'},
     ]},
   ]},
 };
 
-function getItemsFlat(role) {
-  const d = ALL_ITEMS[role] || ALL_ITEMS.STAFF;
-  const flat = [];
-  d.categories.forEach(cat => cat.items.forEach(item => flat.push({ ...item, catName: cat.name })));
+function getItemsFlat(role){
+  const d=ALL_ITEMS[role]||ALL_ITEMS.STAFF;
+  const flat=[];
+  d.categories.forEach(cat=>cat.items.forEach(item=>flat.push({...item,catName:cat.name})));
   return flat;
 }
 
 // ============================================================
 // STATE
 // ============================================================
-let currentUser = null;
-let currentPin = '';
-let currentDetailMember = null;
-let currentStep = 0;
-let evalData = {};
+let currentUser=null;
+let currentPin='';
+let currentDetailMember=null;
+let currentStep=0;
+let evalData={};
+const SESSION_KEY='ug_session';
+
+// セッション復元
+function saveSession(){if(currentUser)localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));}
+function clearSession(){localStorage.removeItem(SESSION_KEY);}
+function getSession(){const d=localStorage.getItem(SESSION_KEY);return d?JSON.parse(d):null;}
 
 // ============================================================
 // PIN
 // ============================================================
-function pinInput(d) {
-  if (currentPin.length >= 4) return;
-  currentPin += d; updatePinDisplay();
-  if (currentPin.length === 4) setTimeout(doLogin, 200);
-}
-function pinDelete() { currentPin = currentPin.slice(0,-1); updatePinDisplay(); }
-function updatePinDisplay() {
-  for (let i=0;i<4;i++) {
-    const dot = document.getElementById('pd'+i);
-    dot.classList.toggle('filled', i < currentPin.length);
-    dot.textContent = i < currentPin.length ? '●' : '';
-  }
-}
-function onLoginTypeChange() {
-  const t = document.getElementById('loginType').value;
-  document.getElementById('staffLoginArea').style.display = t==='staff'?'':'none';
-  document.getElementById('adminLoginArea').style.display = t==='admin'?'':'none';
-  currentPin=''; updatePinDisplay();
-  document.getElementById('loginError').style.display='none';
-}
+function pinInput(d){if(currentPin.length>=4)return;currentPin+=d;updatePinDisplay();if(currentPin.length===4)setTimeout(doLogin,200);}
+function pinDelete(){currentPin=currentPin.slice(0,-1);updatePinDisplay();}
+function updatePinDisplay(){for(let i=0;i<4;i++){const dot=document.getElementById('pd'+i);dot.classList.toggle('filled',i<currentPin.length);dot.textContent=i<currentPin.length?'●':'';};}
+function onLoginTypeChange(){const t=document.getElementById('loginType').value;document.getElementById('staffLoginArea').style.display=t==='staff'?'':'none';document.getElementById('adminLoginArea').style.display=t==='admin'?'':'none';currentPin='';updatePinDisplay();document.getElementById('loginError').style.display='none';}
 
 // ============================================================
 // LOGIN
 // ============================================================
-function initStaffSelect() {
-  const sel = document.getElementById('staffSelect');
-  sel.innerHTML = '<option value="">-- 選択してください --</option>';
-  getMembers().forEach(m => { sel.innerHTML += `<option value="${m.id}">${m.name}（${m.store}）</option>`; });
-}
+function initStaffSelect(){const sel=document.getElementById('staffSelect');sel.innerHTML='<option value="">-- 選択してください --</option>';getMembers().forEach(m=>{sel.innerHTML+=`<option value="${m.id}">${m.name}（${m.store}）</option>`;});}
 
-async function doLogin() {
-  const type = document.getElementById('loginType').value;
-  const settings = getSettings();
+async function doLogin(){
+  const type=document.getElementById('loginType').value;
+  const settings=getSettings();
   document.getElementById('loginError').style.display='none';
-  if (type === 'admin') {
-    if (currentPin === (settings.adminPin || ADMIN_PIN_DEFAULT)) {
-      currentUser = { type:'admin', name:'管理者（秦 慈宏）' };
-      evalData = await fetchEvals();
+  if(type==='admin'){
+    if(currentPin===(settings.adminPin||ADMIN_PIN_DEFAULT)){
+      currentUser={type:'admin',name:'管理者（秦 慈宏）'};
+      saveSession();
+      evalData=await fetchEvals();
       afterLogin();
     } else showLoginError();
   } else {
-    const memberId = document.getElementById('staffSelect').value;
-    if (!memberId) { showToast('名前を選んでください'); currentPin=''; updatePinDisplay(); return; }
-    const member = getMembers().find(m => m.id === memberId);
-    if (!member) { showLoginError(); return; }
-    if (currentPin === member.pin) {
-      currentUser = { type:'staff', ...member };
-      evalData = await fetchEvals();
+    const memberId=document.getElementById('staffSelect').value;
+    if(!memberId){showToast('名前を選んでください');currentPin='';updatePinDisplay();return;}
+    const member=getMembers().find(m=>m.id===memberId);
+    if(!member){showLoginError();return;}
+    if(currentPin===member.pin){
+      currentUser={type:'staff',...member};
+      saveSession();
+      evalData=await fetchEvals();
       afterLogin();
     } else showLoginError();
   }
 }
 
-function showLoginError() {
-  document.getElementById('loginError').style.display='block';
-  currentPin=''; updatePinDisplay();
-  setTimeout(()=>{ document.getElementById('loginError').style.display='none'; },2000);
-}
+function showLoginError(){document.getElementById('loginError').style.display='block';currentPin='';updatePinDisplay();setTimeout(()=>{document.getElementById('loginError').style.display='none';},2000);}
 
-function afterLogin() {
+function afterLogin(){
   document.getElementById('appHeader').style.display='flex';
-  if (currentUser.type==='admin') {
-    setHeader('管理者ダッシュボード'); showScreen('adminScreen'); showAdminOverview();
-  } else {
-    setHeader('自己評価入力'); showScreen('staffHomeScreen'); renderStaffHome();
-  }
+  if(currentUser.type==='admin'){setHeader('管理者ダッシュボード');showScreen('adminScreen');showAdminOverview();}
+  else{setHeader('自己評価入力');showScreen('staffHomeScreen');renderStaffHome();}
 }
 
-function logout() {
-  currentUser=null; currentPin=''; evalData={};
+function logout(){
+  currentUser=null;currentPin='';evalData={};
+  clearSession();
   updatePinDisplay();
   document.getElementById('appHeader').style.display='none';
   document.getElementById('staffSelect').value='';
   document.getElementById('loginType').value='staff';
-  onLoginTypeChange(); initStaffSelect(); showScreen('loginScreen');
+  onLoginTypeChange();initStaffSelect();showScreen('loginScreen');
 }
 
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function setHeader(title) { document.getElementById('headerTitle').textContent = title; }
-function goHome() { showScreen('staffHomeScreen'); setHeader('自己評価入力'); renderStaffHome(); }
-function backToAdmin() { showScreen('adminScreen'); setHeader('管理者ダッシュボード'); }
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function setHeader(title){document.getElementById('headerTitle').textContent=title;}
+function goHome(){showScreen('staffHomeScreen');setHeader('自己評価入力');renderStaffHome();}
+function backToAdmin(){showScreen('adminScreen');setHeader('管理者ダッシュボード');}
 
 // ============================================================
 // STAFF HOME
 // ============================================================
-function renderStaffHome() {
-  const user = currentUser;
-  document.getElementById('homeRole').textContent = getRoleLabel(user.role);
-  document.getElementById('homeName').textContent = user.name;
-  document.getElementById('homeStore').textContent = user.store + ' ｜ 評価期間: ' + (getSettings().period || '2025.10〜2026.3');
-  const ev = evalData[user.id] || {};
-  let statusHtml = '';
-  if (ev.submitted) { statusHtml='<span class="status-badge s-done">✅ 提出済み</span>'; document.getElementById('btnStartEval').textContent='内容を修正する'; }
-  else if (ev.scores && Object.keys(ev.scores).length>0) { statusHtml='<span class="status-badge s-draft">✏️ 入力途中（途中保存）</span>'; document.getElementById('btnStartEval').textContent='続きから入力する'; }
-  else { statusHtml='<span class="status-badge s-none">未入力</span>'; document.getElementById('btnStartEval').textContent='評価を入力する'; }
-  document.getElementById('homeStatus').innerHTML = statusHtml;
-  const items = getItemsFlat(user.role);
-  const scores = ev.scores || {};
-  const done = items.filter(i=>scores[i.id]!==undefined).length;
-  const pct = items.length>0 ? Math.round(done/items.length*100) : 0;
-  document.getElementById('homeProgress').innerHTML = `
+function renderStaffHome(){
+  const user=currentUser;
+  document.getElementById('homeRole').textContent=getRoleLabel(user.role);
+  document.getElementById('homeName').textContent=user.name;
+  document.getElementById('homeStore').textContent=user.store+' ｜ 評価期間: '+(getSettings().period||'2025.10〜2026.3');
+  const ev=evalData[user.id]||{};
+  let statusHtml='';
+  if(ev.submitted){statusHtml='<span class="status-badge s-done">✅ 提出済み</span>';document.getElementById('btnStartEval').textContent='内容を修正する';}
+  else if(ev.scores&&Object.keys(ev.scores).length>0){statusHtml='<span class="status-badge s-draft">✏️ 入力途中（途中保存）</span>';document.getElementById('btnStartEval').textContent='続きから入力する';}
+  else{statusHtml='<span class="status-badge s-none">未入力</span>';document.getElementById('btnStartEval').textContent='評価を入力する';}
+  document.getElementById('homeStatus').innerHTML=statusHtml;
+  const items=getItemsFlat(user.role),scores=ev.scores||{};
+  const done=items.filter(i=>scores[i.id]!==undefined).length,pct=items.length>0?Math.round(done/items.length*100):0;
+  document.getElementById('homeProgress').innerHTML=`
     <div class="flex-between text-sm fw-bold" style="margin-bottom:4px;"><span>定性評価</span><span>${done} / ${items.length} 項目</span></div>
     <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
     <div class="progress-label">${pct}% 完了</div>`;
-  const settings = getSettings();
-  const dlBanner = document.getElementById('deadlineBanner');
-  if (settings.deadline) {
-    const diff = Math.ceil((new Date(settings.deadline)-new Date())/86400000);
-    dlBanner.innerHTML = diff<0
-      ? `<div class="deadline-banner overdue">⚠️ 提出期限を過ぎています（${settings.deadline}）</div>`
-      : `<div class="deadline-banner">📅 提出期限：${settings.deadline}（あと${diff}日）</div>`;
-  } else dlBanner.innerHTML='';
+  const settings=getSettings();
+  const dlBanner=document.getElementById('deadlineBanner');
+  if(settings.deadline){const diff=Math.ceil((new Date(settings.deadline)-new Date())/86400000);dlBanner.innerHTML=diff<0?`<div class="deadline-banner overdue">⚠️ 提出期限を過ぎています（${settings.deadline}）</div>`:`<div class="deadline-banner">📅 提出期限：${settings.deadline}（あと${diff}日）</div>`;}
+  else dlBanner.innerHTML='';
 }
 
 // ============================================================
-// EVAL INPUT
+// EVAL INPUT - 点数選択で自動次へ
 // ============================================================
-function startEvaluation() {
-  const items = getItemsFlat(currentUser.role);
-  const scores = (evalData[currentUser.id]||{}).scores || {};
-  let first = items.length;
-  for (let i=0;i<items.length;i++) { if (scores[items[i].id]===undefined) { first=i; break; } }
-  currentStep = first;
-  showScreen('evalScreen'); setHeader('自己評価入力'); renderStep();
+function startEvaluation(){
+  const items=getItemsFlat(currentUser.role);
+  const scores=(evalData[currentUser.id]||{}).scores||{};
+  let first=items.length;
+  for(let i=0;i<items.length;i++){if(scores[items[i].id]===undefined){first=i;break;}}
+  currentStep=first;
+  showScreen('evalScreen');setHeader('自己評価入力');renderStep();
 }
 
-function renderStep() {
-  const user = currentUser;
-  const items = getItemsFlat(user.role);
-  const ev = evalData[user.id] || {};
-  const scores = ev.scores || {};
-  const criteria = SCORE_CRITERIA[user.role] || SCORE_CRITERIA.STAFF;
-  const totalSteps = items.length + 2;
-  const pct = Math.round(currentStep/totalSteps*100);
+function renderStep(){
+  const user=currentUser;
+  const items=getItemsFlat(user.role);
+  const ev=evalData[user.id]||{};
+  const scores=ev.scores||{};
+  const criteria=SCORE_CRITERIA[user.role]||SCORE_CRITERIA.STAFF;
+  const totalSteps=items.length+2;
+  const pct=Math.round(currentStep/totalSteps*100);
 
-  let html = `<div style="padding:12px 12px 0;">
+  let html=`<div style="padding:10px 10px 0;">
     <div class="step-progress">
       <div class="step-progress-bar-wrap"><div class="step-progress-bar" style="width:${pct}%"></div></div>
       <div class="step-progress-text">${Math.min(currentStep+1,totalSteps)} / ${totalSteps}</div>
     </div>
   </div>`;
 
-  if (currentStep < items.length) {
-    const item = items[currentStep];
-    const sel = scores[item.id];
-    html += `<div class="eval-step-card">
-      <div class="step-badge">STEP ${currentStep+1} / ${items.length}</div>
+  if(currentStep<items.length){
+    const item=items[currentStep];
+    const sel=scores[item.id];
+    html+=`<div class="eval-step-card">
+      <div class="step-header">
+        <div class="step-badge">STEP ${currentStep+1} / ${items.length}</div>
+      </div>
       <div class="step-category">${item.catName}</div>
       <div class="step-item-name">${item.name}</div>
-      <div class="step-criteria">
+
+      <div class="step-criteria-box">
         <div class="step-criteria-label">💡 期待される行動（3点基準）</div>
-        ${item.criteria}
+        <div class="step-criteria-text">${item.criteria}</div>
       </div>
-      <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:10px;letter-spacing:0.05em;">▼ 評価基準を確認して点数を選んでください</div>
-      <div class="criteria-list">
+
+      <div style="font-size:11px;font-weight:700;color:var(--c-muted);margin-bottom:6px;letter-spacing:0.06em;">▼ 評価基準</div>
+      <div class="criteria-compact">
         ${criteria.slice().reverse().map(c=>`
-          <div class="criteria-item">
-            <div class="c-score-badge cs-${c.score}">${c.score}</div>
-            <div class="criteria-text-wrap">
-              <div class="c-label">${c.label}</div>
-              <div class="c-text">${c.text}</div>
+          <div class="criteria-compact-row${c.score===3?' highlight':''}">
+            <div class="cc-badge cc-${c.score}">${c.score}</div>
+            <div class="cc-content">
+              <div class="cc-label">${c.label}</div>
+              <div class="cc-text">${c.text}</div>
             </div>
           </div>`).join('')}
       </div>
-      <div style="font-size:13px;font-weight:800;color:var(--c-dark);margin-bottom:10px;">自己評価点を選ぶ</div>
+
+      <div class="score-section-label">▼ 点数を選ぶ（選択すると自動で次へ）</div>
       <div class="score-buttons-large">
-        ${[1,2,3,4,5].map(s=>`<button class="score-btn-lg ${sel===s?'sel-'+s:''}" onclick="selectScore('${item.id}',${s})">${s}</button>`).join('')}
+        ${[1,2,3,4,5].map(s=>`<button class="score-btn-lg ${sel===s?'sel-'+s:''}" onclick="selectScoreAndNext('${item.id}',${s})">${s}</button>`).join('')}
       </div>
-      <div class="step-nav">
-        <button class="btn btn-secondary" onclick="prevStep()" ${currentStep===0?'disabled style="opacity:0.5"':''}>◀ 前へ</button>
-        <button class="btn btn-primary" onclick="nextStep()" ${sel===undefined?'disabled style="opacity:0.5"':''}>次へ ▶</button>
-      </div>
+
+      <button class="step-prev-btn" onclick="prevStep()" ${currentStep===0?'disabled':''}>◀ 前の問題に戻る</button>
     </div>`;
-  } else if (currentStep === items.length) {
-    const q1 = (evalData[user.id]||{}).q1||'';
-    html += `<div class="eval-step-card">
-      <div class="step-badge">振り返り Q1</div>
+  } else if(currentStep===items.length){
+    const q1=(evalData[user.id]||{}).q1||'';
+    html+=`<div class="eval-step-card">
+      <div class="step-badge" style="margin-bottom:12px;">振り返り Q1</div>
       <div class="q-label">この半年で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
       <textarea class="comment-textarea" id="q1Text" placeholder="具体的なエピソードを入力してください...">${q1}</textarea>
-      <div class="step-nav" style="margin-top:14px;">
-        <button class="btn btn-secondary" onclick="prevStep()">◀ 前へ</button>
-        <button class="btn btn-primary" onclick="saveQ1Next()">次へ ▶</button>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="step-prev-btn" style="flex:1;" onclick="prevStep()">◀ 前へ</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="saveQ1Next()">次へ ▶</button>
       </div>
     </div>`;
   } else {
-    const q2 = (evalData[user.id]||{}).q2||'';
-    html += `<div class="eval-step-card">
-      <div class="step-badge">振り返り Q2</div>
+    const q2=(evalData[user.id]||{}).q2||'';
+    html+=`<div class="eval-step-card">
+      <div class="step-badge" style="margin-bottom:12px;">振り返り Q2</div>
       <div class="q-label">次の半年で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
       <textarea class="comment-textarea" id="q2Text" placeholder="目標や課題を入力してください...">${q2}</textarea>
-      <div class="step-nav" style="margin-top:14px;">
-        <button class="btn btn-secondary" onclick="prevStep()">◀ 前へ</button>
-        <button class="btn btn-sage" onclick="saveQ2Done()">✅ 完了・確認する</button>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="step-prev-btn" style="flex:1;" onclick="prevStep()">◀ 前へ</button>
+        <button class="btn btn-sage" style="flex:2;" onclick="saveQ2Done()">✅ 完了・確認する</button>
       </div>
     </div>`;
   }
-  document.getElementById('evalStepContent').innerHTML = html;
+
+  document.getElementById('evalStepContent').innerHTML=html;
   window.scrollTo(0,0);
 }
 
-function selectScore(itemId, score) {
-  if (!evalData[currentUser.id]) evalData[currentUser.id]={};
-  if (!evalData[currentUser.id].scores) evalData[currentUser.id].scores={};
+// 点数選択→即次へ
+function selectScoreAndNext(itemId,score){
+  if(!evalData[currentUser.id])evalData[currentUser.id]={};
+  if(!evalData[currentUser.id].scores)evalData[currentUser.id].scores={};
   evalData[currentUser.id].scores[itemId]=score;
-  renderStep();
+  // 選択アニメのため少し待ってから次へ
+  const btn=event.currentTarget;
+  if(btn){btn.className='score-btn-lg sel-'+score;}
+  setTimeout(()=>{currentStep++;renderStep();},280);
 }
-function prevStep() { if (currentStep>0){currentStep--;renderStep();} }
-function nextStep() { currentStep++; renderStep(); }
-function saveQ1Next() {
-  if (!evalData[currentUser.id]) evalData[currentUser.id]={};
-  evalData[currentUser.id].q1=document.getElementById('q1Text').value;
-  currentStep++; renderStep();
-}
-async function saveQ2Done() {
-  if (!evalData[currentUser.id]) evalData[currentUser.id]={};
+
+function prevStep(){if(currentStep>0){currentStep--;renderStep();}}
+function saveQ1Next(){if(!evalData[currentUser.id])evalData[currentUser.id]={};evalData[currentUser.id].q1=document.getElementById('q1Text').value;currentStep++;renderStep();}
+async function saveQ2Done(){
+  if(!evalData[currentUser.id])evalData[currentUser.id]={};
   evalData[currentUser.id].q2=document.getElementById('q2Text').value;
   evalData[currentUser.id].lastSaved=new Date().toISOString();
-  const ok = await saveEvals(evalData);
+  const ok=await saveEvals(evalData);
   showToast(ok?'✅ 保存しました！':'⚠️ ローカルに保存しました');
-  goHome(); renderStaffHome();
+  goHome();renderStaffHome();
 }
-async function saveEvalDraft() {
-  if (!evalData[currentUser.id]) evalData[currentUser.id]={};
-  const q1El=document.getElementById('q1Text'), q2El=document.getElementById('q2Text');
-  if(q1El) evalData[currentUser.id].q1=q1El.value;
-  if(q2El) evalData[currentUser.id].q2=q2El.value;
+async function saveEvalDraft(){
+  if(!evalData[currentUser.id])evalData[currentUser.id]={};
+  const q1El=document.getElementById('q1Text'),q2El=document.getElementById('q2Text');
+  if(q1El)evalData[currentUser.id].q1=q1El.value;
+  if(q2El)evalData[currentUser.id].q2=q2El.value;
   evalData[currentUser.id].lastSaved=new Date().toISOString();
-  const ok = await saveEvals(evalData);
+  const ok=await saveEvals(evalData);
   showToast(ok?'💾 途中保存しました':'⚠️ ローカルに保存しました');
 }
-async function submitEval() {
-  if (!evalData[currentUser.id]) evalData[currentUser.id]={};
-  const q1El=document.getElementById('q1Text'), q2El=document.getElementById('q2Text');
-  if(q1El) evalData[currentUser.id].q1=q1El.value;
-  if(q2El) evalData[currentUser.id].q2=q2El.value;
-  const items=getItemsFlat(currentUser.role);
-  const scores=evalData[currentUser.id].scores||{};
+async function submitEval(){
+  if(!evalData[currentUser.id])evalData[currentUser.id]={};
+  const q1El=document.getElementById('q1Text'),q2El=document.getElementById('q2Text');
+  if(q1El)evalData[currentUser.id].q1=q1El.value;
+  if(q2El)evalData[currentUser.id].q2=q2El.value;
+  const items=getItemsFlat(currentUser.role),scores=evalData[currentUser.id].scores||{};
   const missing=items.filter(i=>scores[i.id]===undefined).length;
-  if(missing>0 && !confirm(`まだ${missing}項目が未入力です。このまま提出しますか？`)) return;
+  if(missing>0&&!confirm(`まだ${missing}項目が未入力です。このまま提出しますか？`))return;
   evalData[currentUser.id].submitted=true;
   evalData[currentUser.id].submittedAt=new Date().toISOString();
   const ok=await saveEvals(evalData);
   showToast(ok?'✅ 提出しました！':'✅ ローカルに提出保存しました');
-  goHome(); renderStaffHome();
+  goHome();renderStaffHome();
 }
 
 // ============================================================
 // CSV
 // ============================================================
-function downloadCSV(memberId) {
-  const id=memberId||currentUser?.id; if(!id)return;
-  const member=getMembers().find(m=>m.id===id); if(!member)return;
-  const ev=evalData[id]||{}, scores=ev.scores||{};
-  const items=getItemsFlat(member.role);
+function downloadCSV(memberId){
+  const id=memberId||currentUser?.id;if(!id)return;
+  const member=getMembers().find(m=>m.id===id);if(!member)return;
+  const ev=evalData[id]||{},scores=ev.scores||{};
   let rows=[['カテゴリ','評価項目','行動基準','自己評価点']];
-  items.forEach(item=>rows.push([item.catName,item.name,item.criteria,scores[item.id]??'']));
-  rows.push(['振り返りQ1','','',ev.q1||'']);
-  rows.push(['振り返りQ2','','',ev.q2||'']);
+  getItemsFlat(member.role).forEach(item=>rows.push([item.catName,item.name,item.criteria,scores[item.id]??'']));
+  rows.push(['振り返りQ1','','',ev.q1||'']);rows.push(['振り返りQ2','','',ev.q2||'']);
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download=`自己評価_${member.name}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
-  a.click(); URL.revokeObjectURL(url); showToast('📤 CSVをダウンロードしました');
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`自己評価_${member.name}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
+  a.click();URL.revokeObjectURL(url);showToast('📤 CSVをダウンロードしました');
 }
 function downloadCSVForMember(id){downloadCSV(id);}
-async function downloadAllCSV() {
+async function downloadAllCSV(){
   const members=getMembers();
   let rows=[['氏名','店舗','役職','カテゴリ','評価項目','行動基準','自己評価点']];
   members.forEach(member=>{
-    const ev=evalData[member.id]||{}, scores=ev.scores||{};
+    const ev=evalData[member.id]||{},scores=ev.scores||{};
     getItemsFlat(member.role).forEach(item=>rows.push([member.name,member.store,getRoleLabel(member.role),item.catName,item.name,item.criteria,scores[item.id]??'']));
     rows.push([member.name,member.store,getRoleLabel(member.role),'振り返りQ1','','',ev.q1||'']);
     rows.push([member.name,member.store,getRoleLabel(member.role),'振り返りQ2','','',ev.q2||'']);
   });
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=`全員自己評価_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
-  a.click(); URL.revokeObjectURL(url); showToast('📤 全員分CSVをダウンロードしました');
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`全員自己評価_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
+  a.click();URL.revokeObjectURL(url);showToast('📤 全員分CSVをダウンロードしました');
 }
 
 // ============================================================
 // ADMIN
 // ============================================================
-function adminTab(tab,btn) {
-  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+function adminTab(tab,btn){
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   document.getElementById('adminOverview').style.display=tab==='overview'?'':'none';
   document.getElementById('adminMembers').style.display=tab==='members'?'':'none';
   document.getElementById('adminSettings').style.display=tab==='settings'?'':'none';
-  if(tab==='overview') showAdminOverview();
-  if(tab==='members') showAdminMembers();
-  if(tab==='settings') showAdminSettings();
+  if(tab==='overview')showAdminOverview();
+  if(tab==='members')showAdminMembers();
+  if(tab==='settings')showAdminSettings();
 }
 
-function showAdminOverview() {
-  const members=getMembers(), settings=getSettings();
+function showAdminOverview(){
+  const members=getMembers(),settings=getSettings();
   const submitted=members.filter(m=>evalData[m.id]?.submitted).length;
   const draft=members.filter(m=>!evalData[m.id]?.submitted&&evalData[m.id]?.scores&&Object.keys(evalData[m.id].scores).length>0).length;
   const notStarted=members.length-submitted-draft;
   let warningHtml='';
   if(settings.deadline&&new Date()>new Date(settings.deadline)){
     const unsub=members.filter(m=>!evalData[m.id]?.submitted);
-    if(unsub.length>0) warningHtml=`<div class="warning-banner">⚠️ 期限超過：未提出 ${unsub.length}名（${unsub.map(m=>m.name).join('、')}）</div>`;
+    if(unsub.length>0)warningHtml=`<div class="warning-banner">⚠️ 期限超過：未提出 ${unsub.length}名（${unsub.map(m=>m.name).join('、')}）</div>`;
   }
-  let storeGroups={};
-  members.forEach(m=>{if(!storeGroups[m.store])storeGroups[m.store]=[];storeGroups[m.store].push(m);});
+  let storeGroups={};members.forEach(m=>{if(!storeGroups[m.store])storeGroups[m.store]=[];storeGroups[m.store].push(m);});
   let membersHtml='';
   Object.keys(storeGroups).forEach(store=>{
     membersHtml+=`<div class="section-heading">${store}</div>`;
     storeGroups[store].forEach(m=>{
-      const ev=evalData[m.id]||{}, items=getItemsFlat(m.role), scores=ev.scores||{};
-      const done=items.filter(i=>scores[i.id]!==undefined).length;
-      const pct=items.length>0?Math.round(done/items.length*100):0;
-      let badge=ev.submitted?'<span class="status-badge s-done">✅提出済</span>':done>0?'<span class="status-badge s-draft">✏️途中</span>':'<span class="status-badge s-none">未入力</span>';
+      const ev=evalData[m.id]||{},items=getItemsFlat(m.role),scores=ev.scores||{};
+      const done=items.filter(i=>scores[i.id]!==undefined).length,pct=items.length>0?Math.round(done/items.length*100):0;
+      const badge=ev.submitted?'<span class="status-badge s-done">✅提出済</span>':done>0?'<span class="status-badge s-draft">✏️途中</span>':'<span class="status-badge s-none">未入力</span>';
       membersHtml+=`<div class="member-row" onclick="showMemberDetail('${m.id}')" style="cursor:pointer;">
         <div class="member-avatar">${m.name[0]}</div>
-        <div class="member-info">
-          <div class="member-name">${m.name}</div>
-          <div class="member-meta">${getRoleLabel(m.role)} ${badge}</div>
-          <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div>
-        </div>
+        <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ${badge}</div>
+        <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div></div>
         <div style="font-size:11px;color:var(--c-muted);">▶</div>
       </div>`;
     });
   });
-  document.getElementById('adminOverview').innerHTML=`
-    ${warningHtml}
-    <div class="card">
-      <div class="card-title">📊 提出状況</div>
+  document.getElementById('adminOverview').innerHTML=`${warningHtml}
+    <div class="card"><div class="card-title">📊 提出状況</div>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
         <div style="flex:1;background:#d4edda;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#155724;">${submitted}</div><div style="font-size:11px;color:#155724;font-weight:700;">提出済み</div></div>
         <div style="flex:1;background:var(--c-yellow-pale);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#7a6500;">${draft}</div><div style="font-size:11px;color:#7a6500;font-weight:700;">入力途中</div></div>
@@ -870,25 +820,20 @@ function showAdminOverview() {
     <div class="card"><div class="card-title">👥 メンバー別状況</div>${membersHtml}</div>`;
 }
 
-function showMemberDetail(memberId) {
+function showMemberDetail(memberId){
   currentDetailMember=memberId;
-  const member=getMembers().find(m=>m.id===memberId); if(!member)return;
-  const ev=evalData[memberId]||{}, scores=ev.scores||{};
+  const member=getMembers().find(m=>m.id===memberId);if(!member)return;
+  const ev=evalData[memberId]||{},scores=ev.scores||{};
   const colorMap=['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
   const d=ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
   let html=`<div class="home-greeting">
-    <div class="hg-role">${getRoleLabel(member.role)}</div>
-    <div class="hg-name">${member.name}</div>
-    <div class="hg-store">${member.store}</div>
+    <div class="hg-role">${getRoleLabel(member.role)}</div><div class="hg-name">${member.name}</div><div class="hg-store">${member.store}</div>
     ${ev.submitted?'<span class="status-badge s-done">✅ 提出済み</span>':'<span class="status-badge s-none">未提出</span>'}
     ${ev.submittedAt?`<div style="font-size:11px;color:var(--c-gray);margin-top:4px;">提出日時: ${new Date(ev.submittedAt).toLocaleString('ja-JP')}</div>`:''}
   </div>`;
   d.categories.forEach(cat=>{
     let catHtml='';
-    cat.items.forEach(item=>{
-      const s=scores[item.id];
-      catHtml+=`<div class="detail-score-row"><span style="flex:1;">${item.name}</span>${s!==undefined?`<div class="score-chip" style="background:${colorMap[s]}">${s}</div>`:'<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>'}</div>`;
-    });
+    cat.items.forEach(item=>{const s=scores[item.id];catHtml+=`<div class="detail-score-row"><span style="flex:1;">${item.name}</span>${s!==undefined?`<div class="score-chip" style="background:${colorMap[s]}">${s}</div>`:'<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>'}</div>`;});
     html+=`<div class="card"><div class="card-title" style="font-size:13px;">📋 ${cat.name}</div>${catHtml}</div>`;
   });
   html+=`<div class="card"><div class="card-title">💬 振り返り・報告</div>
@@ -898,37 +843,29 @@ function showMemberDetail(memberId) {
     <div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;white-space:pre-wrap;">${ev.q2||'（未入力）'}</div>
   </div>`;
   document.getElementById('detailContent').innerHTML=html;
-  showScreen('detailScreen'); setHeader(member.name+' の詳細');
+  showScreen('detailScreen');setHeader(member.name+' の詳細');
 }
 
-// ============================================================
-// ADMIN MEMBERS
-// ============================================================
-function showAdminMembers() {
+function showAdminMembers(){
   const members=getMembers();
   let html=`<div class="card"><div class="card-title">👥 メンバー管理</div>
     <button class="btn btn-primary btn-sm" style="margin-bottom:14px;" onclick="showAddMemberForm()">＋ メンバー追加</button>
     <div id="addMemberFormArea"></div>`;
-  members.forEach((m,i)=>{
-    html+=`<div class="member-row"><div class="member-avatar">${m.name[0]}</div>
-      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div><div class="text-xs text-muted">PIN: ${'●'.repeat(m.pin.length)}</div></div>
-      <div class="member-actions"><button class="btn-icon" onclick="editMember(${i})">✏️</button><button class="btn-icon" onclick="deleteMember(${i})">🗑️</button></div>
-    </div>`;
-  });
-  html+='</div>';
-  document.getElementById('adminMembers').innerHTML=html;
+  members.forEach((m,i)=>{html+=`<div class="member-row"><div class="member-avatar">${m.name[0]}</div>
+    <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div><div style="font-size:11px;color:var(--c-muted);">PIN: ${'●'.repeat(m.pin.length)}</div></div>
+    <div class="member-actions"><button class="btn-icon" onclick="editMember(${i})">✏️</button><button class="btn-icon" onclick="deleteMember(${i})">🗑️</button></div>
+  </div>`;});
+  html+='</div>';document.getElementById('adminMembers').innerHTML=html;
 }
 
-function showAddMemberForm(editIndex) {
+function showAddMemberForm(editIndex){
   const m=editIndex!==undefined?getMembers()[editIndex]:null;
   document.getElementById('addMemberFormArea').innerHTML=`<div style="background:var(--c-gray-pale);border:1px solid var(--c-gray-light);border-radius:12px;padding:14px;margin-bottom:14px;">
     <div style="font-size:13px;font-weight:800;color:var(--c-dark);margin-bottom:10px;">${m?'メンバー編集':'メンバー追加'}</div>
     <div class="form-group"><label class="form-label">氏名</label><input class="form-input" id="mf_name" value="${m?.name||''}" placeholder="例：山田 太郎"></div>
     <div class="form-group"><label class="form-label">役職</label><select class="form-select" id="mf_role">
-      <option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option>
-      <option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option>
-      <option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option>
-      <option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option>
+      <option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option><option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option>
+      <option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option><option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option>
     </select></div>
     <div class="form-group"><label class="form-label">所属店舗</label><select class="form-select" id="mf_store">
       <option value="埼玉入間店" ${m?.store==='埼玉入間店'?'selected':''}>埼玉入間店</option>
@@ -940,8 +877,7 @@ function showAddMemberForm(editIndex) {
       <button class="btn btn-primary btn-sm" onclick="saveMember(${editIndex})">保存</button>
       <button class="btn btn-secondary btn-sm" onclick="document.getElementById('addMemberFormArea').innerHTML=''">キャンセル</button>
     </div>
-  </div>`;
-  document.getElementById('mf_name').focus();
+  </div>`;document.getElementById('mf_name').focus();
 }
 function editMember(i){showAddMemberForm(i);document.getElementById('addMemberFormArea').scrollIntoView({behavior:'smooth'});}
 function saveMember(editIndex){
@@ -953,37 +889,26 @@ function saveMember(editIndex){
   else members.push({id:'member_'+Date.now(),name,role,store,pin});
   saveMembers(members);showToast('✅ 保存しました');showAdminMembers();initStaffSelect();
 }
-function deleteMember(i){
-  if(!confirm('このメンバーを削除しますか？'))return;
-  const members=getMembers();members.splice(i,1);saveMembers(members);showToast('🗑️ 削除しました');showAdminMembers();initStaffSelect();
-}
+function deleteMember(i){if(!confirm('このメンバーを削除しますか？'))return;const members=getMembers();members.splice(i,1);saveMembers(members);showToast('🗑️ 削除しました');showAdminMembers();initStaffSelect();}
 
-// ============================================================
-// ADMIN SETTINGS
-// ============================================================
 function showAdminSettings(){
   const settings=getSettings();
   document.getElementById('adminSettings').innerHTML=`
     <div class="settings-card"><h3>📅 提出期限設定</h3>
       <div class="form-group"><label class="form-label">締め切り日</label><input class="form-input" type="date" id="st_deadline" value="${settings.deadline||''}"></div>
-      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button>
-    </div>
+      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button></div>
     <div class="settings-card"><h3>📋 評価期間</h3>
       <div class="form-group"><label class="form-label">表示テキスト</label><input class="form-input" id="st_period" value="${settings.period||'2025.10〜2026.3'}"></div>
-      <button class="btn btn-primary btn-sm" onclick="savePeriod()">保存</button>
-    </div>
+      <button class="btn btn-primary btn-sm" onclick="savePeriod()">保存</button></div>
     <div class="settings-card"><h3>🔑 管理者PIN変更</h3>
       <div class="form-group"><label class="form-label">新しいPIN（4桁）</label><input class="form-input" type="tel" maxlength="4" id="st_adminPin" placeholder="例：0000"></div>
-      <button class="btn btn-danger btn-sm" onclick="saveAdminPin()">PIN変更</button>
-    </div>
+      <button class="btn btn-danger btn-sm" onclick="saveAdminPin()">PIN変更</button></div>
     <div class="settings-card"><h3>☁️ データ再読み込み</h3>
       <p class="text-sm text-muted" style="margin-bottom:10px;">JSONBinから最新データを取得します</p>
-      <button class="btn btn-sage btn-sm" onclick="reloadData()">データ再取得</button>
-    </div>
+      <button class="btn btn-sage btn-sm" onclick="reloadData()">データ再取得</button></div>
     <div class="settings-card"><h3>⚠️ データリセット</h3>
       <p class="text-sm text-muted" style="margin-bottom:10px;">全評価データをリセットします（メンバー情報は保持）</p>
-      <button class="btn btn-danger btn-sm" onclick="resetAllEvals()">全評価データをリセット</button>
-    </div>`;
+      <button class="btn btn-danger btn-sm" onclick="resetAllEvals()">全評価データをリセット</button></div>`;
 }
 function saveDeadline(){const s=getSettings();s.deadline=document.getElementById('st_deadline').value;saveSettings(s);showToast('✅ 保存しました');}
 function savePeriod(){const s=getSettings();s.period=document.getElementById('st_period').value;saveSettings(s);showToast('✅ 保存しました');}
@@ -991,11 +916,23 @@ function saveAdminPin(){const pin=document.getElementById('st_adminPin').value.t
 async function reloadData(){evalData=await fetchEvals();showToast('✅ データを再取得しました');showAdminOverview();}
 async function resetAllEvals(){if(!confirm('本当に全評価データをリセットしますか？'))return;evalData={};await saveEvals({});showToast('🗑️ リセットしました');showAdminOverview();}
 
-// TOAST
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-// INIT
-window.onload=function(){initStaffSelect();};
+// ============================================================
+// INIT - セッション復元
+// ============================================================
+window.onload=async function(){
+  initStaffSelect();
+  const session=getSession();
+  if(session){
+    currentUser=session;
+    evalData=await fetchEvals();
+    document.getElementById('appHeader').style.display='flex';
+    // 評価入力中だった場合は入力画面へ、それ以外はホームへ
+    if(currentUser.type==='admin'){setHeader('管理者ダッシュボード');showScreen('adminScreen');showAdminOverview();}
+    else{setHeader('自己評価入力');showScreen('staffHomeScreen');renderStaffHome();}
+  }
+};
 </script>
 </body>
 </html>
