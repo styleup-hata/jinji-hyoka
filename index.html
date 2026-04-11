@@ -54,7 +54,7 @@
   .btn-sm { width: auto; padding: 8px 16px; font-size: 12px; border-radius: 8px; }
 
   .card { background: var(--c-white); border-radius: var(--radius); padding: 18px; margin: 10px 12px; box-shadow: var(--shadow); }
-  .card-title { font-size: 14px; font-weight: 800; color: var(--c-dark); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--c-gray-light); display: flex; align-items: center; gap: 8px; }
+  .card-title { font-size: 14px; font-weight: 800; color: var(--c-dark); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--c-gray-light); }
 
   .home-greeting { background: var(--c-dark); padding: 20px; margin: 10px 12px; border-radius: var(--radius); color: var(--c-white); border-left: 4px solid var(--c-salmon); }
   .hg-role { font-size: 11px; color: var(--c-salmon); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
@@ -70,47 +70,69 @@
   .progress-bar { height: 8px; border-radius: 6px; background: var(--c-salmon); transition: width 0.3s; }
   .progress-label { font-size: 11px; color: var(--c-muted); text-align: right; }
 
-  /* EVAL STEP - コンパクト・スクロール最小化 */
+  /* EVAL STEP */
   .eval-step-card { background: var(--c-white); border-radius: 16px; padding: 18px 16px; margin: 8px 10px; box-shadow: var(--shadow-lg); }
-  .step-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .step-badge { background: var(--c-salmon); color: white; border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
+  .step-badge { background: var(--c-salmon); color: white; border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; display: inline-block; margin-bottom: 10px; }
   .step-category { font-size: 11px; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-  .step-item-name { font-size: 22px; font-weight: 800; color: var(--c-dark); margin-bottom: 10px; line-height: 1.3; }
+  .step-item-name { font-size: 22px; font-weight: 800; color: var(--c-dark); margin-bottom: 12px; line-height: 1.3; }
 
-  /* 期待される行動 - 大きく見やすく */
-  .step-criteria-box {
-    background: linear-gradient(135deg, #eef6f0 0%, #e8f4eb 100%);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    border-left: 4px solid var(--c-sage-dark);
-  }
+  /* 期待される行動 - 大きく */
+  .step-criteria-box { background: linear-gradient(135deg,#eef6f0,#e8f4eb); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; border-left: 4px solid var(--c-sage-dark); }
   .step-criteria-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--c-sage-dark); text-transform: uppercase; margin-bottom: 6px; }
   .step-criteria-text { font-size: 16px; font-weight: 600; color: #1a3d25; line-height: 1.65; }
 
-  /* 評価基準テーブル - コンパクト横並び */
-  .criteria-compact { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
-  .criteria-compact-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 8px; background: var(--c-gray-pale); }
-  .criteria-compact-row.highlight { background: #fff; border: 1px solid var(--c-gray-light); }
-  .cc-badge { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: white; margin-top: 1px; }
-  .cc-1 { background: #c0392b; } .cc-2 { background: #e67e22; } .cc-3 { background: var(--c-blue); } .cc-4 { background: var(--c-sage-dark); } .cc-5 { background: #8e44ad; }
-  .cc-content { flex: 1; }
-  .cc-label { font-size: 10px; font-weight: 700; color: var(--c-muted); margin-bottom: 2px; }
-  .cc-text { font-size: 12px; color: var(--c-text); line-height: 1.4; }
+  /* 評価基準ボタン */
+  .score-btn-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .score-select-btn {
+    width: 100%;
+    border: 2px solid var(--c-gray-light);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    background: var(--c-gray-pale);
+    transition: all 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .score-select-btn:active { transform: scale(0.98); }
+  .score-select-btn.selected { border-width: 2px; }
+  .score-select-btn.selected-1 { background: #fdecea; border-color: #c0392b; }
+  .score-select-btn.selected-2 { background: #fef0e6; border-color: #e67e22; }
+  .score-select-btn.selected-3 { background: #eaf2f8; border-color: var(--c-blue); }
+  .score-select-btn.selected-4 { background: #eaf5ee; border-color: var(--c-sage-dark); }
+  .score-select-btn.selected-5 { background: #f4ecf7; border-color: #8e44ad; }
+  .ssb-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900; color: white;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .ssb-1 { background: #c0392b; }
+  .ssb-2 { background: #e67e22; }
+  .ssb-3 { background: var(--c-blue); }
+  .ssb-4 { background: var(--c-sage-dark); }
+  .ssb-5 { background: #8e44ad; }
+  .ssb-text { flex: 1; }
+  .ssb-label { font-size: 11px; font-weight: 700; color: var(--c-muted); margin-bottom: 3px; }
+  .ssb-desc { font-size: 13px; color: var(--c-text); line-height: 1.5; font-weight: 500; }
+  .score-select-btn.selected-1 .ssb-label,
+  .score-select-btn.selected-1 .ssb-desc { color: #7b241c; }
+  .score-select-btn.selected-2 .ssb-label,
+  .score-select-btn.selected-2 .ssb-desc { color: #784212; }
+  .score-select-btn.selected-3 .ssb-label,
+  .score-select-btn.selected-3 .ssb-desc { color: #1a5276; }
+  .score-select-btn.selected-4 .ssb-label,
+  .score-select-btn.selected-4 .ssb-desc { color: #1e4d2b; }
+  .score-select-btn.selected-5 .ssb-label,
+  .score-select-btn.selected-5 .ssb-desc { color: #4a235a; }
+  .select-hint { text-align: center; font-size: 11px; color: var(--c-muted); margin-bottom: 6px; }
 
-  /* 点数ボタン - 大きく・タップしたら自動次へ */
-  .score-section-label { font-size: 13px; font-weight: 800; color: var(--c-dark); margin-bottom: 10px; }
-  .score-buttons-large { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
-  .score-btn-lg { height: 60px; border-radius: 12px; border: 2px solid var(--c-gray-light); background: var(--c-gray-pale); font-size: 24px; font-weight: 900; color: var(--c-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
-  .score-btn-lg:active { transform: scale(0.88); }
-  .score-btn-lg.sel-1 { background: #c0392b; border-color: #c0392b; color: white; box-shadow: 0 3px 12px rgba(192,57,43,0.4); }
-  .score-btn-lg.sel-2 { background: #e67e22; border-color: #e67e22; color: white; box-shadow: 0 3px 12px rgba(230,126,34,0.4); }
-  .score-btn-lg.sel-3 { background: var(--c-blue); border-color: var(--c-blue); color: white; box-shadow: 0 3px 12px rgba(122,165,200,0.4); }
-  .score-btn-lg.sel-4 { background: var(--c-sage-dark); border-color: var(--c-sage-dark); color: white; box-shadow: 0 3px 12px rgba(109,158,122,0.4); }
-  .score-btn-lg.sel-5 { background: #8e44ad; border-color: #8e44ad; color: white; box-shadow: 0 3px 12px rgba(142,68,173,0.4); }
-  .auto-next-hint { text-align: center; font-size: 11px; color: var(--c-muted); margin-bottom: 4px; }
-
-  /* 手動ナビ（前へのみ） */
+  /* 前へボタン */
   .step-prev-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; background: var(--c-gray-light); color: var(--c-dark); transition: all 0.15s; margin-top: 6px; }
   .step-prev-btn:disabled { opacity: 0.4; cursor: default; }
   .step-prev-btn:active { transform: scale(0.97); }
@@ -121,7 +143,7 @@
   .step-progress-bar { height: 5px; border-radius: 4px; background: var(--c-salmon); transition: width 0.4s; }
   .step-progress-text { font-size: 11px; font-weight: 700; color: var(--c-muted); white-space: nowrap; }
 
-  .comment-textarea { width: 100%; border: 2px solid var(--c-gray-light); border-radius: 10px; padding: 12px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 110px; color: var(--c-text); outline: none; transition: border-color 0.2s; background: var(--c-gray-pale); }
+  .comment-textarea { width: 100%; border: 2px solid var(--c-gray-light); border-radius: 10px; padding: 12px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 110px; color: var(--c-text); outline: none; background: var(--c-gray-pale); transition: border-color 0.2s; }
   .comment-textarea:focus { border-color: var(--c-salmon); background: var(--c-white); }
   .q-label { font-size: 15px; font-weight: 700; color: var(--c-dark); margin-bottom: 10px; line-height: 1.5; }
 
@@ -141,7 +163,7 @@
   .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--c-dark); color: var(--c-white); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 999; transition: transform 0.3s; white-space: nowrap; border-left: 4px solid var(--c-salmon); box-shadow: var(--shadow-lg); }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--c-dark); border-top: 1px solid rgba(255,255,255,0.1); display: flex; z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
-  .nav-btn { flex: 1; background: transparent; border: none; color: var(--c-gray); padding: 10px 4px 8px; font-size: 10px; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.15s; }
+  .nav-btn { flex: 1; background: transparent; border: none; color: var(--c-gray); padding: 10px 4px 8px; font-size: 10px; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
   .nav-btn .nav-icon { font-size: 20px; }
   .nav-btn.active { color: var(--c-salmon); }
   .pb-nav { padding-bottom: 72px; }
@@ -271,33 +293,27 @@
 </div>
 
 <script>
-// ============================================================
-// JSONBIN
-// ============================================================
-const JSONBIN_BIN_ID = '69d9c94d856a6821891f9b46';
-const JSONBIN_API_KEY = '$2a$10$zfIhYk9PeF8bhcMeD5PC/O4KAFyZbtQqwXA2/ts0Whj8qtVI3.keC';
-const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+const JSONBIN_BIN_ID='69d9c94d856a6821891f9b46';
+const JSONBIN_API_KEY='$2a$10$zfIhYk9PeF8bhcMeD5PC/O4KAFyZbtQqwXA2/ts0Whj8qtVI3.keC';
+const JSONBIN_URL='https://api.jsonbin.io/v3/b/'+JSONBIN_BIN_ID;
 
-async function fetchEvals() {
+async function fetchEvals(){
   showLoading(true);
-  try {
-    const res = await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
-    const data = await res.json(); showLoading(false); return data.evals||{};
-  } catch(e) { showLoading(false); const d=localStorage.getItem('ug_eval_data'); return d?JSON.parse(d):{}; }
+  try{
+    const res=await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
+    const data=await res.json();showLoading(false);return data.evals||{};
+  }catch(e){showLoading(false);const d=localStorage.getItem('ug_eval_data');return d?JSON.parse(d):{};}
 }
-async function saveEvals(evals) {
+async function saveEvals(evals){
   showLoading(true);
-  try {
-    const res = await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},body:JSON.stringify({evals})});
-    showLoading(false); if(!res.ok) throw new Error();
-    localStorage.setItem('ug_eval_data',JSON.stringify(evals)); return true;
-  } catch(e) { showLoading(false); localStorage.setItem('ug_eval_data',JSON.stringify(evals)); showToast('⚠️ クラウド保存失敗。ローカルに保存しました'); return false; }
+  try{
+    const res=await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},body:JSON.stringify({evals})});
+    showLoading(false);if(!res.ok)throw new Error();
+    localStorage.setItem('ug_eval_data',JSON.stringify(evals));return true;
+  }catch(e){showLoading(false);localStorage.setItem('ug_eval_data',JSON.stringify(evals));showToast('⚠️ クラウド保存失敗。ローカルに保存しました');return false;}
 }
 function showLoading(v){document.getElementById('loadingOverlay').classList.toggle('hidden',!v);}
 
-// ============================================================
-// SETTINGS / MEMBERS
-// ============================================================
 const ADMIN_PIN_DEFAULT='1008';
 function getSettings(){const d=localStorage.getItem('ug_eval_settings');return d?JSON.parse(d):{deadline:'',adminPin:ADMIN_PIN_DEFAULT,period:'2025.10〜2026.3'};}
 function saveSettings(s){localStorage.setItem('ug_eval_settings',JSON.stringify(s));}
@@ -319,9 +335,6 @@ function getMembers(){const d=localStorage.getItem('ug_eval_members');if(d)retur
 function saveMembers(m){localStorage.setItem('ug_eval_members',JSON.stringify(m));}
 function getRoleLabel(r){return{SM:'SM（店長）',VSM:'VSM（副店長）',STAFF:'一般スタッフ',PART:'アルバイト'}[r]||r;}
 
-// ============================================================
-// EVAL DATA
-// ============================================================
 const SCORE_CRITERIA={
   SM:[
     {score:5,label:'模範となるレベル',text:'自店での成功事例や仕組みを他店舗に共有し、全社の向上に貢献した。'},
@@ -499,56 +512,44 @@ function getItemsFlat(role){
   return flat;
 }
 
-// ============================================================
 // STATE
-// ============================================================
 let currentUser=null;
 let currentPin='';
 let currentDetailMember=null;
 let currentStep=0;
 let evalData={};
-const SESSION_KEY='ug_session';
+const SESSION_KEY='ug_v3_session'; // v3 = 新バージョン
 
-// セッション復元
-function saveSession(){if(currentUser)localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));}
-function clearSession(){localStorage.removeItem(SESSION_KEY);}
-function getSession(){const d=localStorage.getItem(SESSION_KEY);return d?JSON.parse(d):null;}
-
-// ============================================================
 // PIN
-// ============================================================
 function pinInput(d){if(currentPin.length>=4)return;currentPin+=d;updatePinDisplay();if(currentPin.length===4)setTimeout(doLogin,200);}
 function pinDelete(){currentPin=currentPin.slice(0,-1);updatePinDisplay();}
 function updatePinDisplay(){for(let i=0;i<4;i++){const dot=document.getElementById('pd'+i);dot.classList.toggle('filled',i<currentPin.length);dot.textContent=i<currentPin.length?'●':'';};}
 function onLoginTypeChange(){const t=document.getElementById('loginType').value;document.getElementById('staffLoginArea').style.display=t==='staff'?'':'none';document.getElementById('adminLoginArea').style.display=t==='admin'?'':'none';currentPin='';updatePinDisplay();document.getElementById('loginError').style.display='none';}
 
-// ============================================================
-// LOGIN
-// ============================================================
 function initStaffSelect(){const sel=document.getElementById('staffSelect');sel.innerHTML='<option value="">-- 選択してください --</option>';getMembers().forEach(m=>{sel.innerHTML+=`<option value="${m.id}">${m.name}（${m.store}）</option>`;});}
 
 async function doLogin(){
   const type=document.getElementById('loginType').value;
-  const settings=getSettings();
   document.getElementById('loginError').style.display='none';
   if(type==='admin'){
+    const settings=getSettings();
     if(currentPin===(settings.adminPin||ADMIN_PIN_DEFAULT)){
       currentUser={type:'admin',name:'管理者（秦 慈宏）'};
-      saveSession();
+      localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));
       evalData=await fetchEvals();
       afterLogin();
-    } else showLoginError();
-  } else {
+    }else showLoginError();
+  }else{
     const memberId=document.getElementById('staffSelect').value;
     if(!memberId){showToast('名前を選んでください');currentPin='';updatePinDisplay();return;}
     const member=getMembers().find(m=>m.id===memberId);
     if(!member){showLoginError();return;}
     if(currentPin===member.pin){
       currentUser={type:'staff',...member};
-      saveSession();
+      localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));
       evalData=await fetchEvals();
       afterLogin();
-    } else showLoginError();
+    }else showLoginError();
   }
 }
 
@@ -562,7 +563,7 @@ function afterLogin(){
 
 function logout(){
   currentUser=null;currentPin='';evalData={};
-  clearSession();
+  localStorage.removeItem(SESSION_KEY);
   updatePinDisplay();
   document.getElementById('appHeader').style.display='none';
   document.getElementById('staffSelect').value='';
@@ -571,39 +572,27 @@ function logout(){
 }
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function setHeader(title){document.getElementById('headerTitle').textContent=title;}
+function setHeader(t){document.getElementById('headerTitle').textContent=t;}
 function goHome(){showScreen('staffHomeScreen');setHeader('自己評価入力');renderStaffHome();}
 function backToAdmin(){showScreen('adminScreen');setHeader('管理者ダッシュボード');}
 
-// ============================================================
-// STAFF HOME
-// ============================================================
 function renderStaffHome(){
   const user=currentUser;
   document.getElementById('homeRole').textContent=getRoleLabel(user.role);
   document.getElementById('homeName').textContent=user.name;
   document.getElementById('homeStore').textContent=user.store+' ｜ 評価期間: '+(getSettings().period||'2025.10〜2026.3');
   const ev=evalData[user.id]||{};
-  let statusHtml='';
-  if(ev.submitted){statusHtml='<span class="status-badge s-done">✅ 提出済み</span>';document.getElementById('btnStartEval').textContent='内容を修正する';}
-  else if(ev.scores&&Object.keys(ev.scores).length>0){statusHtml='<span class="status-badge s-draft">✏️ 入力途中（途中保存）</span>';document.getElementById('btnStartEval').textContent='続きから入力する';}
-  else{statusHtml='<span class="status-badge s-none">未入力</span>';document.getElementById('btnStartEval').textContent='評価を入力する';}
-  document.getElementById('homeStatus').innerHTML=statusHtml;
+  if(ev.submitted){document.getElementById('homeStatus').innerHTML='<span class="status-badge s-done">✅ 提出済み</span>';document.getElementById('btnStartEval').textContent='内容を修正する';}
+  else if(ev.scores&&Object.keys(ev.scores).length>0){document.getElementById('homeStatus').innerHTML='<span class="status-badge s-draft">✏️ 入力途中（途中保存）</span>';document.getElementById('btnStartEval').textContent='続きから入力する';}
+  else{document.getElementById('homeStatus').innerHTML='<span class="status-badge s-none">未入力</span>';document.getElementById('btnStartEval').textContent='評価を入力する';}
   const items=getItemsFlat(user.role),scores=ev.scores||{};
   const done=items.filter(i=>scores[i.id]!==undefined).length,pct=items.length>0?Math.round(done/items.length*100):0;
-  document.getElementById('homeProgress').innerHTML=`
-    <div class="flex-between text-sm fw-bold" style="margin-bottom:4px;"><span>定性評価</span><span>${done} / ${items.length} 項目</span></div>
-    <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
-    <div class="progress-label">${pct}% 完了</div>`;
-  const settings=getSettings();
-  const dlBanner=document.getElementById('deadlineBanner');
+  document.getElementById('homeProgress').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px;"><span>定性評価</span><span>${done} / ${items.length} 項目</span></div><div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div><div class="progress-label">${pct}% 完了</div>`;
+  const settings=getSettings();const dlBanner=document.getElementById('deadlineBanner');
   if(settings.deadline){const diff=Math.ceil((new Date(settings.deadline)-new Date())/86400000);dlBanner.innerHTML=diff<0?`<div class="deadline-banner overdue">⚠️ 提出期限を過ぎています（${settings.deadline}）</div>`:`<div class="deadline-banner">📅 提出期限：${settings.deadline}（あと${diff}日）</div>`;}
   else dlBanner.innerHTML='';
 }
 
-// ============================================================
-// EVAL INPUT - 点数選択で自動次へ
-// ============================================================
 function startEvaluation(){
   const items=getItemsFlat(currentUser.role);
   const scores=(evalData[currentUser.id]||{}).scores||{};
@@ -622,48 +611,36 @@ function renderStep(){
   const totalSteps=items.length+2;
   const pct=Math.round(currentStep/totalSteps*100);
 
-  let html=`<div style="padding:10px 10px 0;">
-    <div class="step-progress">
-      <div class="step-progress-bar-wrap"><div class="step-progress-bar" style="width:${pct}%"></div></div>
-      <div class="step-progress-text">${Math.min(currentStep+1,totalSteps)} / ${totalSteps}</div>
-    </div>
-  </div>`;
+  let html=`<div style="padding:10px 10px 0;"><div class="step-progress"><div class="step-progress-bar-wrap"><div class="step-progress-bar" style="width:${pct}%"></div></div><div class="step-progress-text">${Math.min(currentStep+1,totalSteps)} / ${totalSteps}</div></div></div>`;
 
   if(currentStep<items.length){
     const item=items[currentStep];
     const sel=scores[item.id];
+    // 評価基準ボタン（5→1の順）
+    const btns=criteria.slice().reverse().map(c=>{
+      const isSel=sel===c.score;
+      return `<button class="score-select-btn${isSel?' selected selected-'+c.score:''}" onclick="selectScoreAndNext('${item.id}',${c.score},this)">
+        <div class="ssb-num ssb-${c.score}">${c.score}</div>
+        <div class="ssb-text">
+          <div class="ssb-label">${c.label}</div>
+          <div class="ssb-desc">${c.text}</div>
+        </div>
+      </button>`;
+    }).join('');
+
     html+=`<div class="eval-step-card">
-      <div class="step-header">
-        <div class="step-badge">STEP ${currentStep+1} / ${items.length}</div>
-      </div>
+      <div class="step-badge">STEP ${currentStep+1} / ${items.length}</div>
       <div class="step-category">${item.catName}</div>
       <div class="step-item-name">${item.name}</div>
-
       <div class="step-criteria-box">
         <div class="step-criteria-label">💡 期待される行動（3点基準）</div>
         <div class="step-criteria-text">${item.criteria}</div>
       </div>
-
-      <div style="font-size:11px;font-weight:700;color:var(--c-muted);margin-bottom:6px;letter-spacing:0.06em;">▼ 評価基準</div>
-      <div class="criteria-compact">
-        ${criteria.slice().reverse().map(c=>`
-          <div class="criteria-compact-row${c.score===3?' highlight':''}">
-            <div class="cc-badge cc-${c.score}">${c.score}</div>
-            <div class="cc-content">
-              <div class="cc-label">${c.label}</div>
-              <div class="cc-text">${c.text}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-
-      <div class="score-section-label">▼ 点数を選ぶ（選択すると自動で次へ）</div>
-      <div class="score-buttons-large">
-        ${[1,2,3,4,5].map(s=>`<button class="score-btn-lg ${sel===s?'sel-'+s:''}" onclick="selectScoreAndNext('${item.id}',${s})">${s}</button>`).join('')}
-      </div>
-
+      <div class="select-hint">▼ 該当するボタンをタップしてください（自動で次へ進みます）</div>
+      <div class="score-btn-row">${btns}</div>
       <button class="step-prev-btn" onclick="prevStep()" ${currentStep===0?'disabled':''}>◀ 前の問題に戻る</button>
     </div>`;
-  } else if(currentStep===items.length){
+  }else if(currentStep===items.length){
     const q1=(evalData[user.id]||{}).q1||'';
     html+=`<div class="eval-step-card">
       <div class="step-badge" style="margin-bottom:12px;">振り返り Q1</div>
@@ -674,7 +651,7 @@ function renderStep(){
         <button class="btn btn-primary" style="flex:2;" onclick="saveQ1Next()">次へ ▶</button>
       </div>
     </div>`;
-  } else {
+  }else{
     const q2=(evalData[user.id]||{}).q2||'';
     html+=`<div class="eval-step-card">
       <div class="step-badge" style="margin-bottom:12px;">振り返り Q2</div>
@@ -686,20 +663,18 @@ function renderStep(){
       </div>
     </div>`;
   }
-
   document.getElementById('evalStepContent').innerHTML=html;
   window.scrollTo(0,0);
 }
 
-// 点数選択→即次へ
-function selectScoreAndNext(itemId,score){
+function selectScoreAndNext(itemId,score,btn){
   if(!evalData[currentUser.id])evalData[currentUser.id]={};
   if(!evalData[currentUser.id].scores)evalData[currentUser.id].scores={};
   evalData[currentUser.id].scores[itemId]=score;
-  // 選択アニメのため少し待ってから次へ
-  const btn=event.currentTarget;
-  if(btn){btn.className='score-btn-lg sel-'+score;}
-  setTimeout(()=>{currentStep++;renderStep();},280);
+  // 選択ハイライト
+  document.querySelectorAll('.score-select-btn').forEach(b=>{b.className='score-select-btn';});
+  if(btn){btn.className='score-select-btn selected selected-'+score;}
+  setTimeout(()=>{currentStep++;renderStep();},350);
 }
 
 function prevStep(){if(currentStep>0){currentStep--;renderStep();}}
@@ -736,9 +711,6 @@ async function submitEval(){
   goHome();renderStaffHome();
 }
 
-// ============================================================
-// CSV
-// ============================================================
 function downloadCSV(memberId){
   const id=memberId||currentUser?.id;if(!id)return;
   const member=getMembers().find(m=>m.id===id);if(!member)return;
@@ -769,9 +741,6 @@ async function downloadAllCSV(){
   a.click();URL.revokeObjectURL(url);showToast('📤 全員分CSVをダウンロードしました');
 }
 
-// ============================================================
-// ADMIN
-// ============================================================
 function adminTab(tab,btn){
   document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   document.getElementById('adminOverview').style.display=tab==='overview'?'':'none';
@@ -788,10 +757,7 @@ function showAdminOverview(){
   const draft=members.filter(m=>!evalData[m.id]?.submitted&&evalData[m.id]?.scores&&Object.keys(evalData[m.id].scores).length>0).length;
   const notStarted=members.length-submitted-draft;
   let warningHtml='';
-  if(settings.deadline&&new Date()>new Date(settings.deadline)){
-    const unsub=members.filter(m=>!evalData[m.id]?.submitted);
-    if(unsub.length>0)warningHtml=`<div class="warning-banner">⚠️ 期限超過：未提出 ${unsub.length}名（${unsub.map(m=>m.name).join('、')}）</div>`;
-  }
+  if(settings.deadline&&new Date()>new Date(settings.deadline)){const unsub=members.filter(m=>!evalData[m.id]?.submitted);if(unsub.length>0)warningHtml=`<div class="warning-banner">⚠️ 期限超過：未提出 ${unsub.length}名（${unsub.map(m=>m.name).join('、')}）</div>`;}
   let storeGroups={};members.forEach(m=>{if(!storeGroups[m.store])storeGroups[m.store]=[];storeGroups[m.store].push(m);});
   let membersHtml='';
   Object.keys(storeGroups).forEach(store=>{
@@ -800,24 +766,10 @@ function showAdminOverview(){
       const ev=evalData[m.id]||{},items=getItemsFlat(m.role),scores=ev.scores||{};
       const done=items.filter(i=>scores[i.id]!==undefined).length,pct=items.length>0?Math.round(done/items.length*100):0;
       const badge=ev.submitted?'<span class="status-badge s-done">✅提出済</span>':done>0?'<span class="status-badge s-draft">✏️途中</span>':'<span class="status-badge s-none">未入力</span>';
-      membersHtml+=`<div class="member-row" onclick="showMemberDetail('${m.id}')" style="cursor:pointer;">
-        <div class="member-avatar">${m.name[0]}</div>
-        <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ${badge}</div>
-        <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div></div>
-        <div style="font-size:11px;color:var(--c-muted);">▶</div>
-      </div>`;
+      membersHtml+=`<div class="member-row" onclick="showMemberDetail('${m.id}')" style="cursor:pointer;"><div class="member-avatar">${m.name[0]}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ${badge}</div><div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div></div><div style="font-size:11px;color:var(--c-muted);">▶</div></div>`;
     });
   });
-  document.getElementById('adminOverview').innerHTML=`${warningHtml}
-    <div class="card"><div class="card-title">📊 提出状況</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;background:#d4edda;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#155724;">${submitted}</div><div style="font-size:11px;color:#155724;font-weight:700;">提出済み</div></div>
-        <div style="flex:1;background:var(--c-yellow-pale);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#7a6500;">${draft}</div><div style="font-size:11px;color:#7a6500;font-weight:700;">入力途中</div></div>
-        <div style="flex:1;background:var(--c-gray-pale);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:var(--c-muted);">${notStarted}</div><div style="font-size:11px;color:var(--c-muted);font-weight:700;">未入力</div></div>
-      </div>
-      <button class="btn btn-dark" onclick="downloadAllCSV()">📤 全員分CSVダウンロード</button>
-    </div>
-    <div class="card"><div class="card-title">👥 メンバー別状況</div>${membersHtml}</div>`;
+  document.getElementById('adminOverview').innerHTML=`${warningHtml}<div class="card"><div class="card-title">📊 提出状況</div><div style="display:flex;gap:8px;margin-bottom:12px;"><div style="flex:1;background:#d4edda;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#155724;">${submitted}</div><div style="font-size:11px;color:#155724;font-weight:700;">提出済み</div></div><div style="flex:1;background:var(--c-yellow-pale);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#7a6500;">${draft}</div><div style="font-size:11px;color:#7a6500;font-weight:700;">入力途中</div></div><div style="flex:1;background:var(--c-gray-pale);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:var(--c-muted);">${notStarted}</div><div style="font-size:11px;color:var(--c-muted);font-weight:700;">未入力</div></div></div><button class="btn btn-dark" onclick="downloadAllCSV()">📤 全員分CSVダウンロード</button></div><div class="card"><div class="card-title">👥 メンバー別状況</div>${membersHtml}</div>`;
 }
 
 function showMemberDetail(memberId){
@@ -825,59 +777,27 @@ function showMemberDetail(memberId){
   const member=getMembers().find(m=>m.id===memberId);if(!member)return;
   const ev=evalData[memberId]||{},scores=ev.scores||{};
   const colorMap=['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
-  const d=ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
-  let html=`<div class="home-greeting">
-    <div class="hg-role">${getRoleLabel(member.role)}</div><div class="hg-name">${member.name}</div><div class="hg-store">${member.store}</div>
-    ${ev.submitted?'<span class="status-badge s-done">✅ 提出済み</span>':'<span class="status-badge s-none">未提出</span>'}
-    ${ev.submittedAt?`<div style="font-size:11px;color:var(--c-gray);margin-top:4px;">提出日時: ${new Date(ev.submittedAt).toLocaleString('ja-JP')}</div>`:''}
-  </div>`;
-  d.categories.forEach(cat=>{
+  let html=`<div class="home-greeting"><div class="hg-role">${getRoleLabel(member.role)}</div><div class="hg-name">${member.name}</div><div class="hg-store">${member.store}</div>${ev.submitted?'<span class="status-badge s-done">✅ 提出済み</span>':'<span class="status-badge s-none">未提出</span>'}${ev.submittedAt?`<div style="font-size:11px;color:var(--c-gray);margin-top:4px;">提出日時: ${new Date(ev.submittedAt).toLocaleString('ja-JP')}</div>`:''}</div>`;
+  (ALL_ITEMS[member.role]||ALL_ITEMS.STAFF).categories.forEach(cat=>{
     let catHtml='';
     cat.items.forEach(item=>{const s=scores[item.id];catHtml+=`<div class="detail-score-row"><span style="flex:1;">${item.name}</span>${s!==undefined?`<div class="score-chip" style="background:${colorMap[s]}">${s}</div>`:'<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>'}</div>`;});
     html+=`<div class="card"><div class="card-title" style="font-size:13px;">📋 ${cat.name}</div>${catHtml}</div>`;
   });
-  html+=`<div class="card"><div class="card-title">💬 振り返り・報告</div>
-    <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q1. アピールポイント</div>
-    <div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;margin-bottom:14px;white-space:pre-wrap;">${ev.q1||'（未入力）'}</div>
-    <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q2. 課題・チャレンジ</div>
-    <div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;white-space:pre-wrap;">${ev.q2||'（未入力）'}</div>
-  </div>`;
+  html+=`<div class="card"><div class="card-title">💬 振り返り・報告</div><div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q1. アピールポイント</div><div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;margin-bottom:14px;white-space:pre-wrap;">${ev.q1||'（未入力）'}</div><div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q2. 課題・チャレンジ</div><div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;white-space:pre-wrap;">${ev.q2||'（未入力）'}</div></div>`;
   document.getElementById('detailContent').innerHTML=html;
   showScreen('detailScreen');setHeader(member.name+' の詳細');
 }
 
 function showAdminMembers(){
   const members=getMembers();
-  let html=`<div class="card"><div class="card-title">👥 メンバー管理</div>
-    <button class="btn btn-primary btn-sm" style="margin-bottom:14px;" onclick="showAddMemberForm()">＋ メンバー追加</button>
-    <div id="addMemberFormArea"></div>`;
-  members.forEach((m,i)=>{html+=`<div class="member-row"><div class="member-avatar">${m.name[0]}</div>
-    <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div><div style="font-size:11px;color:var(--c-muted);">PIN: ${'●'.repeat(m.pin.length)}</div></div>
-    <div class="member-actions"><button class="btn-icon" onclick="editMember(${i})">✏️</button><button class="btn-icon" onclick="deleteMember(${i})">🗑️</button></div>
-  </div>`;});
+  let html=`<div class="card"><div class="card-title">👥 メンバー管理</div><button class="btn btn-primary btn-sm" style="margin-bottom:14px;" onclick="showAddMemberForm()">＋ メンバー追加</button><div id="addMemberFormArea"></div>`;
+  members.forEach((m,i)=>{html+=`<div class="member-row"><div class="member-avatar">${m.name[0]}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div><div style="font-size:11px;color:var(--c-muted);">PIN: ${'●'.repeat(m.pin.length)}</div></div><div class="member-actions"><button class="btn-icon" onclick="editMember(${i})">✏️</button><button class="btn-icon" onclick="deleteMember(${i})">🗑️</button></div></div>`;});
   html+='</div>';document.getElementById('adminMembers').innerHTML=html;
 }
-
 function showAddMemberForm(editIndex){
   const m=editIndex!==undefined?getMembers()[editIndex]:null;
-  document.getElementById('addMemberFormArea').innerHTML=`<div style="background:var(--c-gray-pale);border:1px solid var(--c-gray-light);border-radius:12px;padding:14px;margin-bottom:14px;">
-    <div style="font-size:13px;font-weight:800;color:var(--c-dark);margin-bottom:10px;">${m?'メンバー編集':'メンバー追加'}</div>
-    <div class="form-group"><label class="form-label">氏名</label><input class="form-input" id="mf_name" value="${m?.name||''}" placeholder="例：山田 太郎"></div>
-    <div class="form-group"><label class="form-label">役職</label><select class="form-select" id="mf_role">
-      <option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option><option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option>
-      <option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option><option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option>
-    </select></div>
-    <div class="form-group"><label class="form-label">所属店舗</label><select class="form-select" id="mf_store">
-      <option value="埼玉入間店" ${m?.store==='埼玉入間店'?'selected':''}>埼玉入間店</option>
-      <option value="川越インター店" ${m?.store==='川越インター店'?'selected':''}>川越インター店</option>
-      <option value="その他" ${m?.store==='その他'?'selected':''}>その他</option>
-    </select></div>
-    <div class="form-group"><label class="form-label">PINコード（4桁）</label><input class="form-input" type="tel" maxlength="4" id="mf_pin" value="${m?.pin||''}" placeholder="例：1234"></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveMember(${editIndex})">保存</button>
-      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('addMemberFormArea').innerHTML=''">キャンセル</button>
-    </div>
-  </div>`;document.getElementById('mf_name').focus();
+  document.getElementById('addMemberFormArea').innerHTML=`<div style="background:var(--c-gray-pale);border:1px solid var(--c-gray-light);border-radius:12px;padding:14px;margin-bottom:14px;"><div style="font-size:13px;font-weight:800;color:var(--c-dark);margin-bottom:10px;">${m?'メンバー編集':'メンバー追加'}</div><div class="form-group"><label class="form-label">氏名</label><input class="form-input" id="mf_name" value="${m?.name||''}" placeholder="例：山田 太郎"></div><div class="form-group"><label class="form-label">役職</label><select class="form-select" id="mf_role"><option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option><option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option><option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option><option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option></select></div><div class="form-group"><label class="form-label">所属店舗</label><select class="form-select" id="mf_store"><option value="埼玉入間店" ${m?.store==='埼玉入間店'?'selected':''}>埼玉入間店</option><option value="川越インター店" ${m?.store==='川越インター店'?'selected':''}>川越インター店</option><option value="その他">その他</option></select></div><div class="form-group"><label class="form-label">PINコード（4桁）</label><input class="form-input" type="tel" maxlength="4" id="mf_pin" value="${m?.pin||''}" placeholder="例：1234"></div><div style="display:flex;gap:8px;"><button class="btn btn-primary btn-sm" onclick="saveMember(${editIndex})">保存</button><button class="btn btn-secondary btn-sm" onclick="document.getElementById('addMemberFormArea').innerHTML=''">キャンセル</button></div></div>`;
+  document.getElementById('mf_name').focus();
 }
 function editMember(i){showAddMemberForm(i);document.getElementById('addMemberFormArea').scrollIntoView({behavior:'smooth'});}
 function saveMember(editIndex){
@@ -893,22 +813,7 @@ function deleteMember(i){if(!confirm('このメンバーを削除しますか？
 
 function showAdminSettings(){
   const settings=getSettings();
-  document.getElementById('adminSettings').innerHTML=`
-    <div class="settings-card"><h3>📅 提出期限設定</h3>
-      <div class="form-group"><label class="form-label">締め切り日</label><input class="form-input" type="date" id="st_deadline" value="${settings.deadline||''}"></div>
-      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button></div>
-    <div class="settings-card"><h3>📋 評価期間</h3>
-      <div class="form-group"><label class="form-label">表示テキスト</label><input class="form-input" id="st_period" value="${settings.period||'2025.10〜2026.3'}"></div>
-      <button class="btn btn-primary btn-sm" onclick="savePeriod()">保存</button></div>
-    <div class="settings-card"><h3>🔑 管理者PIN変更</h3>
-      <div class="form-group"><label class="form-label">新しいPIN（4桁）</label><input class="form-input" type="tel" maxlength="4" id="st_adminPin" placeholder="例：0000"></div>
-      <button class="btn btn-danger btn-sm" onclick="saveAdminPin()">PIN変更</button></div>
-    <div class="settings-card"><h3>☁️ データ再読み込み</h3>
-      <p class="text-sm text-muted" style="margin-bottom:10px;">JSONBinから最新データを取得します</p>
-      <button class="btn btn-sage btn-sm" onclick="reloadData()">データ再取得</button></div>
-    <div class="settings-card"><h3>⚠️ データリセット</h3>
-      <p class="text-sm text-muted" style="margin-bottom:10px;">全評価データをリセットします（メンバー情報は保持）</p>
-      <button class="btn btn-danger btn-sm" onclick="resetAllEvals()">全評価データをリセット</button></div>`;
+  document.getElementById('adminSettings').innerHTML=`<div class="settings-card"><h3>📅 提出期限設定</h3><div class="form-group"><label class="form-label">締め切り日</label><input class="form-input" type="date" id="st_deadline" value="${settings.deadline||''}"></div><button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button></div><div class="settings-card"><h3>📋 評価期間</h3><div class="form-group"><label class="form-label">表示テキスト</label><input class="form-input" id="st_period" value="${settings.period||'2025.10〜2026.3'}"></div><button class="btn btn-primary btn-sm" onclick="savePeriod()">保存</button></div><div class="settings-card"><h3>🔑 管理者PIN変更</h3><div class="form-group"><label class="form-label">新しいPIN（4桁）</label><input class="form-input" type="tel" maxlength="4" id="st_adminPin" placeholder="例：0000"></div><button class="btn btn-danger btn-sm" onclick="saveAdminPin()">PIN変更</button></div><div class="settings-card"><h3>☁️ データ再読み込み</h3><p class="text-sm text-muted" style="margin-bottom:10px;">JSONBinから最新データを取得します</p><button class="btn btn-sage btn-sm" onclick="reloadData()">データ再取得</button></div><div class="settings-card"><h3>⚠️ データリセット</h3><p class="text-sm text-muted" style="margin-bottom:10px;">全評価データをリセットします</p><button class="btn btn-danger btn-sm" onclick="resetAllEvals()">全評価データをリセット</button></div>`;
 }
 function saveDeadline(){const s=getSettings();s.deadline=document.getElementById('st_deadline').value;saveSettings(s);showToast('✅ 保存しました');}
 function savePeriod(){const s=getSettings();s.period=document.getElementById('st_period').value;saveSettings(s);showToast('✅ 保存しました');}
@@ -918,19 +823,18 @@ async function resetAllEvals(){if(!confirm('本当に全評価データをリセ
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-// ============================================================
 // INIT - セッション復元
-// ============================================================
 window.onload=async function(){
   initStaffSelect();
-  const session=getSession();
-  if(session){
-    currentUser=session;
-    evalData=await fetchEvals();
-    document.getElementById('appHeader').style.display='flex';
-    // 評価入力中だった場合は入力画面へ、それ以外はホームへ
-    if(currentUser.type==='admin'){setHeader('管理者ダッシュボード');showScreen('adminScreen');showAdminOverview();}
-    else{setHeader('自己評価入力');showScreen('staffHomeScreen');renderStaffHome();}
+  const saved=localStorage.getItem(SESSION_KEY);
+  if(saved){
+    try{
+      currentUser=JSON.parse(saved);
+      evalData=await fetchEvals();
+      document.getElementById('appHeader').style.display='flex';
+      if(currentUser.type==='admin'){setHeader('管理者ダッシュボード');showScreen('adminScreen');showAdminOverview();}
+      else{setHeader('自己評価入力');showScreen('staffHomeScreen');renderStaffHome();}
+    }catch(e){localStorage.removeItem(SESSION_KEY);}
   }
 };
 </script>
