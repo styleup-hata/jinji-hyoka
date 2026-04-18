@@ -127,6 +127,10 @@ body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;backgroun
 </head>
 <body>
 <div class="loading-overlay hidden" id="loadingOverlay"><div class="loading-box"><div class="loading-spin"></div>データ通信中...</div></div>
+<div id="syncBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:200;background:var(--c-salmon);color:#fff;padding:6px 16px;font-size:12px;font-weight:700;align-items:center;gap:8px;justify-content:center;">
+  <div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;"></div>
+  クラウドと同期中...
+</div>
 <div class="toast" id="toast"></div>
 
 <div class="app-header" id="appHeader" style="display:none;">
@@ -581,26 +585,42 @@ function formatRate(target, actual) {
 // JSONBIN
 // ============================================================
 async function fetchDB() {
+  // まずローカルキャッシュを即座に返す
+  let cached = null;
+  try {
+    const d = localStorage.getItem('ug_db');
+    if (d) cached = JSON.parse(d);
+  } catch(e) {}
+
+  // バックグラウンドでクラウドと同期
   showLoading(true);
   try {
     const r = await fetch(JSONBIN_URL+'/latest', {headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
-    const d = await r.json(); showLoading(false); return d;
+    const d = await r.json();
+    showLoading(false);
+    // クラウドデータをキャッシュに保存
+    try { localStorage.setItem('ug_db', JSON.stringify(d)); } catch(e) {}
+    return d;
   } catch(e) {
     showLoading(false);
-    try { const d=localStorage.getItem('ug_db'); return d?JSON.parse(d):{periods:{},currentPeriod:'',members:[]}; } catch(e2) { return {periods:{},currentPeriod:'',members:[]}; }
+    showToast('⚠️ オフライン：ローカルデータを使用中');
+    return cached || {periods:{},currentPeriod:'',members:[]};
   }
 }
 async function saveDB(db) {
+  // まずローカルに即保存（体感速度向上）
+  try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e) {}
+  // バックグラウンドでクラウドに保存
   showLoading(true);
   try {
     const r = await fetch(JSONBIN_URL, {method:'PUT', headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY}, body:JSON.stringify(db)});
-    showLoading(false); if(!r.ok) throw new Error();
-    try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e) {}
+    showLoading(false);
+    if(!r.ok) throw new Error();
     return true;
   } catch(e) {
     showLoading(false);
-    try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e2) {}
-    showToast('⚠️ クラウド保存失敗。ローカルに保存しました'); return false;
+    showToast('⚠️ クラウド同期失敗。ローカルに保存済みです');
+    return false;
   }
 }
 function showLoading(v) { document.getElementById('loadingOverlay').classList.toggle('hidden',!v); }
@@ -773,9 +793,29 @@ function backFromFeedback() {
 // STAFF HOME
 // ============================================================
 async function renderStaffHome() {
-  // 最新DBを取得してから描画（途中保存データを正しく反映するため）
-  window._db = await fetchDB();
+  // まずキャッシュで即描画（ちらつき防止）
+  if (!window._db || !window._db.currentPeriod) {
+    try {
+      const cached = localStorage.getItem('ug_db');
+      if (cached) window._db = JSON.parse(cached);
+    } catch(e) {}
+  }
+  if (!window._db) window._db = {periods:{},currentPeriod:'',members:[]};
   if (!window._db.periods) window._db.periods={};
+
+  // キャッシュで先に描画
+  _renderStaffHomeContent();
+
+  // バックグラウンドでクラウドと同期して再描画
+  const fresh = await fetchDB();
+  if (JSON.stringify(fresh) !== JSON.stringify(window._db)) {
+    window._db = fresh;
+    if (!window._db.periods) window._db.periods={};
+    _renderStaffHomeContent();
+  }
+}
+
+function _renderStaffHomeContent() {
   const db = getDB();
   const user = currentUser;
   const periods = Object.keys(db.periods||{});
@@ -867,7 +907,7 @@ async function renderStaffHome() {
       <p class="text-sm text-muted" style="margin-bottom:12px;">この期の評価シートを確認・PDF出力できます。</p>
       <button class="btn btn-dark" onclick="showPastEval()">確認・PDF出力する</button>`;
   }
-}
+} // end _renderStaffHomeContent
 
 function renderPeriodTabs(periods, currentPeriod) {
   const tabs = document.getElementById('periodTabs');
