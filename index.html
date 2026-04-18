@@ -1315,9 +1315,9 @@ function printEvalSheet(member, ev, periodKey, showFull) {
     </div>`;
   }
 
-  body += `</div>
-  <script>document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){window.print();},600);});</script>
-  </body></html>`;
+  body += '</div>';
+  body += '<scr'+'ipt>document.addEventListener(\'DOMContentLoaded\',function(){setTimeout(function(){window.print();},600);});</scr'+'ipt>';
+  body += '</body></html>';
 
   win.document.write(body);
   win.document.close();
