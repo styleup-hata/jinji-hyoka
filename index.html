@@ -627,7 +627,11 @@ function getMemberEval(periodKey, memberId) {
 }
 function getMembers() {
   const db = getDB();
-  return (db.members && db.members.length > 0) ? db.members : DEFAULT_MEMBERS;
+  // membersが未定義・null・空配列の場合はDEFAULT_MEMBERSを返す
+  if (!db.members || !Array.isArray(db.members) || db.members.length === 0) {
+    return DEFAULT_MEMBERS;
+  }
+  return db.members;
 }
 function saveMembers(m) { window._db.members = m; }
 function getSettings() { try { const d=localStorage.getItem('ug_settings'); return d?JSON.parse(d):{deadline:'',adminPin:ADMIN_PIN}; } catch(e) { return {deadline:'',adminPin:ADMIN_PIN}; } }
@@ -1612,13 +1616,17 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 // INIT
 window.onload = async function() {
-  initStaffSelect(); // まず DEFAULT_MEMBERS で初期化
+  initStaffSelect(); // まず DEFAULT_MEMBERS で初期化（画面を素早く表示）
   window._db = await fetchDB();
   // DBが空の場合は初期化
   if (!window._db.periods) window._db.periods={};
   if (!window._db.currentPeriod) window._db.currentPeriod='';
+  // membersが空・未定義の場合はDEFAULT_MEMBERSをDBに書き込む
+  if (!window._db.members || !Array.isArray(window._db.members) || window._db.members.length === 0) {
+    window._db.members = DEFAULT_MEMBERS;
+  }
   currentViewingPeriod = window._db.currentPeriod || '';
-  // DBにメンバーがいれば再描画
+  // 最新メンバーでセレクトを再描画
   initStaffSelect();
 };
 
