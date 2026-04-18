@@ -293,7 +293,8 @@ body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;backgroun
   <div id="pastEvalContent" class="pb-nav"></div>
   <div class="bottom-nav">
     <button class="nav-btn active" onclick="showView('homeView');renderStaffHome();"><span class="nav-icon">◀</span>ホームへ</button>
-    <button class="nav-btn" onclick="generatePDF()"><span class="nav-icon">🖨️</span>PDF出力</button>
+    <button class="nav-btn" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, false)"><span class="nav-icon">📋</span>面談用PDF</button>
+    <button class="nav-btn" id="btnFullPDF" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, true)"><span class="nav-icon">✅</span>確認用PDF</button>
   </div>
 </div>
 
@@ -718,6 +719,20 @@ function logout() {
 function showView(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function setHeader(title) { document.getElementById('headerTitle').textContent=title; }
 function backToAdmin() { showView('adminView'); setHeader('管理者ダッシュボード'); }
+
+function showAdminPDFMenu() {
+  const member = getMembers().find(m=>m.id===currentDetailMember);
+  if (!member) return;
+  const ev = getMemberEval(currentViewingPeriod, currentDetailMember);
+  const hasFB = ev && ev.feedback && ev.feedback.trim();
+
+  const choice = hasFB
+    ? confirm(`PDF種類を選んでください\n\n[OK] 確認用PDF（全項目入り）\n[キャンセル] 面談用PDF（1次・確定欄は空白）`)
+    : false;
+
+  printEvalSheet(member, ev, currentViewingPeriod, choice);
+}
+
 function backFromFeedback() {
   if (currentUser.type==='admin') { showView('adminView'); showAdminFeedback(); }
   else { showView('homeView'); renderStaffHome(); }
@@ -787,13 +802,18 @@ async function renderStaffHome() {
     const pct = items.length>0 ? Math.round(done/items.length*100) : 0;
 
     if (ev && ev.status==='submitted') {
+      const hasFB = ev.feedback && ev.feedback.trim();
       evalCard.innerHTML = `<div class="card-title">📋 自己評価の進捗</div>
-        <div style="text-align:center;padding:12px 0;">
-          <div style="font-size:36px;margin-bottom:8px;">✅</div>
+        <div style="text-align:center;padding:10px 0 8px;">
+          <div style="font-size:32px;margin-bottom:6px;">✅</div>
           <div style="font-size:16px;font-weight:800;color:var(--c-dark);margin-bottom:4px;">提出済み</div>
-          <div style="font-size:12px;color:var(--c-muted);">${ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):''}</div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:12px;">${ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):''}</div>
         </div>
-        <button class="btn btn-secondary mt-12" onclick="startEvaluation()">内容を見直す</button>`;
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-dark" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, false)">🖨️ 面談用PDF出力</button>
+          ${hasFB ? `<button class="btn btn-sage" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, true)">✅ 確認用PDF出力（全項目）</button>` : ''}
+          <button class="btn btn-secondary" onclick="startEvaluation()">内容を見直す</button>
+        </div>`;
     } else {
       document.getElementById('homeProgress') && (document.getElementById('homeProgress').innerHTML=`
         <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px;"><span>定性評価</span><span>${done} / ${items.length} 項目</span></div>
@@ -1088,6 +1108,22 @@ function renderEvalDetail(member, ev, periodKey, isAdmin) {
     </div>`;
   }
 
+  // PDF出力ボタンエリア（スタッフ画面用）
+  if (!isAdmin) {
+    const hasFB = ev && ev.feedback && ev.feedback.trim();
+    html += `<div style="padding:0 12px 16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:8px;">📄 PDF出力</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-dark" onclick="printEvalSheet(currentUser, getMemberEval('${periodKey}', currentUser.id), '${periodKey}', false)">
+          🖨️ 面談用PDF（1次・確定欄は空白）
+        </button>
+        ${hasFB ? `<button class="btn btn-sage" onclick="printEvalSheet(currentUser, getMemberEval('${periodKey}', currentUser.id), '${periodKey}', true)">
+          ✅ 確認用PDF（全項目入り）
+        </button>` : `<div style="background:var(--c-gray-pale);border-radius:10px;padding:10px;font-size:12px;color:var(--c-muted);text-align:center;">確認用PDF（全項目入り）はフィードバック入力後に出力できます</div>`}
+      </div>
+    </div>`;
+  }
+
   const targetEl = isAdmin ? document.getElementById('detailContent') : document.getElementById('pastEvalContent');
   targetEl.innerHTML = html;
 }
@@ -1132,89 +1168,155 @@ async function saveFeedback() {
 }
 
 // ============================================================
+// ============================================================
 // PDF GENERATION
 // ============================================================
+
+// PDF①：面談用（自己評価提出後・1次/確定/FB欄は空白）
 function generatePDF() {
   const ev = getMemberEval(currentViewingPeriod, currentUser.id);
-  printEvalSheet(currentUser, ev, currentViewingPeriod);
+  printEvalSheet(currentUser, ev, currentViewingPeriod, false);
+}
+
+// PDF②：確認用（全入力完了後・全項目入り）
+function generateFullPDF() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  printEvalSheet(currentUser, ev, currentViewingPeriod, true);
 }
 
 function generateAdminPDF(memberId) {
   const member = getMembers().find(m=>m.id===memberId);
   const ev = getMemberEval(currentViewingPeriod, memberId);
-  printEvalSheet(member, ev, currentViewingPeriod);
+  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+  printEvalSheet(member, ev, currentViewingPeriod, !!hasFeedback);
 }
 
-function printEvalSheet(member, ev, periodKey) {
+// PDF共通出力関数
+// showFull=false → 面談用（1次/確定/FB空白）
+// showFull=true  → 確認用（全項目入り）
+function printEvalSheet(member, ev, periodKey, showFull) {
   const scores = (ev||{}).scores||{};
   const roleData = ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
-  const colorMap = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
   const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+  const colorMap = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
+
+  const pdfTitle = showFull
+    ? `${member.name}　評価シート【確認用・全項目】`
+    : `${member.name}　評価シート【面談用】`;
 
   const win = window.open('','_blank');
   let body = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-  <title>評価シート - ${member.name} - ${periodKey}</title>
+  <title>${pdfTitle}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:10pt;color:#000;background:#fff;padding:10mm;}
-    h1{font-size:14pt;font-weight:800;margin-bottom:8pt;border-bottom:2px solid #2c2c2c;padding-bottom:6pt;}
-    .info-table{width:100%;border-collapse:collapse;margin-bottom:12pt;}
-    .info-table td{border:1px solid #ccc;padding:4pt 6pt;font-size:9pt;}
-    .info-table .label{background:#f0ede8;font-weight:700;width:25%;}
-    .section{margin-bottom:12pt;}
-    .section-title{font-size:11pt;font-weight:800;background:#2c2c2c;color:#fff;padding:4pt 8pt;margin-bottom:4pt;}
-    .eval-table{width:100%;border-collapse:collapse;}
-    .eval-table th{background:#f0ede8;font-size:8pt;font-weight:700;border:1px solid #ccc;padding:3pt 4pt;text-align:center;}
-    .eval-table td{border:1px solid #ccc;padding:3pt 4pt;font-size:8pt;vertical-align:top;}
-    .score-cell{text-align:center;font-weight:800;font-size:10pt;}
+    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:9.5pt;color:#000;background:#fff;}
+    .page{padding:10mm 12mm;}
+    .doc-title{font-size:15pt;font-weight:900;margin-bottom:2pt;color:#2c2c2c;}
+    .doc-sub{font-size:9pt;color:#888;margin-bottom:8pt;}
+    .info-table{width:100%;border-collapse:collapse;margin-bottom:10pt;}
+    .info-table td{border:1px solid #bbb;padding:3.5pt 6pt;font-size:8.5pt;}
+    .info-table .lbl{background:#f0ede8;font-weight:700;width:22%;}
+    .section{margin-bottom:10pt;}
+    .section-title{font-size:10pt;font-weight:900;background:#2c2c2c;color:#fff;padding:3.5pt 8pt;margin-bottom:0;letter-spacing:.05em;}
+    .eval-table{width:100%;border-collapse:collapse;margin-bottom:0;}
+    .eval-table th{background:#f5f2ee;font-size:7.5pt;font-weight:700;border:1px solid #bbb;padding:3pt 4pt;text-align:center;color:#444;}
+    .eval-table td{border:1px solid #bbb;padding:3pt 5pt;font-size:8pt;vertical-align:middle;}
+    .item-name{font-weight:700;font-size:8pt;}
+    .criteria-text{font-size:7pt;color:#555;line-height:1.45;}
+    .score-cell{text-align:center;font-weight:900;font-size:11pt;width:8%;}
+    .score-blank{text-align:center;color:#ccc;font-size:8pt;width:8%;}
     .s1{color:#c0392b;}.s2{color:#e67e22;}.s3{color:#7aa5c8;}.s4{color:#6d9e7a;}.s5{color:#8e44ad;}
-    .text-area{min-height:40pt;background:#fafafa;border:1px solid #ccc;padding:4pt;font-size:9pt;white-space:pre-wrap;line-height:1.6;}
-    .feedback-area{background:#f4ecf7;border:1px solid #8e44ad;padding:6pt;min-height:50pt;white-space:pre-wrap;font-size:9pt;line-height:1.6;}
-    .criteria-cell{font-size:7.5pt;color:#555;line-height:1.4;}
-    @media print{body{padding:5mm;}@page{size:A4;margin:10mm;}}
-  </style></head><body>
-  <h1>${getRoleLabel(member.role)} 評価シート</h1>
+    .text-box{border:1px solid #bbb;padding:5pt 6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:44pt;background:#fafafa;}
+    .feedback-box{border:2px solid #8e44ad;padding:6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:55pt;background:#f9f3fd;}
+    .q-title{font-size:8.5pt;font-weight:700;color:#2c2c2c;margin:6pt 0 3pt;}
+    .pdf-type-badge{display:inline-block;padding:2pt 10pt;border-radius:3pt;font-size:8pt;font-weight:700;margin-bottom:6pt;}
+    .badge-interview{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+    .badge-final{background:#d4edda;color:#155724;border:1px solid #28a745;}
+    .stamp-area{display:flex;gap:8pt;margin-top:8pt;}
+    .stamp-box{border:1px solid #bbb;width:48pt;height:36pt;text-align:center;font-size:6.5pt;color:#888;padding-top:4pt;}
+    @media print{
+      body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{size:A4 portrait;margin:8mm 10mm;}
+    }
+  </style></head><body><div class="page">
+  <div class="doc-title">${getRoleLabel(member.role)} 評価シート</div>
+  <div class="doc-sub">${periodKey}</div>
+  <div class="pdf-type-badge ${showFull?'badge-final':'badge-interview'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（1次・確定欄は空白）'}</div>
   <table class="info-table">
-    <tr><td class="label">氏名</td><td>${member.name}</td><td class="label">所属店舗</td><td>${member.store}</td></tr>
-    <tr><td class="label">評価期間</td><td>${periodKey}</td><td class="label">提出日時</td><td>${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td></tr>
+    <tr>
+      <td class="lbl">氏名</td><td style="font-weight:700;font-size:10pt;">${member.name}</td>
+      <td class="lbl">所属店舗</td><td>${member.store}</td>
+    </tr>
+    <tr>
+      <td class="lbl">評価期間</td><td>${periodKey}</td>
+      <td class="lbl">提出日時</td><td style="font-size:7.5pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+    </tr>
   </table>`;
 
+  // 評価項目テーブル
   roleData.categories.forEach(cat => {
     body += `<div class="section">
-      <div class="section-title">${cat.name}（${cat.allocation}点）</div>
+      <div class="section-title">${cat.name}　（配点 ${cat.allocation}点）</div>
       <table class="eval-table">
-        <tr><th style="width:18%">評価項目</th><th style="width:52%">期待される行動（3点基準）</th><th style="width:10%">自己評価</th><th style="width:10%">1次評価</th><th style="width:10%">確定点数</th></tr>`;
+        <tr>
+          <th style="width:16%;">評価項目</th>
+          <th style="width:48%;">期待される行動（3点基準）</th>
+          <th style="width:9%;">自己評価</th>
+          <th style="width:9%;">1次評価</th>
+          <th style="width:9%;">確定点数</th>
+          <th style="width:9%;">配点割合</th>
+        </tr>`;
     cat.items.forEach(item => {
       const s = scores[item.id];
-      const sc = s ? `<span class="s${s}">${s}</span>` : '-';
+      const selfScore = s ? `<span class="s${s}">${s}</span>` : '<span style="color:#ccc;">-</span>';
       body += `<tr>
-        <td style="font-weight:700;">${item.name}</td>
-        <td class="criteria-cell">${item.criteria}</td>
-        <td class="score-cell">${sc}</td>
-        <td class="score-cell"></td>
-        <td class="score-cell"></td>
+        <td class="item-name">${item.name}</td>
+        <td class="criteria-text">${item.criteria}</td>
+        <td class="score-cell">${selfScore}</td>
+        <td class="score-blank">${showFull?'':''}</td>
+        <td class="score-blank">${showFull?'':''}</td>
+        <td class="score-cell" style="font-size:9pt;font-weight:700;color:#888;">${item.w}</td>
       </tr>`;
     });
     body += '</table></div>';
   });
 
+  // 振り返り欄
   body += `<div class="section">
     <div class="section-title">本人の振り返り・報告</div>
-    <p style="font-size:9pt;font-weight:700;margin-bottom:3pt;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</p>
-    <div class="text-area">${(ev&&ev.q1)||''}</div>
-    <p style="font-size:9pt;font-weight:700;margin:8pt 0 3pt;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</p>
-    <div class="text-area">${(ev&&ev.q2)||''}</div>
+    <div style="padding:6pt 0 2pt;">
+      <div class="q-title">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+      <div class="text-box">${(ev&&ev.q1)||''}</div>
+      <div class="q-title">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+      <div class="text-box">${(ev&&ev.q2)||''}</div>
+    </div>
   </div>`;
 
+  // フィードバック欄
   body += `<div class="section">
     <div class="section-title">評価者からのフィードバックコメント</div>
-    <div class="feedback-area">${hasFeedback ? ev.feedback : ''}</div>
+    <div style="padding:4pt 0;">
+      <div class="feedback-box">${(showFull && hasFeedback) ? ev.feedback : ''}</div>
+      ${showFull && ev&&ev.feedbackAt?`<div style="font-size:7pt;color:#888;text-align:right;margin-top:3pt;">入力日時: ${new Date(ev.feedbackAt).toLocaleString('ja-JP')}</div>`:''}
+    </div>
   </div>`;
 
-  body += '</body></html>';
+  // 押印欄（面談用のみ）
+  if (!showFull) {
+    body += `<div class="stamp-area">
+      <div class="stamp-box">本人</div>
+      <div class="stamp-box">第１評価者</div>
+      <div class="stamp-box">第２評価者</div>
+      <div class="stamp-box">代表取締役</div>
+    </div>`;
+  }
+
+  body += `</div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};</script>
+  </body></html>`;
+
   win.document.write(body);
   win.document.close();
-  setTimeout(()=>win.print(), 500);
 }
 
 // ============================================================
