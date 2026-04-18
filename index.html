@@ -702,7 +702,7 @@ function afterLogin() {
     showView('adminView'); showAdminOverview();
   } else {
     setHeader('自己評価入力');
-    showView('homeView'); renderStaffHome();
+    showView('homeView'); await renderStaffHome();
   }
 }
 
@@ -726,7 +726,10 @@ function backFromFeedback() {
 // ============================================================
 // STAFF HOME
 // ============================================================
-function renderStaffHome() {
+async function renderStaffHome() {
+  // 最新DBを取得してから描画（途中保存データを正しく反映するため）
+  window._db = await fetchDB();
+  if (!window._db.periods) window._db.periods={};
   const db = getDB();
   const user = currentUser;
   const periods = Object.keys(db.periods||{});
