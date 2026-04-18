@@ -505,6 +505,79 @@ function getCurrentPeriodSuggestion() {
 }
 
 // ============================================================
+// 定量評価項目定義
+// ============================================================
+const QUANT_ITEMS = [
+  {id:'sales',      name:'売上',             format:'currency', unit:'円'},
+  {id:'profit',     name:'営業利益',          format:'currency', unit:'円'},
+  {id:'gbp',        name:'GBPクチコミ',       format:'decimal',  unit:''},
+  {id:'mystery',    name:'ミステリーショッパー', format:'percent',  unit:'%'},
+  {id:'gross',      name:'粗利率',            format:'percent',  unit:'%'},
+];
+
+// 達成率から評価点を計算
+function calcQuantScore(target, actual) {
+  if (!target || !actual || target === 0) return null;
+  const rate = actual / target;
+  if (rate >= 1.10) return 5;
+  if (rate >= 1.05) return 4;
+  if (rate >= 1.00) return 3;
+  if (rate >= 0.95) return 2;
+  return 1;
+}
+
+// 定量得点計算（役職別配点）
+function calcQuantTotal(role, scores) {
+  const d = ALL_ITEMS[role] || ALL_ITEMS.STAFF;
+  const alloc = d.quantitative;
+  const validScores = scores.filter(s => s !== null && s !== undefined);
+  if (validScores.length === 0) return 0;
+  const avg = validScores.reduce((a,b) => a+b, 0) / validScores.length;
+  return Math.round((avg / 5) * alloc * 10) / 10;
+}
+
+// 定性得点計算（役職別・カテゴリ別配点）
+function calcQualTotal(role, scores) {
+  const d = ALL_ITEMS[role] || ALL_ITEMS.STAFF;
+  let total = 0;
+  d.categories.forEach(cat => {
+    const items = cat.items;
+    const weightSum = items.reduce((a,b) => a + b.w, 0);
+    let weightedSum = 0;
+    let hasScore = false;
+    items.forEach(item => {
+      const s = scores[item.id];
+      if (s !== undefined && s !== null) {
+        weightedSum += s * item.w;
+        hasScore = true;
+      }
+    });
+    if (hasScore && weightSum > 0) {
+      const catAvg = weightedSum / weightSum;
+      total += (catAvg / 5) * cat.allocation;
+    }
+  });
+  return Math.round(total * 10) / 10;
+}
+
+// 数値フォーマット
+function formatQuantValue(val, format) {
+  if (val === null || val === undefined || val === '') return '-';
+  const n = parseFloat(val);
+  if (isNaN(n)) return '-';
+  if (format === 'currency') return n.toLocaleString('ja-JP') + '円';
+  if (format === 'percent') return (n * 100).toFixed(1) + '%';
+  if (format === 'decimal') return n.toFixed(1);
+  return String(n);
+}
+
+function formatRate(target, actual) {
+  if (!target || !actual || parseFloat(target) === 0) return '-';
+  const rate = parseFloat(actual) / parseFloat(target) * 100;
+  return rate.toFixed(1) + '%';
+}
+
+// ============================================================
 // JSONBIN
 // ============================================================
 async function fetchDB() {
@@ -543,8 +616,41 @@ function getPeriodData(periodKey) {
 }
 function getMemberEval(periodKey, memberId) {
   const pd = getPeriodData(periodKey);
-  if (!pd.evals[memberId]) pd.evals[memberId] = {scores:{},q1:'',q2:'',feedback:'',status:'none',submittedAt:null,feedbackAt:null};
-  return pd.evals[memberId];
+  if (!pd.evals[memberId]) pd.evals[memberId] = {
+    scores:{},        // 自己評価（定性）
+    firstScores:{},   // 1次評価（定性）
+    secondScores:{},  // 2次評価（定性）
+    q1:'', q2:'',
+    feedback:'',
+    status:'none',
+    submittedAt:null,
+    feedbackAt:null,
+    firstAt:null,
+    secondAt:null,
+  };
+  // 古いデータとの互換性
+  const ev = pd.evals[memberId];
+  if (!ev.firstScores) ev.firstScores = {};
+  if (!ev.secondScores) ev.secondScores = {};
+  return ev;
+}
+
+// 店舗の定量評価データを取得
+function getStoreQuant(periodKey, store) {
+  const pd = getPeriodData(periodKey);
+  if (!pd.storeQuant) pd.storeQuant = {};
+  if (!pd.storeQuant[store]) pd.storeQuant[store] = {};
+  return pd.storeQuant[store];
+}
+
+// 定量評価スコアを取得（店舗共通）
+function getMemberQuantScores(periodKey, store) {
+  const sq = getStoreQuant(periodKey, store);
+  return QUANT_ITEMS.map(item => {
+    const target = parseFloat(sq[item.id + '_target']) || 0;
+    const actual = parseFloat(sq[item.id + '_actual']) || 0;
+    return calcQuantScore(target, actual);
+  });
 }
 function getMembers() {
   const db = getDB();
@@ -1000,9 +1106,16 @@ function renderEvalDetail(member, ev, periodKey, isAdmin) {
     let rows = '';
     cat.items.forEach(item => {
       const s = scores[item.id];
-      rows += `<div class="detail-score-row">
-        <span style="flex:1;">${item.name}</span>
-        ${s!==undefined?`<div class="score-chip" style="background:${colorMap[s]}">${s}</div>`:'<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>'}
+      const fs = (ev.firstScores||{})[item.id];
+      const ss = (ev.secondScores||{})[item.id];
+      const selfChip = s!==undefined ? `<div class="score-chip" style="background:${colorMap[s]}">${s}</div>` : '<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>';
+      const firstChip = fs!==undefined ? `<div class="score-chip" style="background:${colorMap[fs]}">${fs}</div>` : '<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>';
+      const secondChip = ss!==undefined ? `<div class="score-chip" style="background:${colorMap[ss]}">${ss}</div>` : '<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>';
+      rows += `<div class="detail-score-row" style="gap:6px;">
+        <span style="flex:1;font-size:12px;">${item.name}</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:9px;color:var(--c-muted);">自己</span>${selfChip}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:9px;color:var(--c-muted);">1次</span>${firstChip}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:9px;color:var(--c-muted);">確定</span>${secondChip}</div>
       </div>`;
     });
     html += `<div class="card"><div class="card-title" style="font-size:13px;">📋 ${cat.name}（${cat.allocation}点）</div>${rows}</div>`;
@@ -1062,6 +1175,50 @@ function openFeedbackInput(memberId) {
   const ev = getMemberEval(currentViewingPeriod, memberId);
   setHeader(`${member.name} へのフィードバック`);
 
+  // 定性評価項目ごとの1次・2次入力フォームを生成
+  const roleData2 = ALL_ITEMS[member.role] || ALL_ITEMS.STAFF;
+  const selfScores = ev.scores || {};
+  const firstScores = ev.firstScores || {};
+  const secondScores = ev.secondScores || {};
+  const colorMap2 = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
+
+  let scoreInputHtml = '';
+  roleData2.categories.forEach(cat => {
+    scoreInputHtml += `<div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:800;background:var(--c-gray-pale);padding:6px 10px;border-radius:6px;margin-bottom:6px;">${cat.name}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <tr style="background:var(--c-gray-pale);">
+          <th style="padding:5px 6px;text-align:left;border:1px solid var(--c-gray-light);width:35%;">評価項目</th>
+          <th style="padding:5px;text-align:center;border:1px solid var(--c-gray-light);width:15%;">自己</th>
+          <th style="padding:5px;text-align:center;border:1px solid var(--c-gray-light);width:25%;">1次評価</th>
+          <th style="padding:5px;text-align:center;border:1px solid var(--c-gray-light);width:25%;">確定(2次)</th>
+        </tr>`;
+    cat.items.forEach(item => {
+      const self = selfScores[item.id];
+      const first = firstScores[item.id];
+      const second = secondScores[item.id];
+      const selfDisp = self !== undefined ? `<div class="score-chip" style="background:${colorMap2[self]};margin:0 auto;">${self}</div>` : '<span style="color:var(--c-muted);">-</span>';
+      const scoreOpts = (current) => [1,2,3,4,5].map(n =>
+        `<option value="${n}" ${current===n?'selected':''}>${n}</option>`
+      ).join('');
+      scoreInputHtml += `<tr>
+        <td style="padding:5px 6px;border:1px solid var(--c-gray-light);font-size:11px;">${item.name}</td>
+        <td style="padding:5px;border:1px solid var(--c-gray-light);text-align:center;">${selfDisp}</td>
+        <td style="padding:3px;border:1px solid var(--c-gray-light);text-align:center;">
+          <select id="first_${item.id}" style="width:100%;padding:3px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;">
+            <option value="">-</option>${scoreOpts(first)}
+          </select>
+        </td>
+        <td style="padding:3px;border:1px solid var(--c-gray-light);text-align:center;">
+          <select id="second_${item.id}" style="width:100%;padding:3px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;">
+            <option value="">-</option>${scoreOpts(second)}
+          </select>
+        </td>
+      </tr>`;
+    });
+    scoreInputHtml += '</table></div>';
+  });
+
   document.getElementById('feedbackContent').innerHTML = `
     <div class="home-greeting" style="margin-bottom:0;">
       <div class="hg-role">${getRoleLabel(member.role)}</div>
@@ -1069,12 +1226,17 @@ function openFeedbackInput(memberId) {
       <div class="hg-store">${member.store} ｜ ${currentViewingPeriod}</div>
     </div>
     <div class="card" style="margin-top:10px;">
-      <div class="card-title">💜 フィードバックコメント入力</div>
-      <p style="font-size:13px;color:var(--c-muted);margin-bottom:12px;line-height:1.6;">面談しながら入力してください。保存すると面談完了となります。</p>
+      <div class="card-title">📊 1次・確定評価入力</div>
+      <p style="font-size:12px;color:var(--c-muted);margin-bottom:12px;line-height:1.6;">面談しながら1次評価を入力。評価会議後に確定（2次）点数を入力してください。</p>
+      ${scoreInputHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">💜 フィードバックコメント</div>
+      <p style="font-size:12px;color:var(--c-muted);margin-bottom:10px;">面談しながら入力してください。</p>
       <textarea class="feedback-textarea" id="feedbackText" placeholder="フィードバックコメントを入力してください...">${ev.feedback||''}</textarea>
       <div style="margin-top:14px;display:flex;gap:10px;">
         <button class="step-prev-btn" style="flex:1;" onclick="backFromFeedback()">キャンセル</button>
-        <button class="btn btn-purple" style="flex:2;" onclick="saveFeedback()">💾 保存する（面談完了）</button>
+        <button class="btn btn-purple" style="flex:2;" onclick="saveFeedback()">💾 保存する</button>
       </div>
     </div>`;
 
@@ -1082,13 +1244,38 @@ function openFeedbackInput(memberId) {
 }
 
 async function saveFeedback() {
-  const text = document.getElementById('feedbackText')?.value || '';
-  if (!text.trim()) { showToast('コメントを入力してください'); return; }
   const ev = getMemberEval(currentViewingPeriod, feedbackTargetMember);
+  const member = getMembers().find(m=>m.id===feedbackTargetMember);
+  const roleData = ALL_ITEMS[member.role] || ALL_ITEMS.STAFF;
+
+  // 1次・2次スコアを保存
+  if (!ev.firstScores) ev.firstScores = {};
+  if (!ev.secondScores) ev.secondScores = {};
+  roleData.categories.forEach(cat => {
+    cat.items.forEach(item => {
+      const fv = document.getElementById('first_' + item.id)?.value;
+      const sv = document.getElementById('second_' + item.id)?.value;
+      if (fv && fv !== '') ev.firstScores[item.id] = parseInt(fv);
+      else delete ev.firstScores[item.id];
+      if (sv && sv !== '') ev.secondScores[item.id] = parseInt(sv);
+      else delete ev.secondScores[item.id];
+    });
+  });
+
+  // フィードバックコメント
+  const text = document.getElementById('feedbackText')?.value || '';
   ev.feedback = text;
   ev.feedbackAt = new Date().toISOString();
+
+  // 1次・2次どちらか入力があれば面談完了
+  const hasFirst = Object.keys(ev.firstScores).length > 0;
+  const hasSecond = Object.keys(ev.secondScores).length > 0;
+  if (hasFirst || hasSecond || text.trim()) {
+    ev.status = 'submitted'; // 提出済みのまま維持
+  }
+
   const ok = await saveDB(window._db);
-  showToast(ok?'✅ フィードバックを保存しました（面談完了）':'⚠️ ローカルに保存しました');
+  showToast(ok?'✅ 保存しました':'⚠️ ローカルに保存しました');
   backFromFeedback();
 }
 
@@ -1097,23 +1284,19 @@ async function saveFeedback() {
 // PDF GENERATION
 // ============================================================
 
-// PDF①：面談用（自己評価提出後・1次/確定/FB欄は空白）
 function generatePDF() {
   const ev = getMemberEval(currentViewingPeriod, currentUser.id);
   printEvalSheet(currentUser, ev, currentViewingPeriod, false);
 }
-
-// PDF②：確認用（全入力完了後・全項目入り）
 function generateFullPDF() {
   const ev = getMemberEval(currentViewingPeriod, currentUser.id);
   printEvalSheet(currentUser, ev, currentViewingPeriod, true);
 }
-
 function generateAdminPDF(memberId) {
   const member = getMembers().find(m=>m.id===memberId);
   const ev = getMemberEval(currentViewingPeriod, memberId);
-  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
-  printEvalSheet(member, ev, currentViewingPeriod, !!hasFeedback);
+  const hasSecond = ev && Object.keys(ev.secondScores||{}).length > 0;
+  printEvalSheet(member, ev, currentViewingPeriod, hasSecond);
 }
 
 // PDF共通出力関数
@@ -1121,123 +1304,211 @@ function generateAdminPDF(memberId) {
 // showFull=true  → 確認用（全項目入り）
 function printEvalSheet(member, ev, periodKey, showFull) {
   const scores = (ev||{}).scores||{};
+  const firstScores = (ev||{}).firstScores||{};
+  const secondScores = (ev||{}).secondScores||{};
   const roleData = ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
   const hasFeedback = ev && ev.feedback && ev.feedback.trim();
-  const colorMap = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
+  const colorMap = {1:'#c0392b',2:'#e67e22',3:'#7aa5c8',4:'#6d9e7a',5:'#8e44ad'};
 
-  const pdfTitle = showFull
-    ? `${member.name}　評価シート【確認用・全項目】`
-    : `${member.name}　評価シート【面談用】`;
+  // 定量評価データ
+  const sq = getStoreQuant(periodKey, member.store);
+  const quantScores = QUANT_ITEMS.map(item => calcQuantScore(
+    parseFloat(sq[item.id+'_target'])||0,
+    parseFloat(sq[item.id+'_actual'])||0
+  ));
+  const quantTotal = calcQuantTotal(member.role, quantScores);
+
+  // 定性得点（確定>1次>自己の優先順位）
+  const effectiveScores = {};
+  getItemsFlat(member.role).forEach(item => {
+    if (secondScores[item.id] !== undefined) effectiveScores[item.id] = secondScores[item.id];
+    else if (firstScores[item.id] !== undefined) effectiveScores[item.id] = firstScores[item.id];
+    else if (scores[item.id] !== undefined) effectiveScores[item.id] = scores[item.id];
+  });
+  const qualSelf = calcQualTotal(member.role, scores);
+  const qualTotal = calcQualTotal(member.role, effectiveScores);
+  const totalScore = Math.round((quantTotal + (showFull ? qualTotal : qualSelf)) * 10) / 10;
+  const rankResult = showFull ? calcRank(member.role, totalScore) : '';
+
+  const pdfTitle = showFull ? `${member.name} 評価シート【確認用】` : `${member.name} 評価シート【面談用】`;
 
   const win = window.open('','_blank');
   let body = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
   <title>${pdfTitle}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:9.5pt;color:#000;background:#fff;}
-    .page{padding:10mm 12mm;}
-    .doc-title{font-size:15pt;font-weight:900;margin-bottom:2pt;color:#2c2c2c;}
-    .doc-sub{font-size:9pt;color:#888;margin-bottom:8pt;}
-    .info-table{width:100%;border-collapse:collapse;margin-bottom:10pt;}
-    .info-table td{border:1px solid #bbb;padding:3.5pt 6pt;font-size:8.5pt;}
-    .info-table .lbl{background:#f0ede8;font-weight:700;width:22%;}
-    .section{margin-bottom:10pt;}
-    .section-title{font-size:10pt;font-weight:900;background:#2c2c2c;color:#fff;padding:3.5pt 8pt;margin-bottom:0;letter-spacing:.05em;}
-    .eval-table{width:100%;border-collapse:collapse;margin-bottom:0;}
-    .eval-table th{background:#f5f2ee;font-size:7.5pt;font-weight:700;border:1px solid #bbb;padding:3pt 4pt;text-align:center;color:#444;}
-    .eval-table td{border:1px solid #bbb;padding:3pt 5pt;font-size:8pt;vertical-align:middle;}
-    .item-name{font-weight:700;font-size:8pt;}
-    .criteria-text{font-size:7pt;color:#555;line-height:1.45;}
-    .score-cell{text-align:center;font-weight:900;font-size:11pt;width:8%;}
-    .score-blank{text-align:center;color:#ccc;font-size:8pt;width:8%;}
-    .s1{color:#c0392b;}.s2{color:#e67e22;}.s3{color:#7aa5c8;}.s4{color:#6d9e7a;}.s5{color:#8e44ad;}
-    .text-box{border:1px solid #bbb;padding:5pt 6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:44pt;background:#fafafa;}
-    .feedback-box{border:2px solid #8e44ad;padding:6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:55pt;background:#f9f3fd;}
-    .q-title{font-size:8.5pt;font-weight:700;color:#2c2c2c;margin:6pt 0 3pt;}
-    .pdf-type-badge{display:inline-block;padding:2pt 10pt;border-radius:3pt;font-size:8pt;font-weight:700;margin-bottom:6pt;}
-    .badge-interview{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
-    .badge-final{background:#d4edda;color:#155724;border:1px solid #28a745;}
-    .stamp-area{display:flex;gap:8pt;margin-top:8pt;}
-    .stamp-box{border:1px solid #bbb;width:48pt;height:36pt;text-align:center;font-size:6.5pt;color:#888;padding-top:4pt;}
-    @media print{
-      body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-      @page{size:A4 portrait;margin:8mm 10mm;}
-    }
+    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:9pt;color:#000;background:#fff;}
+    .page{padding:8mm 10mm;}
+    .doc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6pt;border-bottom:2px solid #2c2c2c;padding-bottom:4pt;}
+    .doc-title{font-size:14pt;font-weight:900;color:#2c2c2c;}
+    .badge{display:inline-block;padding:2pt 8pt;border-radius:3pt;font-size:7.5pt;font-weight:700;}
+    .badge-i{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+    .badge-f{background:#d4edda;color:#155724;border:1px solid #28a745;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{border:1px solid #bbb;padding:3pt 4pt;font-size:8pt;vertical-align:middle;}
+    th{background:#f0ede8;font-weight:700;text-align:center;}
+    .lbl{background:#f0ede8;font-weight:700;width:18%;}
+    .sec-title{background:#2c2c2c;color:#fff;font-size:9.5pt;font-weight:900;padding:3pt 7pt;margin:7pt 0 0;letter-spacing:.04em;}
+    .item-name{font-weight:700;font-size:7.5pt;}
+    .criteria{font-size:6.5pt;color:#555;line-height:1.4;}
+    .score-c{text-align:center;font-weight:900;font-size:10pt;width:7%;}
+    .score-blank{text-align:center;color:#ddd;font-size:7pt;width:7%;}
+    .w-col{text-align:center;color:#888;font-size:7.5pt;width:5%;}
+    .num-r{text-align:right;}
+    .rate-cell{text-align:center;font-weight:700;}
+    .text-box{border:1px solid #bbb;padding:4pt 5pt;font-size:8pt;white-space:pre-wrap;line-height:1.7;min-height:38pt;background:#fafafa;}
+    .fb-box{border:2px solid #8e44ad;padding:5pt;font-size:8pt;white-space:pre-wrap;line-height:1.7;min-height:45pt;background:#f9f3fd;}
+    .total-table td{padding:4pt 6pt;font-size:9pt;}
+    .rank-box{background:#2c2c2c;color:#fff;font-size:12pt;font-weight:900;padding:4pt 12pt;border-radius:4pt;display:inline-block;}
+    .stamp-row{display:flex;gap:6pt;margin-top:6pt;}
+    .stamp-box{border:1px solid #bbb;width:44pt;height:34pt;text-align:center;font-size:6pt;color:#888;padding-top:3pt;}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}@page{size:A4 portrait;margin:7mm 8mm;}}
   </style></head><body><div class="page">
-  <div class="doc-title">${getRoleLabel(member.role)} 評価シート</div>
-  <div class="doc-sub">${periodKey}</div>
-  <div class="pdf-type-badge ${showFull?'badge-final':'badge-interview'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（1次・確定欄は空白）'}</div>
-  <table class="info-table">
+
+  <div class="doc-header">
+    <div class="doc-title">${getRoleLabel(member.role)} 評価シート</div>
+    <div>
+      <span class="badge ${showFull?'badge-f':'badge-i'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（1次・確定欄は空白）'}</span>
+    </div>
+  </div>
+
+  <table style="margin-bottom:6pt;">
     <tr>
-      <td class="lbl">氏名</td><td style="font-weight:700;font-size:10pt;">${member.name}</td>
-      <td class="lbl">所属店舗</td><td>${member.store}</td>
+      <td class="lbl">氏名</td><td style="font-weight:700;font-size:10pt;" colspan="3">${member.name}</td>
+      <td class="lbl">評価期間</td><td colspan="3">${periodKey}</td>
     </tr>
     <tr>
-      <td class="lbl">評価期間</td><td>${periodKey}</td>
-      <td class="lbl">提出日時</td><td style="font-size:7.5pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+      <td class="lbl">所属店舗</td><td colspan="3">${member.store}</td>
+      <td class="lbl">提出日時</td><td colspan="3" style="font-size:7pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+    </tr>
+  </table>
+
+  <!-- 定量評価 -->
+  <div class="sec-title">▼ 定量評価（数字の目標）　配点: ${roleData.quantitative}点</div>
+  <table>
+    <tr>
+      <th style="width:22%;">項目</th>
+      <th style="width:18%;">目標</th>
+      <th style="width:18%;">実績</th>
+      <th style="width:12%;">達成率</th>
+      <th style="width:20%;">達成率→評価得点</th>
+      <th style="width:10%;">評価得点</th>
+    </tr>`;
+
+  QUANT_ITEMS.forEach((item, idx) => {
+    const target = sq[item.id+'_target'] || '';
+    const actual = sq[item.id+'_actual'] || '';
+    const rate = formatRate(target, actual);
+    const qscore = quantScores[idx];
+    const scoreDisp = qscore !== null ? `<span style="font-weight:900;color:${colorMap[qscore]||'#000'}">${qscore}</span>` : '-';
+    body += `<tr>
+      <td class="item-name">${item.name}</td>
+      <td class="num-r">${formatQuantValue(target, item.format)}</td>
+      <td class="num-r">${formatQuantValue(actual, item.format)}</td>
+      <td class="rate-cell">${rate}</td>
+      <td style="font-size:6.5pt;color:#555;">${idx===0?'110%以上=5、105〜109%=4、100〜104%=3、95〜99%=2、94%以下=1':''}</td>
+      <td class="score-c">${scoreDisp}</td>
+    </tr>`;
+  });
+
+  body += `<tr>
+    <td colspan="5" style="text-align:right;font-weight:700;background:#f5f2ee;">定量得点:</td>
+    <td class="score-c" style="font-weight:900;font-size:11pt;">${quantTotal||'-'}</td>
+  </tr></table>`;
+
+  // 定性評価
+  body += `<div class="sec-title">▼ 定性評価（行動マトリクス）　配点: ${roleData.qualitative}点</div>
+  <table>
+    <tr>
+      <th style="width:15%;">カテゴリ</th>
+      <th style="width:16%;">評価項目</th>
+      <th style="width:42%;">具体的な行動基準 (期待レベル＝3点)</th>
+      <th style="width:5%;">配点</th>
+      <th style="width:7%;">自己</th>
+      <th style="width:7%;">1次</th>
+      <th style="width:8%;">確定(2次)</th>
+    </tr>`;
+
+  roleData.categories.forEach((cat, ci) => {
+    cat.items.forEach((item, ii) => {
+      const s = scores[item.id];
+      const fs = firstScores[item.id];
+      const ss = secondScores[item.id];
+      const selfDisp = s!==undefined ? `<span style="font-weight:900;color:${colorMap[s]||'#000'}">${s}</span>` : '-';
+      const firstDisp = fs!==undefined ? `<span style="font-weight:900;color:${colorMap[fs]||'#000'}">${fs}</span>` : '';
+      const secondDisp = ss!==undefined ? `<span style="font-weight:900;color:${colorMap[ss]||'#000'}">${ss}</span>` : '';
+      body += `<tr>
+        ${ii===0?`<td class="item-name" rowspan="${cat.items.length}" style="text-align:center;background:#faf8f5;">${cat.name}<br><span style="font-size:6.5pt;color:#888;">(${cat.allocation}点)</span></td>`:''}
+        <td class="item-name">${item.name}</td>
+        <td class="criteria">${item.criteria}</td>
+        <td class="w-col">${item.w}</td>
+        <td class="score-c">${selfDisp}</td>
+        <td class="score-c">${showFull?firstDisp:''}</td>
+        <td class="score-c">${showFull?secondDisp:''}</td>
+      </tr>`;
+    });
+    // カテゴリ小計行
+    const catSelfScore = (() => {
+      const items = cat.items;
+      const wSum = items.reduce((a,b)=>a+b.w,0);
+      let wScoreSum = 0; let cnt = 0;
+      items.forEach(item=>{ if(scores[item.id]!==undefined){wScoreSum+=scores[item.id]*item.w;cnt++;} });
+      if(cnt===0) return '-';
+      return Math.round((wScoreSum/wSum)/5*cat.allocation*10)/10;
+    })();
+    body += `<tr style="background:#f5f2ee;">
+      <td colspan="6" style="text-align:right;font-weight:700;font-size:7.5pt;">${cat.name} 小計（${cat.allocation}点）</td>
+      <td class="score-c" style="font-weight:900;">${catSelfScore}</td>
+    </tr>`;
+  });
+
+  body += `<tr>
+    <td colspan="6" style="text-align:right;font-weight:700;background:#f0ede8;">定性得点:</td>
+    <td class="score-c" style="font-weight:900;font-size:11pt;">${showFull?(qualTotal||'-'):(qualSelf||'-')}</td>
+  </tr></table>`;
+
+  // 総合評価
+  body += `<div class="sec-title">▼ 総合評価結果</div>
+  <table class="total-table" style="margin-bottom:6pt;">
+    <tr>
+      <th style="width:25%;">定量得点（${roleData.quantitative}点）</th>
+      <th style="width:25%;">定性得点（${roleData.qualitative}点）</th>
+      <th style="width:25%;">総合得点</th>
+      <th style="width:25%;">評価ランク</th>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:900;font-size:12pt;">${quantTotal||'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:12pt;">${showFull?(qualTotal||'-'):(qualSelf||'-')}</td>
+      <td style="text-align:center;font-weight:900;font-size:13pt;">${totalScore||'-'}</td>
+      <td style="text-align:center;">${showFull&&rankResult?`<span class="rank-box">${rankResult}</span>`:'-'}</td>
     </tr>
   </table>`;
 
-  // 評価項目テーブル
-  roleData.categories.forEach(cat => {
-    body += `<div class="section">
-      <div class="section-title">${cat.name}　（配点 ${cat.allocation}点）</div>
-      <table class="eval-table">
-        <tr>
-          <th style="width:16%;">評価項目</th>
-          <th style="width:48%;">期待される行動（3点基準）</th>
-          <th style="width:9%;">自己評価</th>
-          <th style="width:9%;">1次評価</th>
-          <th style="width:9%;">確定点数</th>
-          <th style="width:9%;">配点割合</th>
-        </tr>`;
-    cat.items.forEach(item => {
-      const s = scores[item.id];
-      const selfScore = s ? `<span class="s${s}">${s}</span>` : '<span style="color:#ccc;">-</span>';
-      body += `<tr>
-        <td class="item-name">${item.name}</td>
-        <td class="criteria-text">${item.criteria}</td>
-        <td class="score-cell">${selfScore}</td>
-        <td class="score-blank">${showFull?'':''}</td>
-        <td class="score-blank">${showFull?'':''}</td>
-        <td class="score-cell" style="font-size:9pt;font-weight:700;color:#888;">${item.w}</td>
-      </tr>`;
-    });
-    body += '</table></div>';
-  });
-
   // 振り返り欄
-  body += `<div class="section">
-    <div class="section-title">本人の振り返り・報告</div>
-    <div style="padding:6pt 0 2pt;">
-      <div class="q-title">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
-      <div class="text-box">${(ev&&ev.q1)||''}</div>
-      <div class="q-title">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
-      <div class="text-box">${(ev&&ev.q2)||''}</div>
-    </div>
+  body += `<div class="sec-title">▼ 本人の振り返り・報告</div>
+  <div style="padding:3pt 0 3pt;">
+    <div style="font-size:7.5pt;font-weight:700;margin:4pt 0 2pt;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+    <div class="text-box">${(ev&&ev.q1)||''}</div>
+    <div style="font-size:7.5pt;font-weight:700;margin:4pt 0 2pt;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+    <div class="text-box">${(ev&&ev.q2)||''}</div>
   </div>`;
 
   // フィードバック欄
-  body += `<div class="section">
-    <div class="section-title">評価者からのフィードバックコメント</div>
-    <div style="padding:4pt 0;">
-      <div class="feedback-box">${(showFull && hasFeedback) ? ev.feedback : ''}</div>
-      ${showFull && ev&&ev.feedbackAt?`<div style="font-size:7pt;color:#888;text-align:right;margin-top:3pt;">入力日時: ${new Date(ev.feedbackAt).toLocaleString('ja-JP')}</div>`:''}
-    </div>
+  body += `<div class="sec-title">▼ 評価者からのフィードバックコメント</div>
+  <div style="padding:3pt 0;">
+    <div class="fb-box">${(showFull&&hasFeedback)?ev.feedback:''}</div>
   </div>`;
 
-  // 押印欄（面談用のみ）
-  if (!showFull) {
-    body += `<div class="stamp-area">
-      <div class="stamp-box">本人</div>
-      <div class="stamp-box">第１評価者</div>
-      <div class="stamp-box">第２評価者</div>
-      <div class="stamp-box">代表取締役</div>
-    </div>`;
-  }
+  // 押印欄
+  body += `<div class="stamp-row">
+    <div class="stamp-box">本人</div>
+    <div class="stamp-box">第１評価者</div>
+    <div class="stamp-box">第２評価者</div>
+    <div class="stamp-box">代表取締役</div>
+  </div>`;
 
-  body += '</div>';
-  body += '<scr'+'ipt>document.addEventListener(\'DOMContentLoaded\',function(){setTimeout(function(){window.print();},600);});</scr'+'ipt>';
+  body += `</div>`;
+  body += "<scr"+"ipt>setTimeout(function(){window.print();},600);</scr"+"ipt>";
   body += '</body></html>';
 
   win.document.write(body);
@@ -1466,6 +1737,7 @@ function showAdminPeriods() {
   const db=getDB();
   const periods=Object.keys(db.periods||{});
   const suggestion=getCurrentPeriodSuggestion();
+  const stores=['埼玉入間店','川越インター店'];
 
   let html=`<div class="settings-card"><h3>📅 新しい評価期を開始</h3>
     <p class="text-sm text-muted" style="margin-bottom:12px;">新しい期を作成すると、全スタッフの評価入力がリセットされます（過去の期データは保持されます）。</p>
@@ -1474,6 +1746,45 @@ function showAdminPeriods() {
     </div>
     <button class="btn btn-primary" onclick="startNewPeriod()">🆕 この期を開始する</button>
   </div>`;
+
+  // 定量評価入力（現在の期）
+  if (db.currentPeriod) {
+    html += `<div class="settings-card"><h3>📊 定量評価 目標・実績入力（${db.currentPeriod}）</h3>
+      <p class="text-sm text-muted" style="margin-bottom:14px;">店舗ごとに目標値と実績値を入力してください。入力後は「保存」を押してください。</p>`;
+
+    stores.forEach(store => {
+      const sq = getStoreQuant(db.currentPeriod, store);
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:13px;font-weight:800;color:var(--c-dark);background:var(--c-gray-pale);padding:8px 12px;border-radius:8px;margin-bottom:10px;">🏪 ${store}</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <tr style="background:var(--c-gray-pale);">
+            <th style="padding:6px 8px;text-align:left;border:1px solid var(--c-gray-light);">項目</th>
+            <th style="padding:6px 8px;text-align:right;border:1px solid var(--c-gray-light);">目標値</th>
+            <th style="padding:6px 8px;text-align:right;border:1px solid var(--c-gray-light);">実績値</th>
+          </tr>`;
+      QUANT_ITEMS.forEach(item => {
+        const tid = `q_${store}_${item.id}_target`;
+        const aid = `q_${store}_${item.id}_actual`;
+        const tval = sq[item.id+'_target'] || '';
+        const aval = sq[item.id+'_actual'] || '';
+        const placeholder = item.format==='currency'?'例: 85000000':item.format==='percent'?'例: 0.58':'例: 4.3';
+        html += `<tr>
+          <td style="padding:6px 8px;border:1px solid var(--c-gray-light);font-weight:700;">${item.name}</td>
+          <td style="padding:4px;border:1px solid var(--c-gray-light);">
+            <input type="number" step="any" id="${tid}" value="${tval}" placeholder="${placeholder}"
+              style="width:100%;padding:4px 6px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;text-align:right;">
+          </td>
+          <td style="padding:4px;border:1px solid var(--c-gray-light);">
+            <input type="number" step="any" id="${aid}" value="${aval}" placeholder="${placeholder}"
+              style="width:100%;padding:4px 6px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;text-align:right;">
+          </td>
+        </tr>`;
+      });
+      html += `</table></div>`;
+    });
+
+    html += `<button class="btn btn-primary" onclick="saveQuantData()">💾 定量評価データを保存</button></div>`;
+  }
 
   if (periods.length>0) {
     html+=`<div class="settings-card"><h3>📚 過去の評価期一覧</h3>`;
@@ -1490,6 +1801,25 @@ function showAdminPeriods() {
   }
 
   document.getElementById('adminPeriods').innerHTML=html;
+}
+
+async function saveQuantData() {
+  const db = getDB();
+  const stores = ['埼玉入間店','川越インター店'];
+  if (!db.periods[db.currentPeriod].storeQuant) db.periods[db.currentPeriod].storeQuant = {};
+
+  stores.forEach(store => {
+    if (!db.periods[db.currentPeriod].storeQuant[store]) db.periods[db.currentPeriod].storeQuant[store] = {};
+    QUANT_ITEMS.forEach(item => {
+      const tval = document.getElementById(`q_${store}_${item.id}_target`)?.value;
+      const aval = document.getElementById(`q_${store}_${item.id}_actual`)?.value;
+      if (tval !== undefined) db.periods[db.currentPeriod].storeQuant[store][item.id+'_target'] = tval;
+      if (aval !== undefined) db.periods[db.currentPeriod].storeQuant[store][item.id+'_actual'] = aval;
+    });
+  });
+
+  const ok = await saveDB(db);
+  showToast(ok ? '✅ 定量評価データを保存しました' : '⚠️ ローカルに保存しました');
 }
 
 async function startNewPeriod() {
