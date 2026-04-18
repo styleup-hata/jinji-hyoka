@@ -850,7 +850,7 @@ function renderStep() {
   const scores = ev.scores || {};
   const criteria = SCORE_CRITERIA[user.role] || SCORE_CRITERIA.STAFF;
   const totalItems = items.length;
-  const totalSteps = totalItems + 2;
+  const totalSteps = totalItems + 3;
   const allDone = items.every(i => scores[i.id] !== undefined);
   const pct = Math.round(currentStep/totalSteps*100);
 
@@ -892,41 +892,37 @@ function renderStep() {
       </div>
     </div>`;
 
-  } else {
-    // Q2 + 完了画面
+  } else if (currentStep === totalItems + 1) {
+    // Q2入力画面
     const q2 = ev.q2||'';
-    const allScoresDone = items.every(i => scores[i.id] !== undefined);
-    const missingCount = items.filter(i => scores[i.id]===undefined).length;
-
     html += `<div class="eval-step-card">
       <div class="step-badge" style="margin-bottom:12px;">振り返り Q2</div>
       <div class="q-label">次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
       <textarea class="comment-textarea" id="q2Text" placeholder="目標や課題を入力してください...">${q2}</textarea>
       <div style="display:flex;gap:10px;margin-top:14px;">
         <button class="step-prev-btn" style="flex:1;" onclick="prevStep()">◀ 前へ</button>
-        <button class="btn btn-sage" style="flex:2;" onclick="saveQ2()">💾 保存する</button>
+        <button class="btn btn-sage" style="flex:2;" onclick="saveQ2AndNext()">次へ ▶</button>
       </div>
     </div>`;
 
-    if (allScoresDone) {
-      html += `<div class="complete-banner">
-        <div class="complete-banner-icon">🎉</div>
-        <div class="complete-banner-title">すべての入力が完了しました！</div>
-        <div class="complete-banner-sub">内容を確認して、準備ができたら提出ボタンを押してください。<br>提出後も内容の確認・見直しができます。</div>
-      </div>
-      <div class="submit-action-area">
-        <button class="btn btn-submit-final" onclick="submitEval()">✅ 提出する</button>
-        <button class="btn btn-review" onclick="currentStep=0;renderStep();">🔍 最初から見直す</button>
-      </div>`;
-    } else {
-      html += `<div class="card" style="margin:8px 10px;background:var(--c-yellow-pale);border:1px solid #d4b800;">
-        <div style="font-size:13px;font-weight:700;color:#7a6500;margin-bottom:8px;">⚠️ まだ ${missingCount}項目が未入力です</div>
-        <button class="btn btn-secondary" onclick="goToFirstMissing()">未入力の項目へ移動する</button>
-      </div>
-      <div class="submit-action-area">
-        <button class="btn btn-submit-final" onclick="submitEval()">✅ このまま提出する</button>
-      </div>`;
-    }
+  } else {
+    // 確認・提出画面（Q2保存後）
+    const allScoresDone = items.every(i => scores[i.id] !== undefined);
+    const missingCount = items.filter(i => scores[i.id]===undefined).length;
+
+    html += `<div class="complete-banner">
+      <div class="complete-banner-icon">${allScoresDone ? '🎉' : '⚠️'}</div>
+      <div class="complete-banner-title">${allScoresDone ? 'すべての入力が完了しました！' : `${missingCount}項目が未入力です`}</div>
+      <div class="complete-banner-sub">${allScoresDone
+        ? '内容を確認して、準備ができたら提出ボタンを押してください。<br>提出後も内容の確認・見直しができます。'
+        : '未入力の項目があります。このまま提出するか、戻って入力することができます。'
+      }</div>
+    </div>
+    <div class="submit-action-area">
+      ${!allScoresDone ? `<button class="btn btn-secondary" onclick="goToFirstMissing()">⬅️ 未入力の項目へ戻る</button>` : ''}
+      <button class="btn btn-submit-final" onclick="submitEval()">✅ 提出する</button>
+      <button class="btn btn-review" onclick="currentStep=0;renderStep();">🔍 最初から見直す</button>
+    </div>`;
   }
 
   document.getElementById('evalStepContent').innerHTML = html;
@@ -965,6 +961,16 @@ async function saveQ2() {
   renderStep();
 }
 
+async function saveQ2AndNext() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const text = document.getElementById('q2Text')?.value || '';
+  ev.q2 = text;
+  const ok = await saveDB(window._db);
+  showToast(ok?'💾 保存しました':'⚠️ ローカルに保存しました');
+  currentStep++;
+  renderStep();
+}
+
 async function saveEvalDraft() {
   const ev = getMemberEval(currentViewingPeriod, currentUser.id);
   const q1El=document.getElementById('q1Text'), q2El=document.getElementById('q2Text');
@@ -979,7 +985,7 @@ function showSubmitConfirm() {
   const items = getItemsFlat(currentUser.role);
   const scores = getMemberEval(currentViewingPeriod, currentUser.id).scores || {};
   const missing = items.filter(i=>scores[i.id]===undefined).length;
-  currentStep = items.length+1;
+  currentStep = items.length+2;
   renderStep();
 }
 
