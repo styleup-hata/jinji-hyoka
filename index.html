@@ -1323,225 +1323,211 @@ function printEvalSheet(member, ev, periodKey, showFull) {
   const effectiveScores = {};
   if (showFull) {
     getItemsFlat(member.role).forEach(item => {
-      if (secondScores[item.id] !== undefined) effectiveScores[item.id] = secondScores[item.id];
-      else if (firstScores[item.id] !== undefined) effectiveScores[item.id] = firstScores[item.id];
-      else if (scores[item.id] !== undefined) effectiveScores[item.id] = scores[item.id];
+      if (secondScores[item.id]!==undefined) effectiveScores[item.id]=secondScores[item.id];
+      else if (firstScores[item.id]!==undefined) effectiveScores[item.id]=firstScores[item.id];
+      else if (scores[item.id]!==undefined) effectiveScores[item.id]=scores[item.id];
     });
   }
   const qualTotal = showFull ? calcQualTotal(member.role, effectiveScores) : null;
-  const totalScore = showFull ? Math.round((quantTotal + qualTotal) * 10) / 10 : null;
+  const totalScore = showFull ? Math.round((quantTotal + qualTotal)*10)/10 : null;
   const rankResult = showFull && totalScore ? calcRank(member.role, totalScore) : null;
 
   const badgeStyle = showFull
     ? 'background:#d4edda;color:#155724;border:1px solid #28a745;'
     : 'background:#fff3cd;color:#856404;border:1px solid #ffc107;';
-  const badgeText = showFull ? '✅ 確認用' : '📋 面談用';
+  const badgeText = showFull ? '✅ 確認用（全項目）' : '📋 面談用（得点・ランクは面談後確定）';
 
-  const pageHeader = (pageNum) => `
-    <div class="page-header">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <span class="title-text">${getRoleLabel(member.role)} 評価シート</span>
-          <span class="header-sub">${member.name}　${member.store}　${periodKey}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8pt;">
-          <span style="font-size:8pt;color:#888;">${pageNum}</span>
-          <span style="display:inline-block;padding:2pt 8pt;border-radius:3pt;font-size:8pt;font-weight:700;${badgeStyle}">${badgeText}</span>
-        </div>
+  // A4固定幅：794px = 210mm at 96dpi
+  // 印刷時にブラウザが縮小しないよう、A4幅に合わせたピクセル設計
+  const mkHeader = (pg) => `
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #2c2c2c;padding-bottom:5px;margin-bottom:8px;">
+      <div>
+        <span style="font-size:16px;font-weight:900;color:#2c2c2c;">${getRoleLabel(member.role)} 評価シート</span>
+        <span style="margin-left:10px;font-size:11px;color:#555;font-weight:700;">${member.name}　${member.store}　${periodKey}</span>
       </div>
-      <div style="border-bottom:2px solid #2c2c2c;margin-top:3pt;"></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;color:#aaa;">${pg}</span>
+        <span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;${badgeStyle}">${badgeText}</span>
+      </div>
     </div>`;
 
   const win = window.open('','_blank');
   let body = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-  <title>${member.name} 評価シート - ${periodKey}</title>
+  <title>${member.name} 評価シート</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-
-    /* 画面表示用（見やすいサイズ） */
     body{
       font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
-      font-size:10pt;color:#000;background:#f5f5f5;
+      background:#888;
+      margin:0;padding:20px 0;
     }
-    .screen-wrap{max-width:800px;margin:0 auto;background:#fff;padding:10mm 12mm;}
-    .back-btn{display:inline-block;margin-bottom:10pt;padding:7pt 16pt;background:#2c2c2c;color:#fff;border:none;border-radius:6pt;font-size:11pt;cursor:pointer;font-family:inherit;}
-    .page-header{margin-bottom:6pt;}
-    .title-text{font-size:14pt;font-weight:900;color:#2c2c2c;}
-    .header-sub{margin-left:8pt;font-size:9pt;color:#555;font-weight:700;}
-    .page2-start{border-top:3px dashed #ccc;margin:20pt 0 16pt;padding-top:8pt;}
-    .page2-label{font-size:9pt;color:#aaa;text-align:center;margin-bottom:8pt;}
-    table{width:100%;border-collapse:collapse;margin-bottom:5pt;}
-    th,td{border:1px solid #aaa;padding:4pt 5pt;font-size:9pt;vertical-align:middle;}
+    /* A4固定幅ページ */
+    .a4page{
+      width:794px;
+      min-height:1123px;
+      background:#fff;
+      margin:0 auto 20px;
+      padding:28px 30px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.3);
+    }
+    .back-btn{
+      display:block;width:794px;margin:0 auto 12px;
+      padding:8px 18px;background:#2c2c2c;color:#fff;
+      border:none;border-radius:6px;font-size:13px;
+      cursor:pointer;font-family:inherit;text-align:left;
+    }
+    table{width:100%;border-collapse:collapse;margin-bottom:6px;}
+    th,td{border:1px solid #aaa;padding:5px 6px;font-size:11px;vertical-align:middle;}
     th{background:#f0ede8;font-weight:700;text-align:center;}
     .lbl{background:#f0ede8;font-weight:700;}
-    .sec{background:#2c2c2c;color:#fff;font-size:10pt;font-weight:900;padding:3.5pt 7pt;margin:5pt 0 0;letter-spacing:.03em;}
-    .item-n{font-weight:700;font-size:9pt;}
-    .crit{font-size:7.5pt;color:#444;line-height:1.45;}
-    .sc{text-align:center;font-weight:900;font-size:11pt;}
-    .w-c{text-align:center;color:#888;font-size:8pt;}
+    .sec{background:#2c2c2c;color:#fff;font-size:12px;font-weight:900;padding:4px 8px;margin:7px 0 0;letter-spacing:.03em;}
+    .item-n{font-weight:700;font-size:11px;}
+    .crit{font-size:9px;color:#444;line-height:1.5;}
+    .sc{text-align:center;font-weight:900;font-size:13px;}
+    .w-c{text-align:center;color:#888;font-size:10px;}
     .nr{text-align:right;}
     .rate{text-align:center;font-weight:700;}
     .sub-row{background:#f5f2ee;}
-    .tbox{border:1px solid #aaa;padding:5pt 6pt;font-size:9pt;white-space:pre-wrap;line-height:1.7;min-height:42pt;background:#fafafa;}
-    .fbbox{border:2px solid #8e44ad;padding:5pt;font-size:9pt;white-space:pre-wrap;line-height:1.7;min-height:50pt;background:#f9f3fd;}
-    .rank-box{background:#2c2c2c;color:#fff;font-size:14pt;font-weight:900;padding:3pt 14pt;border-radius:4pt;display:inline-block;}
+    .tbox{border:1px solid #aaa;padding:6px;font-size:11px;white-space:pre-wrap;line-height:1.7;min-height:50px;background:#fafafa;}
+    .fbbox{border:2px solid #8e44ad;padding:6px;font-size:11px;white-space:pre-wrap;line-height:1.7;min-height:60px;background:#f9f3fd;}
+    .rank-box{background:#2c2c2c;color:#fff;font-size:16px;font-weight:900;padding:4px 16px;border-radius:4px;display:inline-block;}
+    .cat-cell{text-align:center;font-size:10px;font-weight:700;background:#faf8f5;}
 
-    /* 印刷用 - ここが最重要 */
     @media print{
-      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+      body{background:#fff;padding:0;margin:0;}
+      .back-btn{display:none!important;}
+      .a4page{
+        width:100%;
+        min-height:0;
+        margin:0;
+        padding:12mm 12mm;
+        box-shadow:none;
+        page-break-after:always;
+      }
+      .a4page:last-child{page-break-after:auto;}
       @page{
         size:A4 portrait;
-        margin:10mm 10mm;  /* 余白を統一 */
-      }
-      body{
-        font-size:11pt;  /* 印刷時は大きめ */
-        background:#fff;
-        margin:0;padding:0;
-      }
-      .screen-wrap{
-        max-width:100%;
-        padding:0;
         margin:0;
       }
-      .back-btn{display:none!important;}
-      .page2-start{display:none;}
-      .page2-label{display:none;}
-      /* 2ページ目は改ページ */
-      .page2-print{
-        break-before:page;
-        page-break-before:always;
-      }
-      /* 行がページをまたぐのを防ぐ */
-      tr{break-inside:avoid;page-break-inside:avoid;}
-      /* 印刷時のフォントサイズ調整 */
-      th,td{font-size:10pt;padding:4pt 5pt;}
-      .title-text{font-size:15pt;}
-      .header-sub{font-size:10pt;}
-      .sec{font-size:11pt;}
-      .item-n{font-size:10pt;}
-      .crit{font-size:8.5pt;line-height:1.5;}
-      .sc{font-size:12pt;}
-      .w-c{font-size:9pt;}
-      .tbox,.fbbox{font-size:10pt;}
-      .rank-box{font-size:15pt;}
+      table{margin-bottom:5px;}
+      th,td{font-size:11px;padding:4px 5px;}
+      .sec{font-size:11px;}
+      .item-n{font-size:11px;}
+      .crit{font-size:9px;}
+      .sc{font-size:13px;}
+      .tbox,.fbbox{font-size:11px;}
     }
   </style></head><body>
-  <div class="screen-wrap">
-  <button class="back-btn" onclick="window.close()">◀ 閉じる</button>
+  <button class="back-btn" onclick="window.close()">◀ 閉じる / 戻る</button>
 
   <!-- ===== 1ページ目 ===== -->
-  ${pageHeader('1 / 2')}
+  <div class="a4page">
+  ${mkHeader('1 / 2')}
 
-  <table style="margin-bottom:5pt;">
+  <table style="margin-bottom:6px;">
     <tr>
-      <td class="lbl" style="width:11%;">氏名</td>
-      <td style="font-weight:700;font-size:12pt;width:28%;">${member.name}</td>
-      <td class="lbl" style="width:11%;">評価期間</td>
-      <td style="width:22%;">${periodKey}</td>
+      <td class="lbl" style="width:10%;">氏名</td>
+      <td style="font-weight:700;font-size:13px;width:28%;">${member.name}</td>
+      <td class="lbl" style="width:10%;">評価期間</td>
+      <td style="width:20%;">${periodKey}</td>
     </tr>
     <tr>
       <td class="lbl">所属店舗</td><td>${member.store}</td>
       <td class="lbl">提出日時</td>
-      <td style="font-size:7.5pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+      <td style="font-size:9px;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
     </tr>
   </table>
 
   <div class="sec">▼ 定量評価（数字の目標）　配点: ${roleData.quantitative}点</div>
   <table>
     <tr>
-      <th style="width:18%;">項目</th>
-      <th style="width:16%;">目標</th>
-      <th style="width:16%;">実績</th>
+      <th style="width:17%;">項目</th>
+      <th style="width:15%;">目標</th>
+      <th style="width:15%;">実績</th>
       <th style="width:10%;">達成率</th>
-      <th style="width:27%;">達成率→評価得点</th>
+      <th style="width:30%;">達成率→評価得点</th>
       <th style="width:13%;">評価得点</th>
     </tr>`;
 
   QUANT_ITEMS.forEach((item, idx) => {
-    const target = sq[item.id+'_target'] || '';
-    const actual = sq[item.id+'_actual'] || '';
+    const target = sq[item.id+'_target']||'';
+    const actual = sq[item.id+'_actual']||'';
     const rate = formatRate(target, actual);
     const qs = quantScores[idx];
-    const scoreDisp = qs !== null ? `<span style="font-weight:900;color:${cm[qs]||'#000'}">${qs}</span>` : '-';
-    const rateCell = idx === 0
-      ? `<td class="crit" rowspan="${QUANT_ITEMS.length}" style="text-align:center;line-height:2.0;">110%以上 ＝ 5<br>105〜109% ＝ 4<br>100〜104% ＝ 3<br>95〜99% ＝ 2<br>94%以下 ＝ 1</td>`
-      : '';
+    const sd = qs!==null?`<span style="font-weight:900;color:${cm[qs]}">${qs}</span>`:'-';
+    const rc = idx===0
+      ?`<td class="crit" rowspan="${QUANT_ITEMS.length}" style="text-align:center;line-height:2.0;">110%以上 ＝ 5<br>105〜109% ＝ 4<br>100〜104% ＝ 3<br>95〜99% ＝ 2<br>94%以下 ＝ 1</td>`
+      :'';
     body += `<tr>
       <td class="item-n">${item.name}</td>
-      <td class="nr">${formatQuantValue(target, item.format)}</td>
-      <td class="nr">${formatQuantValue(actual, item.format)}</td>
+      <td class="nr">${formatQuantValue(target,item.format)}</td>
+      <td class="nr">${formatQuantValue(actual,item.format)}</td>
       <td class="rate">${rate}</td>
-      ${rateCell}
-      <td class="sc">${scoreDisp}</td>
+      ${rc}
+      <td class="sc">${sd}</td>
     </tr>`;
   });
 
   body += `<tr class="sub-row">
     <td colspan="4" style="text-align:right;font-weight:700;">定量得点:</td>
-    <td class="sc" style="font-size:12pt;" colspan="2">${quantTotal||'-'}</td>
+    <td class="sc" style="font-size:14px;" colspan="2">${quantTotal||'-'}</td>
   </tr></table>
 
   <div class="sec">▼ 定性評価（行動マトリクス）　配点: ${roleData.qualitative}点</div>
   <table>
     <tr>
-      <th style="width:13%;">評価項目</th>
-      <th style="width:43%;">期待される行動（3点基準）</th>
+      <th style="width:12%;">カテゴリ</th>
+      <th style="width:14%;">評価項目</th>
+      <th style="width:42%;">期待される行動（3点基準）</th>
       <th style="width:5%;">配点</th>
-      <th style="width:10%;">自己評価</th>
-      <th style="width:10%;">1次評価</th>
-      <th style="width:10%;">確定(2次)</th>
-      <th style="width:9%;">カテゴリ</th>
+      <th style="width:9%;">自己評価</th>
+      <th style="width:9%;">1次評価</th>
+      <th style="width:9%;">確定(2次)</th>
     </tr>`;
 
   roleData.categories.forEach((cat) => {
     const wSum = cat.items.reduce((a,b)=>a+b.w,0);
-    let wSelf=0, cntSelf=0;
-    cat.items.forEach(item=>{if(scores[item.id]!==undefined){wSelf+=scores[item.id]*item.w;cntSelf++;}});
-    const catSelf = cntSelf>0 ? Math.round((wSelf/wSum)/5*cat.allocation*10)/10 : null;
-    let wEff=0, cntEff=0;
-    if (showFull) cat.items.forEach(item=>{
-      const v=effectiveScores[item.id];if(v!==undefined){wEff+=v*item.w;cntEff++;}
-    });
-    const catEff = showFull&&cntEff>0 ? Math.round((wEff/wSum)/5*cat.allocation*10)/10 : null;
+    let wSelf=0,cntS=0;
+    cat.items.forEach(item=>{if(scores[item.id]!==undefined){wSelf+=scores[item.id]*item.w;cntS++;}});
+    const catSelf = cntS>0?Math.round((wSelf/wSum)/5*cat.allocation*10)/10:null;
+    let wEff=0,cntE=0;
+    if(showFull) cat.items.forEach(item=>{const v=effectiveScores[item.id];if(v!==undefined){wEff+=v*item.w;cntE++;}});
+    const catEff = showFull&&cntE>0?Math.round((wEff/wSum)/5*cat.allocation*10)/10:null;
 
-    cat.items.forEach((item, ii) => {
-      const s=scores[item.id], fs=firstScores[item.id], ss=secondScores[item.id];
-      const sd=s!==undefined?`<span style="color:${cm[s]};font-weight:900;">${s}</span>`:'-';
-      const fd=showFull&&fs!==undefined?`<span style="color:${cm[fs]};font-weight:900;">${fs}</span>`:'';
-      const ssd=showFull&&ss!==undefined?`<span style="color:${cm[ss]};font-weight:900;">${ss}</span>`:'';
-      const catCell=ii===0
-        ?`<td class="item-n" rowspan="${cat.items.length}" style="text-align:center;font-size:8.5pt;background:#faf8f5;">${cat.name}<br><span style="font-size:7pt;font-weight:400;color:#888;">(${cat.allocation}点)</span></td>`
+    cat.items.forEach((item,ii)=>{
+      const s=scores[item.id],fs=firstScores[item.id],ss=secondScores[item.id];
+      const sd=s!==undefined?`<span style="color:${cm[s]};font-weight:900;font-size:13px;">${s}</span>`:'-';
+      const fd=showFull&&fs!==undefined?`<span style="color:${cm[fs]};font-weight:900;font-size:13px;">${fs}</span>`:'';
+      const ssd=showFull&&ss!==undefined?`<span style="color:${cm[ss]};font-weight:900;font-size:13px;">${ss}</span>`:'';
+      const catTd=ii===0
+        ?`<td class="cat-cell" rowspan="${cat.items.length}" style="font-size:10px;">${cat.name}<br><span style="font-size:9px;font-weight:400;color:#888;">(${cat.allocation}点)</span></td>`
         :'';
-      body += `<tr>
-        <td class="item-n" style="font-size:8.5pt;">${item.name}</td>
+      body+=`<tr>
+        ${catTd}
+        <td class="item-n">${item.name}</td>
         <td class="crit">${item.criteria}</td>
         <td class="w-c">${item.w}</td>
         <td style="text-align:center;">${sd}</td>
         <td style="text-align:center;">${fd}</td>
         <td style="text-align:center;">${ssd}</td>
-        ${catCell}
       </tr>`;
     });
-    body += `<tr class="sub-row">
-      <td colspan="5" style="text-align:right;font-weight:700;font-size:8.5pt;">${cat.name} 小計（${cat.allocation}点）</td>
-      <td style="text-align:center;font-weight:900;font-size:11pt;">${catSelf||'-'}</td>
-      <td style="text-align:center;font-weight:900;font-size:11pt;">${showFull?(catEff||'-'):'-'}</td>
+    body+=`<tr class="sub-row">
+      <td colspan="5" style="text-align:right;font-weight:700;font-size:10px;">${cat.name} 小計（${cat.allocation}点）</td>
+      <td style="text-align:center;font-weight:900;font-size:13px;">${catSelf||'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:13px;">${showFull?(catEff||'-'):'-'}</td>
     </tr>`;
   });
 
-  body += `</table>
-
-  <!-- 画面表示用の区切り線（印刷時は非表示） -->
-  <div class="page2-start">
-    <div class="page2-label">── 2ページ目（印刷時は自動改ページ） ──</div>
+  body+=`</table>
   </div>
 
   <!-- ===== 2ページ目 ===== -->
-  <div class="page2-print">
-  ${pageHeader('2 / 2')}
+  <div class="a4page">
+  ${mkHeader('2 / 2')}
 
   <div class="sec">▼ 総合評価結果</div>
-  <table style="margin-bottom:10pt;">
+  <table style="margin-bottom:12px;">
     <tr>
       <th style="width:25%;">定量得点（${roleData.quantitative}点）</th>
       <th style="width:25%;">定性得点（${roleData.qualitative}点）</th>
@@ -1549,27 +1535,25 @@ function printEvalSheet(member, ev, periodKey, showFull) {
       <th style="width:25%;">評価ランク</th>
     </tr>
     <tr>
-      <td style="text-align:center;font-weight:900;font-size:15pt;">${quantTotal||'-'}</td>
-      <td style="text-align:center;font-weight:900;font-size:15pt;">${showFull?(qualTotal||'-'):'-'}</td>
-      <td style="text-align:center;font-weight:900;font-size:15pt;">${showFull?(totalScore||'-'):'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:18px;">${quantTotal||'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:18px;">${showFull?(qualTotal||'-'):'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:18px;">${showFull?(totalScore||'-'):'-'}</td>
       <td style="text-align:center;">${showFull&&rankResult?`<span class="rank-box">${rankResult}</span>`:'-'}</td>
     </tr>
   </table>
 
   <div class="sec">▼ 本人の振り返り・報告</div>
-  <div style="padding:4pt 0 6pt;">
-    <div style="font-size:9pt;font-weight:700;margin:4pt 0 3pt;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+  <div style="padding:5px 0 6px;">
+    <div style="font-size:10px;font-weight:700;margin:5px 0 3px;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
     <div class="tbox">${(ev&&ev.q1)||''}</div>
-    <div style="font-size:9pt;font-weight:700;margin:8pt 0 3pt;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+    <div style="font-size:10px;font-weight:700;margin:8px 0 3px;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
     <div class="tbox">${(ev&&ev.q2)||''}</div>
   </div>
 
   <div class="sec">▼ 評価者からのフィードバックコメント</div>
-  <div style="padding:4pt 0 2pt;">
+  <div style="padding:5px 0 2px;">
     <div class="fbbox">${(showFull&&hasFeedback)?ev.feedback:''}</div>
   </div>
-  </div>
-
   </div>`;
 
   body += "<scr"+"ipt>setTimeout(function(){window.print();},600);</scr"+"ipt>";
