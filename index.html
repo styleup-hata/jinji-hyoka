@@ -4,134 +4,1553 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>動作テスト</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>人事評価システム | スタイルアップ</title>
 <style>
-body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-select, input { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 10px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-button { padding: 12px 20px; font-size: 16px; margin: 4px; border: 1px solid #ccc; border-radius: 8px; background: #eee; cursor: pointer; }
-.pin-btn { width: 30%; height: 52px; font-size: 22px; font-weight: bold; }
-#log { background: white; padding: 10px; border-radius: 8px; margin-top: 10px; min-height: 60px; font-size: 13px; }
+:root{--c-bg:#f7f6f3;--c-dark:#2c2c2c;--c-gray:#8a8582;--c-gray-light:#e8e5e0;--c-gray-pale:#f0ede8;--c-salmon:#e8967a;--c-salmon-dark:#d4785e;--c-sage:#8fb89a;--c-sage-dark:#6d9e7a;--c-blue:#7aa5c8;--c-yellow-pale:#f0e8c0;--c-white:#fff;--c-text:#2c2c2c;--c-muted:#8a8582;--c-purple:#8e44ad;--c-red:#c0392b;--c-orange:#e67e22;--radius:12px;--shadow:0 2px 12px rgba(44,44,44,.08);--shadow-lg:0 4px 24px rgba(44,44,44,.12);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:var(--c-bg);color:var(--c-text);min-height:100vh;}
+.view{display:none;}.view.active{display:block;}
+#loginView{min-height:100vh;background:var(--c-dark);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+#loginView.active{display:flex;}
+.app-header{background:var(--c-dark);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.app-logo-img{height:32px;width:auto;}
+.app-header-title{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;}
+.period-badge{background:var(--c-salmon);color:#fff;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:800;margin-right:6px;}
+.login-logo-area{text-align:center;margin-bottom:28px;}
+.login-logo-area img{height:80px;width:auto;display:block;margin:0 auto 14px;}
+.login-logo-area h1{color:#fff;font-size:18px;font-weight:700;margin-bottom:4px;}
+.login-logo-area .company{color:var(--c-gray);font-size:12px;}
+.login-box{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:var(--shadow-lg);}
+.form-label{font-size:11px;font-weight:700;color:var(--c-muted);margin-bottom:6px;display:block;letter-spacing:.08em;text-transform:uppercase;}
+.form-select,.form-input{width:100%;padding:12px 14px;border:2px solid var(--c-gray-light);border-radius:10px;font-size:15px;font-family:inherit;color:var(--c-text);background:var(--c-gray-pale);appearance:none;-webkit-appearance:none;margin-bottom:16px;outline:none;transition:border-color .2s;}
+.form-select:focus,.form-input:focus{border-color:var(--c-salmon);background:#fff;}
+.pin-display{display:flex;gap:10px;justify-content:center;margin-bottom:16px;}
+.pin-dot{width:46px;height:46px;border-radius:12px;background:var(--c-gray-pale);border:2px solid var(--c-gray-light);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--c-dark);transition:all .15s;}
+.pin-dot.filled{background:var(--c-salmon);border-color:var(--c-salmon-dark);color:#fff;}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.pin-key{background:var(--c-gray-pale);border:1px solid var(--c-gray-light);border-radius:12px;height:52px;font-size:20px;font-weight:700;cursor:pointer;color:var(--c-dark);transition:all .1s;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.pin-key:active{background:var(--c-salmon);color:#fff;border-color:var(--c-salmon);transform:scale(.93);}
+.pin-key.del{font-size:16px;color:var(--c-red);}
+.pin-key.empty{background:transparent;border-color:transparent;cursor:default;}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:all .15s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--c-salmon);color:#fff;}.btn-sage{background:var(--c-sage);color:#fff;}.btn-dark{background:var(--c-dark);color:#fff;}.btn-danger{background:var(--c-red);color:#fff;}.btn-secondary{background:var(--c-gray-light);color:var(--c-dark);}.btn-purple{background:var(--c-purple);color:#fff;}
+.btn-sm{width:auto;padding:8px 16px;font-size:12px;border-radius:8px;}
+.btn-submit-final{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;font-size:17px;padding:16px;box-shadow:0 4px 16px rgba(39,174,96,.4);animation:pulse-green 2s infinite;}
+.btn-review{background:linear-gradient(135deg,#2980b9,#3498db);color:#fff;font-size:15px;padding:14px;}
+@keyframes pulse-green{0%,100%{box-shadow:0 4px 16px rgba(39,174,96,.4);}50%{box-shadow:0 4px 24px rgba(39,174,96,.7);}}
+.card{background:#fff;border-radius:var(--radius);padding:18px;margin:10px 12px;box-shadow:var(--shadow);}
+.card-title{font-size:14px;font-weight:800;color:var(--c-dark);margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--c-gray-light);}
+.home-greeting{background:var(--c-dark);padding:20px;margin:10px 12px;border-radius:var(--radius);color:#fff;border-left:4px solid var(--c-salmon);}
+.hg-role{font-size:11px;color:var(--c-salmon);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.hg-name{font-size:22px;font-weight:800;margin-bottom:4px;}
+.hg-store{font-size:12px;color:var(--c-gray);}
+.hg-period{font-size:11px;color:var(--c-muted);margin-top:6px;}
+.status-badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-top:10px;}
+.s-draft{background:var(--c-yellow-pale);color:#7a6500;}.s-done{background:#d4edda;color:#155724;}.s-meeting{background:#d1ecf1;color:#0c5460;}.s-none{background:var(--c-gray-light);color:var(--c-gray);}
+.deadline-banner{background:var(--c-yellow-pale);border:1px solid #d4b800;border-radius:10px;padding:10px 14px;margin:0 12px 8px;font-size:13px;font-weight:600;color:var(--c-dark);}
+.deadline-banner.overdue{background:#fdecea;border-color:var(--c-red);color:var(--c-red);}
+.progress-bar-wrap{background:var(--c-gray-light);border-radius:6px;height:8px;margin:8px 0 4px;}
+.progress-bar{height:8px;border-radius:6px;background:var(--c-salmon);transition:width .3s;}
+.progress-label{font-size:11px;color:var(--c-muted);text-align:right;}
+.period-selector{background:var(--c-dark);margin:0 12px 10px;border-radius:var(--radius);padding:12px 14px;}
+.period-selector-label{font-size:10px;font-weight:800;color:var(--c-gray);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.period-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}
+.period-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);transition:all .15s;}
+.period-tab.active{background:var(--c-salmon);color:#fff;}
+.eval-step-card{background:#fff;border-radius:16px;padding:18px 16px;margin:8px 10px;box-shadow:var(--shadow-lg);}
+.step-badge{background:var(--c-salmon);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;letter-spacing:.05em;display:inline-block;margin-bottom:10px;}
+.step-category{font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.step-item-name{font-size:22px;font-weight:800;color:var(--c-dark);margin-bottom:12px;line-height:1.3;}
+.step-criteria-box{background:linear-gradient(135deg,#eef6f0,#e8f4eb);border-radius:12px;padding:14px 16px;margin-bottom:16px;border-left:4px solid var(--c-sage-dark);}
+.step-criteria-label{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--c-sage-dark);text-transform:uppercase;margin-bottom:6px;}
+.step-criteria-text{font-size:16px;font-weight:600;color:#1a3d25;line-height:1.65;}
+.select-hint{text-align:center;font-size:11px;color:var(--c-muted);margin-bottom:8px;}
+.score-btn-row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.score-select-btn{width:100%;border:2px solid var(--c-gray-light);border-radius:12px;padding:12px 14px;text-align:left;cursor:pointer;font-family:inherit;background:var(--c-gray-pale);transition:all .15s;display:flex;align-items:flex-start;gap:12px;}
+.score-select-btn:active{transform:scale(.98);}
+.score-select-btn.selected-1{background:#fdecea;border-color:var(--c-red);}.score-select-btn.selected-2{background:#fef0e6;border-color:var(--c-orange);}.score-select-btn.selected-3{background:#eaf2f8;border-color:var(--c-blue);}.score-select-btn.selected-4{background:#eaf5ee;border-color:var(--c-sage-dark);}.score-select-btn.selected-5{background:#f4ecf7;border-color:var(--c-purple);}
+.ssb-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;}
+.ssb-1{background:var(--c-red);}.ssb-2{background:var(--c-orange);}.ssb-3{background:var(--c-blue);}.ssb-4{background:var(--c-sage-dark);}.ssb-5{background:var(--c-purple);}
+.ssb-text{flex:1;}.ssb-label{font-size:11px;font-weight:700;color:var(--c-muted);margin-bottom:3px;}.ssb-desc{font-size:13px;color:var(--c-text);line-height:1.5;font-weight:500;}
+.complete-banner{background:linear-gradient(135deg,#1a5276,#2980b9);border-radius:14px;padding:20px;margin:10px 10px;color:#fff;text-align:center;}
+.complete-banner-icon{font-size:40px;margin-bottom:8px;}.complete-banner-title{font-size:18px;font-weight:800;margin-bottom:6px;}.complete-banner-sub{font-size:13px;opacity:.85;margin-bottom:16px;line-height:1.5;}
+.submit-action-area{display:flex;flex-direction:column;gap:10px;margin:0 10px 10px;}
+.step-prev-btn{width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--c-gray-light);color:var(--c-dark);transition:all .15s;margin-top:6px;}
+.step-prev-btn:disabled{opacity:.4;cursor:default;}
+.step-progress{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.step-progress-bar-wrap{flex:1;background:var(--c-gray-light);border-radius:4px;height:5px;}
+.step-progress-bar{height:5px;border-radius:4px;background:var(--c-salmon);transition:width .4s;}
+.step-progress-text{font-size:11px;font-weight:700;color:var(--c-muted);white-space:nowrap;}
+.comment-textarea{width:100%;border:2px solid var(--c-gray-light);border-radius:10px;padding:12px;font-size:14px;font-family:inherit;resize:vertical;min-height:110px;color:var(--c-text);outline:none;background:var(--c-gray-pale);transition:border-color .2s;}
+.comment-textarea:focus{border-color:var(--c-salmon);background:#fff;}
+.q-label{font-size:15px;font-weight:700;color:var(--c-dark);margin-bottom:10px;line-height:1.5;}
+.admin-tabs{display:flex;background:var(--c-gray-pale);border-radius:12px;padding:4px;margin:10px 12px;gap:4px;}
+.admin-tab{flex:1;padding:9px 4px;border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;background:transparent;color:var(--c-muted);transition:all .15s;}
+.admin-tab.active{background:#fff;color:var(--c-dark);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.member-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--c-gray-light);gap:10px;}
+.member-row:last-child{border-bottom:none;}
+.member-avatar{width:38px;height:38px;border-radius:50%;background:var(--c-dark);color:var(--c-salmon);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;}
+.member-info{flex:1;min-width:0;}.member-name{font-size:14px;font-weight:700;color:var(--c-dark);}.member-meta{font-size:11px;color:var(--c-muted);}
+.member-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn-icon{width:34px;height:34px;border:1px solid var(--c-gray-light);border-radius:8px;background:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.feedback-box{background:linear-gradient(135deg,#f4ecf7,#ede0f7);border-radius:12px;padding:14px;margin-bottom:12px;border-left:4px solid var(--c-purple);}
+.feedback-label{font-size:10px;font-weight:800;color:var(--c-purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.feedback-text{font-size:14px;color:#4a235a;line-height:1.6;white-space:pre-wrap;}
+.feedback-textarea{width:100%;border:2px solid var(--c-gray-light);border-radius:10px;padding:12px;font-size:14px;font-family:inherit;resize:vertical;min-height:140px;color:var(--c-text);outline:none;background:var(--c-gray-pale);transition:border-color .2s;}
+.feedback-textarea:focus{border-color:var(--c-purple);background:#fff;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--c-dark);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;transition:transform .3s;white-space:nowrap;border-left:4px solid var(--c-salmon);box-shadow:var(--shadow-lg);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--c-dark);border-top:1px solid rgba(255,255,255,.1);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;background:transparent;border:none;color:var(--c-gray);padding:10px 4px 8px;font-size:10px;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.nav-btn .nav-icon{font-size:20px;}.nav-btn.active{color:var(--c-salmon);}
+.pb-nav{padding-bottom:72px;}
+.section-heading{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--c-muted);padding:14px 20px 6px;}
+.text-sm{font-size:13px;}.text-muted{color:var(--c-muted);}.fw-bold{font-weight:700;}.mt-12{margin-top:12px;}.form-group{margin-bottom:14px;}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,44,44,.5);z-index:500;display:flex;align-items:center;justify-content:center;}
+.loading-overlay.hidden{display:none;}
+.loading-box{background:#fff;border-radius:16px;padding:24px 32px;text-align:center;font-weight:700;color:var(--c-dark);font-size:14px;}
+.loading-spin{width:36px;height:36px;border:3px solid var(--c-gray-light);border-top-color:var(--c-salmon);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.warning-banner{background:#fdecea;border:1px solid var(--c-red);border-radius:10px;padding:8px 12px;margin:0 12px 8px;font-size:12px;font-weight:700;color:var(--c-red);}
+.info-banner{background:#d1ecf1;border:1px solid #17a2b8;border-radius:10px;padding:8px 12px;margin:0 12px 8px;font-size:12px;font-weight:700;color:#0c5460;}
+.detail-score-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--c-gray-light);font-size:13px;}
+.detail-score-row:last-child{border-bottom:none;}
+.score-chip{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0;}
+.settings-card{background:#fff;border-radius:var(--radius);padding:16px;margin:8px 12px;box-shadow:var(--shadow);}
+.settings-card h3{font-size:14px;font-weight:800;color:var(--c-dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--c-gray-light);}
+.stat-box{flex:1;border-radius:10px;padding:10px;text-align:center;}
+.stat-num{font-size:22px;font-weight:900;}.stat-label{font-size:11px;font-weight:700;}
 </style>
 </head>
 <body>
-<h2>動作テスト</h2>
-<p id="status">初期化中...</p>
+<div class="loading-overlay hidden" id="loadingOverlay"><div class="loading-box"><div class="loading-spin"></div>データ通信中...</div></div>
+<div class="toast" id="toast"></div>
 
-<label>名前選択:</label>
-<select id="staffSelect"><option value="">読込中...</option></select>
-
-<label>PINテスト:</label>
-<div style="display:flex;gap:8px;margin-bottom:10px;">
-  <span id="pd0" style="width:40px;height:40px;border:2px solid #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:white;">_</span>
-  <span id="pd1" style="width:40px;height:40px;border:2px solid #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:white;">_</span>
-  <span id="pd2" style="width:40px;height:40px;border:2px solid #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:white;">_</span>
-  <span id="pd3" style="width:40px;height:40px;border:2px solid #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:white;">_</span>
+<div class="app-header" id="appHeader" style="display:none;">
+  <img src="logo.jpg" class="app-logo-img" alt="スタイルアップ">
+  <span class="period-badge" id="headerPeriod"></span>
+  <div class="app-header-title" id="headerTitle"></div>
+  <button class="btn-logout" onclick="logout()">ログアウト</button>
 </div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:240px;">
-  <button class="pin-btn" onclick="pinInput('1')">1</button>
-  <button class="pin-btn" onclick="pinInput('2')">2</button>
-  <button class="pin-btn" onclick="pinInput('3')">3</button>
-  <button class="pin-btn" onclick="pinInput('4')">4</button>
-  <button class="pin-btn" onclick="pinInput('5')">5</button>
-  <button class="pin-btn" onclick="pinInput('6')">6</button>
-  <button class="pin-btn" onclick="pinInput('7')">7</button>
-  <button class="pin-btn" onclick="pinInput('8')">8</button>
-  <button class="pin-btn" onclick="pinInput('9')">9</button>
-  <button class="pin-btn" onclick="pinClear()">C</button>
-  <button class="pin-btn" onclick="pinInput('0')">0</button>
-  <button class="pin-btn" onclick="pinDelete()">⌫</button>
-</div>
-<button onclick="doLogin()" style="width:100%;margin-top:10px;background:#e8967a;color:white;border:none;">ログイン</button>
 
-<div id="log">ログ: </div>
+<!-- LOGIN -->
+<div class="view active" id="loginView">
+  <div class="login-logo-area">
+    <img src="logo.jpg" alt="スタイルアップ">
+    <h1>人事評価システム</h1>
+    <div class="company">株式会社スタイルアップ</div>
+  </div>
+  <div class="login-box">
+    <div class="form-group">
+      <label class="form-label">ログイン種別</label>
+      <select class="form-select" id="loginType" onchange="onLoginTypeChange()">
+        <option value="staff">スタッフ</option>
+        <option value="admin">管理者</option>
+      </select>
+    </div>
+    <div id="staffLoginArea">
+      <div class="form-group">
+        <label class="form-label">名前を選んでください</label>
+        <select class="form-select" id="staffSelect"><option value="">-- 選択してください --</option></select>
+      </div>
+    </div>
+    <div id="adminLoginArea" style="display:none;">
+      <div style="background:var(--c-gray-pale);border-radius:8px;padding:10px;font-size:12px;color:var(--c-muted);margin-bottom:14px;">管理者専用ログインです</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PINコード（4桁）</label>
+      <div class="pin-display" id="pinDisplay">
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      </div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinInput('1')">1</button><button class="pin-key" onclick="pinInput('2')">2</button><button class="pin-key" onclick="pinInput('3')">3</button>
+      <button class="pin-key" onclick="pinInput('4')">4</button><button class="pin-key" onclick="pinInput('5')">5</button><button class="pin-key" onclick="pinInput('6')">6</button>
+      <button class="pin-key" onclick="pinInput('7')">7</button><button class="pin-key" onclick="pinInput('8')">8</button><button class="pin-key" onclick="pinInput('9')">9</button>
+      <button class="pin-key empty"></button><button class="pin-key" onclick="pinInput('0')">0</button><button class="pin-key del" onclick="pinDelete()">⌫</button>
+    </div>
+    <div id="loginError" style="color:var(--c-red);font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;display:none;">PINが正しくありません</div>
+    <button class="btn btn-primary" onclick="doLogin()">ログイン</button>
+  </div>
+</div>
+
+<!-- STAFF HOME -->
+<div class="view" id="homeView">
+  <div class="home-greeting">
+    <div class="hg-role" id="homeRole"></div>
+    <div class="hg-name" id="homeName"></div>
+    <div class="hg-store" id="homeStore"></div>
+    <div class="hg-period" id="homePeriod"></div>
+    <div id="homeStatus"></div>
+  </div>
+  <div id="deadlineBanner"></div>
+  <div id="feedbackNotice"></div>
+  <div class="period-selector" id="periodSelector">
+    <div class="period-selector-label">📅 評価期を選択</div>
+    <div class="period-tabs" id="periodTabs"></div>
+  </div>
+  <div class="card" id="homeEvalCard"></div>
+  <div class="card" id="homePastCard" style="display:none;"></div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- EVAL INPUT -->
+<div class="view" id="evalView">
+  <div id="evalStepContent" class="pb-nav"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showView('homeView');renderStaffHome();"><span class="nav-icon">🏠</span>ホーム</button>
+    <button class="nav-btn active"><span class="nav-icon">✏️</span>入力中</button>
+    <button class="nav-btn" onclick="saveEvalDraft()"><span class="nav-icon">💾</span>途中保存</button>
+    <button class="nav-btn" onclick="showSubmitConfirm()"><span class="nav-icon">✅</span>提出</button>
+  </div>
+</div>
+
+<!-- PAST EVAL VIEW -->
+<div class="view" id="pastEvalView">
+  <div id="pastEvalContent" class="pb-nav"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showView('homeView');renderStaffHome();"><span class="nav-icon">◀</span>ホームへ</button>
+    <button class="nav-btn" onclick="printEvalSheet(currentUser,getMemberEval(currentViewingPeriod,currentUser.id),currentViewingPeriod,false)"><span class="nav-icon">📋</span>面談用PDF</button>
+    <button class="nav-btn" onclick="printEvalSheet(currentUser,getMemberEval(currentViewingPeriod,currentUser.id),currentViewingPeriod,true)"><span class="nav-icon">✅</span>確認用PDF</button>
+  </div>
+</div>
+
+<!-- FEEDBACK INPUT -->
+<div class="view" id="feedbackView">
+  <div id="feedbackContent" class="pb-nav"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="backFromFeedback()"><span class="nav-icon">◀</span>戻る</button>
+    <button class="nav-btn" onclick="saveFeedback()"><span class="nav-icon">💾</span>保存</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="view" id="adminView">
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="adminTab('overview',this)">一覧</button>
+    <button class="admin-tab" onclick="adminTab('feedback',this)">FB入力</button>
+    <button class="admin-tab" onclick="adminTab('members',this)">メンバー</button>
+    <button class="admin-tab" onclick="adminTab('periods',this)">期管理</button>
+    <button class="admin-tab" onclick="adminTab('settings',this)">設定</button>
+  </div>
+  <div id="adminOverview" class="pb-nav"></div>
+  <div id="adminFeedback" style="display:none;" class="pb-nav"></div>
+  <div id="adminMembers" style="display:none;" class="pb-nav"></div>
+  <div id="adminPeriods" style="display:none;" class="pb-nav"></div>
+  <div id="adminSettings" style="display:none;" class="pb-nav"></div>
+</div>
+
+<!-- DETAIL -->
+<div class="view" id="detailView">
+  <div id="detailContent" class="pb-nav"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="backToAdmin()"><span class="nav-icon">◀</span>一覧へ</button>
+    <button class="nav-btn" onclick="showAdminPDFMenu()"><span class="nav-icon">🖨️</span>PDF出力</button>
+    <button class="nav-btn" onclick="downloadCSVForMember(currentDetailMember)"><span class="nav-icon">📤</span>CSV出力</button>
+  </div>
+</div>
 
 <script>
-var currentPin = '';
-var members = [
-  {id:'isaka',     name:'伊坂 邦明',   role:'SM',    store:'埼玉入間店',    pin:'0810'},
-  {id:'takano',    name:'高野 彪瑠',   role:'VSM',   store:'埼玉入間店',    pin:'0325'},
-  {id:'fukunishi', name:'福西 海人',   role:'STAFF', store:'埼玉入間店',    pin:'0116'},
-  {id:'kajisa',    name:'加治佐 魁人', role:'STAFF', store:'埼玉入間店',    pin:'0124'},
-  {id:'yaegashi',  name:'八重樫 裕美', role:'PART',  store:'埼玉入間店',    pin:'1019'},
-  {id:'hara',      name:'原 昂平',     role:'SM',    store:'川越インター店', pin:'1008'},
-  {id:'ito',       name:'伊藤 祐輝',   role:'VSM',   store:'川越インター店', pin:'1015'},
-  {id:'yoshizawa', name:'吉澤 陽輝',   role:'STAFF', store:'川越インター店', pin:'0205'},
-  {id:'inoue',     name:'井上 京一',   role:'PART',  store:'川越インター店', pin:'0106'},
-  {id:'shimizu',   name:'清水 天音',   role:'PART',  store:'川越インター店', pin:'0603'},
-  {id:'yamamatsu', name:'山松 泰',     role:'PART',  store:'川越インター店', pin:'0812'},
+// ============================================================
+// スタイルアップ 人事評価アプリ - データ定義
+// ============================================================
+
+const JSONBIN_BIN_ID = '69d9c94d856a6821891f9b46';
+const JSONBIN_API_KEY = '$2a$10$zfIhYk9PeF8bhcMeD5PC/O4KAFyZbtQqwXA2/ts0Whj8qtVI3.keC';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID;
+
+const DEFAULT_MEMBERS = [
+  {id:'isaka',    name:'伊坂 邦明',  role:'SM',    store:'埼玉入間店',    pin:'0810'},
+  {id:'takano',   name:'高野 彪瑠',  role:'VSM',   store:'埼玉入間店',    pin:'0325'},
+  {id:'fukunishi',name:'福西 海人',  role:'STAFF', store:'埼玉入間店',    pin:'0116'},
+  {id:'kajisa',   name:'加治佐 魁人',role:'STAFF', store:'埼玉入間店',    pin:'0124'},
+  {id:'yaegashi', name:'八重樫 裕美',role:'PART',  store:'埼玉入間店',    pin:'1019'},
+  {id:'hara',     name:'原 昂平',    role:'SM',    store:'川越インター店', pin:'1008'},
+  {id:'ito',      name:'伊藤 祐輝',  role:'VSM',   store:'川越インター店', pin:'1015'},
+  {id:'yoshizawa',name:'吉澤 陽輝',  role:'STAFF', store:'川越インター店', pin:'0205'},
+  {id:'inoue',    name:'井上 京一',  role:'PART',  store:'川越インター店', pin:'0106'},
+  {id:'shimizu',  name:'清水 天音',  role:'PART',  store:'川越インター店', pin:'0603'},
+  {id:'yamamatsu',name:'山松 泰',    role:'PART',  store:'川越インター店', pin:'0812'},
 ];
 
-function log(msg) {
-  var el = document.getElementById('log');
-  el.innerHTML += '<br>' + new Date().toLocaleTimeString() + ' ' + msg;
+const ADMIN_PIN = '1008';
+
+// フィードバック権限: SM・M・管理者は全員に入力可能
+function canGiveFeedback(user) {
+  if (!user) return false;
+  if (user.type === 'admin') return true;
+  return user.role === 'SM';
 }
 
-function initSelect() {
-  var sel = document.getElementById('staffSelect');
-  sel.innerHTML = '<option value="">-- 選択してください --</option>';
-  members.forEach(function(m) {
-    var opt = document.createElement('option');
-    opt.value = m.id;
-    opt.textContent = m.name + '（' + m.store + '）';
-    sel.appendChild(opt);
-  });
-  log('選択リスト初期化: ' + members.length + '名');
+const ROLE_LABELS = {SM:'SM（店長）', VSM:'VSM（副店長）', STAFF:'一般スタッフ', PART:'アルバイト'};
+
+const SCORE_CRITERIA = {
+  SM: [
+    {score:5, label:'模範となるレベル',         text:'自店での成功事例や仕組みを他店舗に共有し、全社の向上に貢献した。'},
+    {score:4, label:'期待を上回るレベル',        text:'基準を達成するだけでなく、店舗の構造を見直し改善させる事が出来る。'},
+    {score:3, label:'現職能ランクの期待レベル',  text:'SVや本部のフォローなしで基準以上の運営が出来る。'},
+    {score:2, label:'期待を下回るレベル',        text:'上層部の介入やフォローがないと基準値に満たない部分がある。'},
+    {score:1, label:'大幅に期待を下回るレベル', text:'部下からの信頼がなく、指示が通らない。一般スタッフレベル。'},
+  ],
+  VSM: [
+    {score:5, label:'模範となるレベル',         text:'店舗のルール・仕組みを変えた。SM(店長)がいなくても実行し結果を出せる。'},
+    {score:4, label:'期待を上回るレベル',        text:'店舗全体を巻き込んで改善した。自発的に提案、行動出来る。'},
+    {score:3, label:'現職能ランクの期待レベル',  text:'SM(店長)の指示や確認なしで、一人で確実に行えている。'},
+    {score:2, label:'期待を下回るレベル',        text:'指示・確認されないと動けない、またはムラがある。'},
+    {score:1, label:'大幅に期待を下回るレベル', text:'VSM(副店長)としての役割がはたせず、店舗の士気を下げている。'},
+  ],
+  STAFF: [
+    {score:5, label:'模範となるレベル',         text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。'},
+    {score:4, label:'期待を上回るレベル',        text:'言われたこと＋αの気遣いや、やり方の改善を行った。'},
+    {score:3, label:'現職能ランクの期待レベル',  text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。'},
+    {score:2, label:'期待を下回るレベル',        text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。'},
+    {score:1, label:'大幅に期待を下回るレベル', text:'やろうとしない、約束を破る、ルール違反がある。'},
+  ],
+  PART: [
+    {score:5, label:'模範となるレベル',         text:'自分だけでなく、周囲に良い影響を与えている。他の人に指導できている。'},
+    {score:4, label:'期待を上回るレベル',        text:'言われたこと＋αの気遣いや、やり方の改善を行った。'},
+    {score:3, label:'現職能ランクの期待レベル',  text:'行動基準に書いてあることを、指示されずに一人でミスなく完了した。'},
+    {score:2, label:'期待を下回るレベル',        text:'行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要。'},
+    {score:1, label:'大幅に期待を下回るレベル', text:'やろうとしない、約束を破る、ルール違反がある。'},
+  ],
+};
+
+const ALL_ITEMS = {
+  SM: {
+    quantitative: 70, qualitative: 30,
+    rank: {S:75, A:70, B:60, C:50},
+    categories: [
+      {name:'スタンス・規律', allocation:10, items:[
+        {id:'st1',name:'理念・ポリシー',   w:2, criteria:'理念を自らの言葉で語り、店舗の判断基準として浸透させ、部下の行動変容を促している。'},
+        {id:'st2',name:'協調性',           w:2, criteria:'店舗全体のチームビルディングを行い、全部門が協力し合う体制と風土を構築している。'},
+        {id:'st3',name:'前向き',           w:2, criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+        {id:'st4',name:'挨拶・言葉遣い',   w:1, criteria:'店舗全体の活気（声出し）をコントロールし、お客様が入店しやすい雰囲気を作り出している。'},
+        {id:'st5',name:'時間管理・勤務態度',w:1, criteria:'残業時間の管理を行い、特定のスタッフに負荷が偏らないよう業務配分を調整している。'},
+        {id:'st6',name:'報・連・相',        w:1, criteria:'店舗内の重要事項を漏らさず把握し、本部やSV、上司に対して、予測や対策を含めた質の高い報告を行っている。'},
+        {id:'st7',name:'積極性・自己管理', w:1, criteria:'自らのモチベーションを一定に保ち、店舗がどんな状況でもポジティブな態度で組織を牽引している。'},
+      ]},
+      {name:'接客・販売スキル', allocation:5, items:[
+        {id:'sa1',name:'基本接客(レジ・電話)',w:1,criteria:'接客マニュアルの更新や、スタッフへのロールプレイング指導を行い、店舗全体の接客レベルを底上げしている。'},
+        {id:'sa2',name:'ゲストトーク',       w:1,criteria:'顧客満足度（CS）向上のための施策を立案し、Google口コミ等の評価向上に直結する行動を指導している。'},
+        {id:'sa3',name:'買取・査定',         w:1,criteria:'市場相場と自店の在庫状況を鑑みて、買取強化ジャンルやキャンペーン戦略を決定している。'},
+        {id:'sa4',name:'商品知識・説明',     w:1,criteria:'競合他店舗や雑誌、インターネットなどから情報を収集・分析し、店舗全体の専門知識レベルと提案力を向上させている。'},
+        {id:'sa5',name:'商品化・品出し',     w:1,criteria:'商品化の生産性（1時間あたりの処理数）を管理し、バックヤードの滞留在庫をゼロにする仕組みを作っている。'},
+        {id:'sa6',name:'取付・作業',         w:1,criteria:'ピット作業の稼働率を分析し、作業待ち時間の短縮や工賃売上の最大化に向けた人員配置を行っている。'},
+      ]},
+      {name:'売場・店舗管理', allocation:5, items:[
+        {id:'sh1',name:'売場づくり',       w:1,criteria:'店舗全体のゾーニング（売場配置）を見直し、顧客動線と滞在時間を最大化するレイアウトを決定している。'},
+        {id:'sh2',name:'在庫管理・棚卸し', w:1,criteria:'在庫回転率と粗利率のバランスを管理し、不良在庫化する前の早期対策ルールを運用している。'},
+        {id:'sh3',name:'現金・伝票管理',   w:1,criteria:'監査基準に基づき、すべての帳票・現金・個人情報の保管状況を定期チェックし、コンプライアンスを遵守している。'},
+        {id:'sh4',name:'清掃・衛生',       w:1,criteria:'お客様視点で店舗内外（駐車場含む）を巡回し、老朽化箇所の修繕や業者手配を行っている。'},
+        {id:'sh5',name:'安全・危機管理',   w:1,criteria:'事故・災害発生時の責任者として、人命優先の指揮を執り、二次被害を防ぐための迅速な判断を行っている。'},
+      ]},
+      {name:'マネジメント・組織貢献', allocation:10, items:[
+        {id:'mg1',name:'予算・数値管理',   w:1,criteria:'月間・半期のPL（損益）責任を持ち、売上・粗利・営業利益のすべてで予算達成に向けた戦略を実行している。'},
+        {id:'mg2',name:'節約・経費意識',   w:1,criteria:'販管費（人件費、修繕費等）の予算内コントロールを行い、無駄な支出を削減して利益率を高めている。'},
+        {id:'mg3',name:'人材育成',         w:1,criteria:'次期リーダー候補を選抜・育成し、本人のキャリアプランに合わせた目標設定と動機付けを行っている。'},
+        {id:'mg4',name:'シフト管理',       w:1,criteria:'労働法規（有休取得、労働時間上限）を遵守した上で、スタッフの働きやすさと店舗運営を両立させている。'},
+        {id:'mg5',name:'クレーム対応',     w:1,criteria:'重大クレームや困難な事案の最終責任者として対応し、再発防止策を策定して全社共有を行っている。'},
+        {id:'mg6',name:'折衝・改善提案',   w:1,criteria:'本部や取引業者に対し、自店の利益や要望を論理的に伝え、必要なリソース（商品・予算・人）を獲得している。'},
+      ]},
+    ],
+  },
+  VSM: {
+    quantitative: 50, qualitative: 50,
+    rank: {S:75, A:70, B:60, C:50},
+    categories: [
+      {name:'スタンス・規律', allocation:20, items:[
+        {id:'st1',name:'理念・ポリシー',    w:2,criteria:'理念の意味を理解し、後輩に対して「なぜこの行動が必要か」を理念に基づいて説明できる。'},
+        {id:'st2',name:'協調性',            w:2,criteria:'SMに協力的でスタッフ間の人間関係に気を配り、不協和音があれば間に入って調整・解決している。'},
+        {id:'st3',name:'前向き',            w:2,criteria:'ネガティブなことを言わず物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+        {id:'st4',name:'挨拶・言葉遣い',    w:1,criteria:'スタッフ全員の挨拶の質をチェックし、声が小さいスタッフにはその場で指導・修正させている。'},
+        {id:'st5',name:'時間管理・勤務態度',w:1,criteria:'遅刻・欠勤がなく、休憩回しの管理を行い、業務の繁閑に合わせてスタッフの休憩時間を調整している。'},
+        {id:'st6',name:'報・連・相',         w:1,criteria:'部下からの報告を受け止め、次のアクション（指示）を即座に出し、店長へ要約して報告している。'},
+        {id:'st7',name:'責任感・自己管理',  w:1,criteria:'既存の業務フローの無駄を見つけ、より効率的なやり方を提案・実行している。'},
+      ]},
+      {name:'接客・販売スキル', allocation:10, items:[
+        {id:'sa1',name:'感謝',              w:2,criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。'},
+        {id:'sa2',name:'基本接客(レジ・電話)',w:1,criteria:'トラブル時のレジ対応や、複雑な問い合わせ電話（適合確認等）を代行し、解決している。'},
+        {id:'sa3',name:'ゲストトーク',      w:1,criteria:'お客様の潜在ニーズ（買い替え理由等）を聞き出し、リピーターになってもらうための関係構築ができる。'},
+        {id:'sa4',name:'買取・査定',        w:1,criteria:'特殊な商品や高額品の査定判断ができ、お客様に納得感のある価格提示と交渉ができる。'},
+        {id:'sa5',name:'商品化・品出し',    w:1,criteria:'売れ筋商品を見極め、ゴールデンゾーン（見やすい位置）への陳列変更を指示・実行している。'},
+        {id:'sa6',name:'取付・作業',        w:1,criteria:'難易度の高い作業やトラブルシューティングに対応し、後輩の作業最終チェックを行っている。'},
+      ]},
+      {name:'売場・店舗管理', allocation:10, items:[
+        {id:'sh1',name:'売場づくり',        w:1,criteria:'売上データや季節トレンドに基づき、特集コーナーの企画・設置の提案を上司に行っている。'},
+        {id:'sh2',name:'在庫管理・棚卸し',  w:1,criteria:'長期在庫（デッドストック）をリストアップし、値下げや配置転換による処分・現金化を進めている。'},
+        {id:'sh3',name:'現金・伝票管理',    w:1,criteria:'日々の売上入金確認、小口現金の管理を行い、経理処理上のミスを未然に防いでいる。'},
+        {id:'sh4',name:'清掃・衛生',        w:1,criteria:'汚れが目立つ箇所や、スタッフの手が回っていない箇所に気づき、スポット清掃を指示・実施している。'},
+        {id:'sh5',name:'安全・危機管理',    w:1,criteria:'万引き防止の巡回や、災害時の避難誘導手順を把握し、スタッフに周知徹底している。'},
+      ]},
+      {name:'マネジメント・組織貢献', allocation:10, items:[
+        {id:'mg1',name:'予算・数値管理',    w:2,criteria:'部門別・日別の進捗を管理し、未達ペースの場合に具体的なリカバリー策（買取強化、目標の再設定等）を打っている。'},
+        {id:'mg2',name:'節約・経費意識',    w:1,criteria:'消耗品の発注管理を行い、在庫過多や欠品を防ぎつつ、代替品によるコストダウンを検討している。'},
+        {id:'mg3',name:'人材育成',          w:2,criteria:'スタッフ個々のスキルマップを作成し、OJT計画を立てて、戦力化までのスピードを早めている。'},
+        {id:'mg4',name:'シフト管理',        w:2,criteria:'SM不在時に業務量予測に基づき、無駄のないシフト調整を行い、人件費率を適正範囲に収めている。'},
+        {id:'mg5',name:'クレーム対応',      w:1,criteria:'初期対応後の二次対応を行い、お客様の言い分を傾聴し、事実関係を確認して解決策を提示している。'},
+        {id:'mg6',name:'折衝・改善提案',    w:1,criteria:'他店との在庫移動や応援要請をスムーズに行い、会社全体の利益になるよう連携している。'},
+      ]},
+    ],
+  },
+  STAFF: {
+    quantitative: 30, qualitative: 70,
+    rank: {S:75, A:70, B:60, C:50},
+    categories: [
+      {name:'スタンス・規律', allocation:30, items:[
+        {id:'st1',name:'理念・ポリシー',    w:2,criteria:'企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。'},
+        {id:'st2',name:'協調性',            w:2,criteria:'共通の目標達成に向けて、役割分担・連携・相互補完を行いながら共同作業をする姿勢はあるか。'},
+        {id:'st3',name:'前向き',            w:2,criteria:'物事に対して積極的、建設的、肯定的な姿勢で取り組んでいるか。'},
+        {id:'st4',name:'挨拶・言葉遣い',    w:1,criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。'},
+        {id:'st5',name:'時間管理・勤務態度',w:1,criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。'},
+        {id:'st6',name:'報・連・相',         w:1,criteria:'事実を正確に伝え、対応策に対する自分の意見や考えも入れながら、報・連・相ができる。'},
+        {id:'st7',name:'責任感・自己管理',  w:1,criteria:'自分に与えられた役割、任務、約束を最後までやり遂げようとする意志や姿勢はあるか。'},
+      ]},
+      {name:'接客・販売スキル', allocation:15, items:[
+        {id:'sa1',name:'感謝',              w:2,criteria:'他者から受けた親切や行為に対して「ありがたい」と感じるポジティブな心情と、その感謝の意を表す行動はあるか。'},
+        {id:'sa2',name:'明るさ',            w:2,criteria:'笑顔が多く、ポジティブで前向きな思考を持ち、人懐っこく誰にでも明るく接することができるか。'},
+        {id:'sa3',name:'ゲストトーク',      w:2,criteria:'挨拶に加え口コミ獲得やC査定等の声かけができ、お客様と会話のキャッチボールができる。'},
+        {id:'sa4',name:'買取・査定',        w:2,criteria:'マニュアル通りに商品の状態を確認し、適正な値入で成約率を落とさずに仕入れができる。'},
+        {id:'sa5',name:'商品化・品出し',    w:1,criteria:'未商品化在庫を把握しスピーディに商品化を行い、売場に隙間を作らず補充している。'},
+        {id:'sa6',name:'取付・作業',        w:1,criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外し作業ができる。'},
+      ]},
+      {name:'売場・店舗管理', allocation:10, items:[
+        {id:'sh1',name:'売場づくり',        w:1,criteria:'顧客目線に立ち商品を並べ、POPの剥がれや汚れを自ら見つけて直している。'},
+        {id:'sh2',name:'在庫管理・棚卸し',  w:1,criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。'},
+        {id:'sh3',name:'現金・伝票管理',    w:1,criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。'},
+        {id:'sh4',name:'清掃・衛生',        w:1,criteria:'店内、トイレ、駐車場の清掃状況を把握し清潔な状態を保っている。'},
+        {id:'sh5',name:'安全・危機管理',    w:1,criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。'},
+      ]},
+      {name:'マネジメント・組織貢献', allocation:15, items:[
+        {id:'mg1',name:'予算・数値管理',    w:2,criteria:'自分の店舗の売上・粗利・取り組み目標を把握し、達成に向けて声出しや追加提案をしている。'},
+        {id:'mg2',name:'節約・経費意識',    w:1,criteria:'無駄な残業の削減、電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。'},
+        {id:'mg3',name:'人材育成',          w:2,criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。'},
+        {id:'mg4',name:'シフト管理',        w:2,criteria:'店舗のシフト作成に協力し、急な欠員が出た際はシフト変更に協力している。'},
+        {id:'mg5',name:'クレーム対応',      w:1,criteria:'クレームの内容を理解し、上司に指示を仰ぎながら適切な処理ができる。お客様を満足させてお帰り頂くことができる。'},
+        {id:'mg6',name:'折衝・改善提案',    w:1,criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・改善に協力している。'},
+      ]},
+    ],
+  },
+  PART: {
+    quantitative: 20, qualitative: 80,
+    rank: {S:70, A:60, B:50, C:40},
+    categories: [
+      {name:'スタンス・規律', allocation:30, items:[
+        {id:'st1',name:'理念・ポリシー',    w:2,criteria:'企業理念、アップガレージ魂を暗記しており、朝礼等の唱和で大きな声を出している。'},
+        {id:'st2',name:'協調性',            w:2,criteria:'自分の担当業務が終わったら、忙しい他部門（レジ・ピット等）のヘルプを自発的に申し出ている。'},
+        {id:'st3',name:'挨拶・言葉遣い',    w:2,criteria:'相手の目を見て、自分から先に、明るく聞き取りやすい声で挨拶ができる。正しい敬語が使える。'},
+        {id:'st4',name:'身だしなみ',        w:1,criteria:'制服・名札・髪型などが規定通り清潔に保たれており、指摘される前に整えている。'},
+        {id:'st5',name:'時間管理・勤務態度',w:1,criteria:'遅刻・欠勤がなく、始業5分前には業務を開始できる準備が完了している。'},
+        {id:'st6',name:'報・連・相',         w:1,criteria:'悪い情報（ミス・トラブル）ほど隠さずに、直属の上司へ即座に事実を報告している。'},
+        {id:'st7',name:'積極性・自己管理',  w:1,criteria:'未経験の業務にも「やってみたい」と手を挙げ、教わったことをメモして習得している。'},
+      ]},
+      {name:'接客・販売スキル', allocation:15, items:[
+        {id:'sa1',name:'基本接客(レジ・電話)',w:2,criteria:'正確なレジ操作、明るい電話応対ができ、お客様を待たせずにスムーズに処理している。'},
+        {id:'sa2',name:'ゲストトーク',      w:2,criteria:'挨拶に加え「またお願いします」等のプラスαの声かけができ、お客様と会話のキャッチボールができる。'},
+        {id:'sa3',name:'買取・査定',        w:2,criteria:'マニュアル通りに商品の状態を確認し、適正なランク付けとシステム入力ができる。'},
+        {id:'sa4',name:'商品知識・説明',    w:1,criteria:'お客様の質問に対し、商品タグやカタログを用いて正確な情報を案内できる。'},
+        {id:'sa5',name:'商品化・品出し',    w:1,criteria:'洗浄・パッキングを手順通りスピーディに行い、売場に隙間を作らず補充している。'},
+        {id:'sa6',name:'取付・作業',        w:1,criteria:'安全手順を守り、工具を正しく使用して、ミスなく取付・取外しの作業補助ができる。'},
+      ]},
+      {name:'売場・店舗管理', allocation:15, items:[
+        {id:'sh1',name:'売場づくり',        w:1,criteria:'指示されたレイアウト通りに商品を並べ、POPの剥がれや汚れを自ら見つけて直している。'},
+        {id:'sh2',name:'在庫管理・棚卸し',  w:1,criteria:'担当エリアの商品の有無を把握し、お客様に即答できる。棚卸し時のカウントミスがない。'},
+        {id:'sh3',name:'現金・伝票管理',    w:1,criteria:'レジ点検時の差異ゼロを維持し、伝票の記入漏れや紛失がないよう整理整頓している。'},
+        {id:'sh4',name:'清掃・衛生',        w:1,criteria:'毎日のルーティン清掃（床、トイレ、棚）をサボらず丁寧に行い、清潔な状態を保っている。'},
+        {id:'sh5',name:'安全・危機管理',    w:1,criteria:'危険な積み方をしている商品や、通路の障害物を発見し、すぐに安全な状態に戻している。'},
+      ]},
+      {name:'マネジメント・組織貢献', allocation:20, items:[
+        {id:'mg1',name:'予算・数値管理',    w:2,criteria:'自分の店舗の「今日の売上目標」を知っており、達成に向けて声出しや追加提案をしている。'},
+        {id:'mg2',name:'節約・経費意識',    w:1,criteria:'電気の消し忘れや備品の無駄遣いをせず、コスト削減（利益捻出）に協力している。'},
+        {id:'mg3',name:'人材育成',          w:2,criteria:'後輩に対して、自分が教わった業務を優しく教え、できるようになるまで面倒を見ている。'},
+        {id:'mg4',name:'シフト管理',        w:2,criteria:'希望休の提出期限を守り、急な欠員が出た際はシフト変更に協力している。'},
+        {id:'mg5',name:'クレーム対応',      w:1,criteria:'お客様の不満を察知したら、自分だけで判断せず、速やかに上席者へバトンタッチしている。'},
+        {id:'mg6',name:'折衝・改善提案',    w:1,criteria:'業務の中で「やりにくい」と感じたことを、そのままにせず上司に相談・提案している。'},
+      ]},
+    ],
+  },
+};
+
+function getItemsFlat(role) {
+  const d = ALL_ITEMS[role] || ALL_ITEMS.STAFF;
+  const flat = [];
+  d.categories.forEach(cat => cat.items.forEach(item => flat.push({...item, catName: cat.name})));
+  return flat;
 }
 
-function pinInput(d) {
-  if (currentPin.length >= 4) return;
-  currentPin += d;
-  updatePinDisplay();
-  log('PIN: ' + currentPin.replace(/./g, '●'));
+function calcRank(role, totalScore) {
+  const r = (ALL_ITEMS[role] || ALL_ITEMS.STAFF).rank;
+  if (totalScore >= r.S) return 'S　昇格推薦';
+  if (totalScore >= r.A) return 'A　昇格候補';
+  if (totalScore >= r.B) return 'B　現状維持';
+  if (totalScore >= r.C) return 'C　要改善';
+  return 'D　降格';
 }
 
-function pinDelete() {
-  currentPin = currentPin.slice(0, -1);
-  updatePinDisplay();
+// 期ラベル生成
+function getPeriodLabel(year, half) {
+  return `${year}年${half === 'first' ? '上半期' : '下半期'}`;
 }
 
-function pinClear() {
-  currentPin = '';
-  updatePinDisplay();
+// 現在の期を推定（参考用）
+function getCurrentPeriodSuggestion() {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  if (month >= 4 && month <= 9) return {year, half: 'first', label: `${year}年上半期`};
+  return {year: month < 4 ? year - 1 : year, half: 'second', label: `${month < 4 ? year-1 : year}年下半期`};
 }
 
-function updatePinDisplay() {
-  for (var i = 0; i < 4; i++) {
-    var dot = document.getElementById('pd' + i);
-    dot.textContent = i < currentPin.length ? '●' : '_';
-    dot.style.background = i < currentPin.length ? '#e8967a' : 'white';
-    dot.style.color = i < currentPin.length ? 'white' : '#333';
+// ============================================================
+// JSONBIN
+// ============================================================
+async function fetchDB() {
+  showLoading(true);
+  try {
+    const r = await fetch(JSONBIN_URL+'/latest', {headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
+    const d = await r.json(); showLoading(false); return d;
+  } catch(e) {
+    showLoading(false);
+    try { const d=localStorage.getItem('ug_db'); return d?JSON.parse(d):{periods:{},currentPeriod:'',members:[]}; } catch(e2) { return {periods:{},currentPeriod:'',members:[]}; }
+  }
+}
+async function saveDB(db) {
+  showLoading(true);
+  try {
+    const r = await fetch(JSONBIN_URL, {method:'PUT', headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY}, body:JSON.stringify(db)});
+    showLoading(false); if(!r.ok) throw new Error();
+    try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e) {}
+    return true;
+  } catch(e) {
+    showLoading(false);
+    try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e2) {}
+    showToast('⚠️ クラウド保存失敗。ローカルに保存しました'); return false;
+  }
+}
+function showLoading(v) { document.getElementById('loadingOverlay').classList.toggle('hidden',!v); }
+
+// ============================================================
+// DB helpers
+// ============================================================
+function getDB() { return window._db || {periods:{},currentPeriod:'',members:[]}; }
+function getPeriodData(periodKey) {
+  const db = getDB();
+  if (!db.periods[periodKey]) db.periods[periodKey] = {evals:{}};
+  return db.periods[periodKey];
+}
+function getMemberEval(periodKey, memberId) {
+  const pd = getPeriodData(periodKey);
+  if (!pd.evals[memberId]) pd.evals[memberId] = {scores:{},q1:'',q2:'',feedback:'',status:'none',submittedAt:null,feedbackAt:null};
+  return pd.evals[memberId];
+}
+function getMembers() {
+  const db = getDB();
+  // membersが未定義・null・空配列の場合はDEFAULT_MEMBERSを返す
+  if (!db.members || !Array.isArray(db.members) || db.members.length === 0) {
+    return DEFAULT_MEMBERS;
+  }
+  return db.members;
+}
+function saveMembers(m) { window._db.members = m; }
+function getSettings() { try { const d=localStorage.getItem('ug_settings'); return d?JSON.parse(d):{deadline:'',adminPin:ADMIN_PIN}; } catch(e) { return {deadline:'',adminPin:ADMIN_PIN}; } }
+function saveSettings(s) { try { localStorage.setItem('ug_settings', JSON.stringify(s)); } catch(e) {} }
+function getRoleLabel(r) { return ROLE_LABELS[r]||r; }
+
+// STATUS helpers
+function getStatusBadge(status, hasFeedback) {
+  if (status==='none') return '<span class="status-badge s-none">未入力</span>';
+  if (status==='draft') return '<span class="status-badge s-draft">✏️ 入力途中</span>';
+  if (status==='submitted' && !hasFeedback) return '<span class="status-badge s-done">📤 提出済み</span>';
+  if (status==='submitted' && hasFeedback) return '<span class="status-badge s-meeting">💬 面談完了</span>';
+  return '<span class="status-badge s-none">-</span>';
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let currentPin = '';
+let currentDetailMember = null;
+let currentStep = 0;
+let currentViewingPeriod = '';
+let feedbackTargetMember = null;
+
+// ============================================================
+// PIN & LOGIN
+// ============================================================
+function pinInput(d) { if(currentPin.length>=4) return; currentPin+=d; updatePinDisplay(); if(currentPin.length===4) setTimeout(doLogin,200); }
+function pinDelete() { currentPin=currentPin.slice(0,-1); updatePinDisplay(); }
+function updatePinDisplay() { for(let i=0;i<4;i++){const dot=document.getElementById('pd'+i);dot.classList.toggle('filled',i<currentPin.length);dot.textContent=i<currentPin.length?'●':'';} }
+function onLoginTypeChange() {
+  const t=document.getElementById('loginType').value;
+  document.getElementById('staffLoginArea').style.display=t==='staff'?'':'none';
+  document.getElementById('adminLoginArea').style.display=t==='admin'?'':'none';
+  currentPin=''; updatePinDisplay(); document.getElementById('loginError').style.display='none';
+}
+function initStaffSelect() {
+  const sel=document.getElementById('staffSelect');
+  sel.innerHTML='<option value="">-- 選択してください --</option>';
+  getMembers().forEach(m=>{ sel.innerHTML+=`<option value="${m.id}">${m.name}（${m.store}）</option>`; });
+}
+
+async function doLogin() {
+  const type=document.getElementById('loginType').value;
+  document.getElementById('loginError').style.display='none';
+  if (type==='admin') {
+    const s=getSettings();
+    if (currentPin===(s.adminPin||ADMIN_PIN)) {
+      currentUser={type:'admin',name:'管理者（秦 慈宏）'};
+      afterLogin();
+    } else showLoginError();
+  } else {
+    const memberId=document.getElementById('staffSelect').value;
+    if (!memberId) { showToast('名前を選んでください'); currentPin=''; updatePinDisplay(); return; }
+    const member=getMembers().find(m=>m.id===memberId);
+    if (!member) { showLoginError(); return; }
+    if (currentPin===member.pin) {
+      currentUser={type:'staff',...member};
+      afterLogin();
+    } else showLoginError();
+  }
+}
+function showLoginError() { document.getElementById('loginError').style.display='block'; currentPin=''; updatePinDisplay(); setTimeout(()=>{document.getElementById('loginError').style.display='none';},2000); }
+
+async function afterLogin() {
+  document.getElementById('appHeader').style.display='flex';
+  const db=getDB();
+  // 現在の期を設定
+  currentViewingPeriod = db.currentPeriod || '';
+  if (currentUser.type==='admin') {
+    setHeader('管理者ダッシュボード');
+    showView('adminView'); showAdminOverview();
+  } else {
+    setHeader('自己評価入力');
+    showView('homeView'); await renderStaffHome();
   }
 }
 
-function doLogin() {
-  var sel = document.getElementById('staffSelect');
-  var memberId = sel.value;
-  if (!memberId) {
-    alert('名前を選んでください');
+function logout() {
+  currentUser=null; currentPin=''; currentViewingPeriod='';
+  updatePinDisplay();
+  document.getElementById('appHeader').style.display='none';
+  document.getElementById('staffSelect').value='';
+  document.getElementById('loginType').value='staff';
+  onLoginTypeChange(); showView('loginView');
+}
+
+function showView(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function setHeader(title) { document.getElementById('headerTitle').textContent=title; }
+function backToAdmin() { showView('adminView'); setHeader('管理者ダッシュボード'); }
+
+function showAdminPDFMenu() {
+  const member = getMembers().find(m=>m.id===currentDetailMember);
+  if (!member) return;
+  const ev = getMemberEval(currentViewingPeriod, currentDetailMember);
+  const hasFB = ev && ev.feedback && ev.feedback.trim();
+
+  const choice = hasFB
+    ? confirm(`PDF種類を選んでください\n\n[OK] 確認用PDF（全項目入り）\n[キャンセル] 面談用PDF（1次・確定欄は空白）`)
+    : false;
+
+  printEvalSheet(member, ev, currentViewingPeriod, choice);
+}
+
+function backFromFeedback() {
+  if (currentUser.type==='admin') { showView('adminView'); showAdminFeedback(); }
+  else { showView('homeView'); renderStaffHome(); }
+}
+
+// ============================================================
+// STAFF HOME
+// ============================================================
+async function renderStaffHome() {
+  // 最新DBを取得してから描画（途中保存データを正しく反映するため）
+  window._db = await fetchDB();
+  if (!window._db.periods) window._db.periods={};
+  const db = getDB();
+  const user = currentUser;
+  const periods = Object.keys(db.periods||{});
+  const currentPeriod = db.currentPeriod || '';
+
+  document.getElementById('homeRole').textContent = getRoleLabel(user.role);
+  document.getElementById('homeName').textContent = user.name;
+  document.getElementById('homeStore').textContent = user.store;
+  document.getElementById('homePeriod').textContent = `評価期間: ${currentViewingPeriod||'（期が設定されていません）'}`;
+  document.getElementById('headerPeriod').textContent = currentViewingPeriod || '-';
+
+  // 期タブ
+  renderPeriodTabs(periods, currentPeriod);
+
+  const isCurrentPeriod = currentViewingPeriod === currentPeriod;
+  const ev = currentViewingPeriod ? getMemberEval(currentViewingPeriod, user.id) : null;
+
+  // ステータス
+  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+  const statusHtml = ev ? getStatusBadge(ev.status, hasFeedback) : '<span class="status-badge s-none">未入力</span>';
+  document.getElementById('homeStatus').innerHTML = statusHtml;
+
+  // フィードバック通知
+  const fbNotice = document.getElementById('feedbackNotice');
+  if (ev && hasFeedback && ev.status === 'submitted') {
+    fbNotice.innerHTML = `<div class="info-banner">💬 フィードバックが入力されています。「確認・PDF出力」から確認できます。</div>`;
+  } else { fbNotice.innerHTML = ''; }
+
+  // 期限バナー
+  const settings = getSettings();
+  const dlBanner = document.getElementById('deadlineBanner');
+  if (settings.deadline && isCurrentPeriod) {
+    const diff = Math.ceil((new Date(settings.deadline)-new Date())/86400000);
+    dlBanner.innerHTML = diff<0 ? `<div class="deadline-banner overdue">⚠️ 提出期限を過ぎています（${settings.deadline}）</div>` : `<div class="deadline-banner">📅 提出期限：${settings.deadline}（あと${diff}日）</div>`;
+  } else dlBanner.innerHTML='';
+
+  // 進捗
+  const evalCard = document.getElementById('homeEvalCard');
+  const pastCard = document.getElementById('homePastCard');
+
+  if (!currentViewingPeriod) {
+    evalCard.innerHTML = '<div class="card-title">📋 評価期間</div><p class="text-sm text-muted">管理者が評価期を設定するまでお待ちください。</p>';
+    pastCard.style.display = 'none';
     return;
   }
-  var member = null;
-  for (var i = 0; i < members.length; i++) {
-    if (members[i].id === memberId) { member = members[i]; break; }
-  }
-  if (!member) { alert('メンバーが見つかりません'); return; }
-  if (currentPin === member.pin) {
-    alert('ログイン成功！ ' + member.name + 'さん');
-    log('ログイン成功: ' + member.name);
+
+  if (isCurrentPeriod) {
+    // 現在期：入力カード
+    evalCard.style.display = '';
+    evalCard.innerHTML = '<div class="card-title">📋 自己評価の進捗</div><div id="homeProgress"></div><button class="btn btn-primary mt-12" id="btnStartEval" onclick="startEvaluation()">評価を入力する</button>';
+
+    const items = getItemsFlat(user.role);
+    const scores = (ev||{}).scores || {};
+    const done = items.filter(i=>scores[i.id]!==undefined).length;
+    const pct = items.length>0 ? Math.round(done/items.length*100) : 0;
+
+    if (ev && ev.status==='submitted') {
+      const hasFB = ev.feedback && ev.feedback.trim();
+      evalCard.innerHTML = `<div class="card-title">📋 自己評価の進捗</div>
+        <div style="text-align:center;padding:10px 0 8px;">
+          <div style="font-size:32px;margin-bottom:6px;">✅</div>
+          <div style="font-size:16px;font-weight:800;color:var(--c-dark);margin-bottom:4px;">提出済み</div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:12px;">${ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-dark" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, false)">🖨️ 面談用PDF出力</button>
+          ${hasFB ? `<button class="btn btn-sage" onclick="printEvalSheet(currentUser, getMemberEval(currentViewingPeriod, currentUser.id), currentViewingPeriod, true)">✅ 確認用PDF出力（全項目）</button>` : ''}
+          <button class="btn btn-secondary" onclick="startEvaluation()">内容を見直す</button>
+        </div>`;
+    } else {
+      document.getElementById('homeProgress') && (document.getElementById('homeProgress').innerHTML=`
+        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px;"><span>定性評価</span><span>${done} / ${items.length} 項目</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="progress-label">${pct}% 完了</div>`);
+      const btn = document.getElementById('btnStartEval');
+      if (btn) btn.textContent = done>0 ? '続きから入力する' : '評価を入力する';
+    }
+
+    // 過去の期がある場合は過去確認カードも
+    if (periods.filter(p=>p!==currentPeriod).length > 0) {
+      pastCard.style.display = '';
+    } else pastCard.style.display = 'none';
+
   } else {
-    alert('PINが違います (入力: ' + currentPin + ')');
-    log('ログイン失敗: PIN=' + currentPin);
-    currentPin = '';
-    updatePinDisplay();
+    // 過去期：閲覧のみ
+    evalCard.style.display = 'none';
+    pastCard.style.display = '';
+    pastCard.innerHTML = `<div class="card-title">📂 ${currentViewingPeriod}の評価</div>
+      <p class="text-sm text-muted" style="margin-bottom:12px;">この期の評価シートを確認・PDF出力できます。</p>
+      <button class="btn btn-dark" onclick="showPastEval()">確認・PDF出力する</button>`;
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  log('DOMContentLoaded');
-  document.getElementById('status').textContent = '✅ 正常に読み込まれました';
-  initSelect();
-});
+function renderPeriodTabs(periods, currentPeriod) {
+  const tabs = document.getElementById('periodTabs');
+  if (!tabs) return;
+  if (periods.length === 0) { tabs.innerHTML = '<div style="color:rgba(255,255,255,.4);font-size:12px;">期が設定されていません</div>'; return; }
+  tabs.innerHTML = periods.slice().reverse().map(p =>
+    `<button class="period-tab${p===currentViewingPeriod?' active':''}" onclick="selectPeriod('${p}')">${p}</button>`
+  ).join('');
+}
+
+function selectPeriod(periodKey) {
+  currentViewingPeriod = periodKey;
+  renderStaffHome();
+}
+
+// ============================================================
+// EVAL INPUT
+// ============================================================
+function startEvaluation() {
+  const items = getItemsFlat(currentUser.role);
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const scores = ev.scores || {};
+
+  // 未入力の最初の項目を探す
+  let firstMissing = -1;
+  for (let i=0; i<items.length; i++) {
+    if (scores[items[i].id]===undefined) { firstMissing=i; break; }
+  }
+
+  if (firstMissing >= 0) {
+    // 未入力項目がある → その項目から再開
+    currentStep = firstMissing;
+  } else if (!ev.q1) {
+    // 全項目入力済みだがQ1未入力
+    currentStep = items.length;
+  } else if (!ev.q2) {
+    // Q1済みだがQ2未入力
+    currentStep = items.length + 1;
+  } else {
+    // 全部入力済み → 確認・提出画面へ
+    currentStep = items.length + 2;
+  }
+
+  setHeader('自己評価入力');
+  showView('evalView'); renderStep();
+}
+
+function renderStep() {
+  const user = currentUser;
+  const items = getItemsFlat(user.role);
+  const ev = getMemberEval(currentViewingPeriod, user.id);
+  const scores = ev.scores || {};
+  const criteria = SCORE_CRITERIA[user.role] || SCORE_CRITERIA.STAFF;
+  const totalItems = items.length;
+  const totalSteps = totalItems + 3;
+  const allDone = items.every(i => scores[i.id] !== undefined);
+  const pct = Math.round(currentStep/totalSteps*100);
+
+  let html = `<div style="padding:10px 10px 0;"><div class="step-progress"><div class="step-progress-bar-wrap"><div class="step-progress-bar" style="width:${pct}%"></div></div><div class="step-progress-text">${Math.min(currentStep+1,totalSteps)} / ${totalSteps}</div></div></div>`;
+
+  if (currentStep < totalItems) {
+    const item = items[currentStep];
+    const sel = scores[item.id];
+    const btns = criteria.slice().reverse().map(c => {
+      const isSel = sel===c.score;
+      return `<button class="score-select-btn${isSel?' selected-'+c.score:''}" onclick="selectScoreAndNext('${item.id}',${c.score},this)">
+        <div class="ssb-num ssb-${c.score}">${c.score}</div>
+        <div class="ssb-text"><div class="ssb-label">${c.label}</div><div class="ssb-desc">${c.text}</div></div>
+      </button>`;
+    }).join('');
+
+    html += `<div class="eval-step-card">
+      <div class="step-badge">STEP ${currentStep+1} / ${totalItems}</div>
+      <div class="step-category">${item.catName}</div>
+      <div class="step-item-name">${item.name}</div>
+      <div class="step-criteria-box">
+        <div class="step-criteria-label">💡 期待される行動（3点基準）</div>
+        <div class="step-criteria-text">${item.criteria}</div>
+      </div>
+      <div class="select-hint">▼ 該当するボタンをタップすると次へ進みます</div>
+      <div class="score-btn-row">${btns}</div>
+      <button class="step-prev-btn" onclick="prevStep()" ${currentStep===0?'disabled':''}>◀ 前の問題に戻る</button>
+    </div>`;
+
+  } else if (currentStep === totalItems) {
+    const q1 = ev.q1||'';
+    html += `<div class="eval-step-card">
+      <div class="step-badge" style="margin-bottom:12px;">振り返り Q1</div>
+      <div class="q-label">この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+      <textarea class="comment-textarea" id="q1Text" placeholder="具体的なエピソードを入力してください...">${q1}</textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="step-prev-btn" style="flex:1;" onclick="prevStep()">◀ 前へ</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="saveQ1Next()">次へ ▶</button>
+      </div>
+    </div>`;
+
+  } else if (currentStep === totalItems + 1) {
+    // Q2入力画面
+    const q2 = ev.q2||'';
+    html += `<div class="eval-step-card">
+      <div class="step-badge" style="margin-bottom:12px;">振り返り Q2</div>
+      <div class="q-label">次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+      <textarea class="comment-textarea" id="q2Text" placeholder="目標や課題を入力してください...">${q2}</textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="step-prev-btn" style="flex:1;" onclick="prevStep()">◀ 前へ</button>
+        <button class="btn btn-sage" style="flex:2;" onclick="saveQ2AndNext()">次へ ▶</button>
+      </div>
+    </div>`;
+
+  } else {
+    // 確認・提出画面（Q2保存後）
+    const allScoresDone = items.every(i => scores[i.id] !== undefined);
+    const missingCount = items.filter(i => scores[i.id]===undefined).length;
+
+    html += `<div class="complete-banner">
+      <div class="complete-banner-icon">${allScoresDone ? '🎉' : '⚠️'}</div>
+      <div class="complete-banner-title">${allScoresDone ? 'すべての入力が完了しました！' : `${missingCount}項目が未入力です`}</div>
+      <div class="complete-banner-sub">${allScoresDone
+        ? '内容を確認して、準備ができたら提出ボタンを押してください。<br>提出後も内容の確認・見直しができます。'
+        : '未入力の項目があります。このまま提出するか、戻って入力することができます。'
+      }</div>
+    </div>
+    <div class="submit-action-area">
+      ${!allScoresDone ? `<button class="btn btn-secondary" onclick="goToFirstMissing()">⬅️ 未入力の項目へ戻る</button>` : ''}
+      <button class="btn btn-submit-final" onclick="submitEval()">✅ 提出する</button>
+      <button class="btn btn-review" onclick="currentStep=0;renderStep();">🔍 最初から見直す</button>
+    </div>`;
+  }
+
+  document.getElementById('evalStepContent').innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function goToFirstMissing() {
+  const items = getItemsFlat(currentUser.role);
+  const scores = getMemberEval(currentViewingPeriod, currentUser.id).scores || {};
+  for (let i=0; i<items.length; i++) { if (scores[items[i].id]===undefined) { currentStep=i; renderStep(); return; } }
+}
+
+function selectScoreAndNext(itemId, score, btn) {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  if (!ev.scores) ev.scores={};
+  ev.scores[itemId]=score;
+  if (ev.status==='none') ev.status='draft';
+  document.querySelectorAll('.score-select-btn').forEach(b=>{ b.className='score-select-btn'; });
+  if (btn) btn.className='score-select-btn selected-'+score;
+  setTimeout(()=>{ currentStep++; renderStep(); }, 350);
+}
+
+function prevStep() { if(currentStep>0){currentStep--;renderStep();} }
+
+function saveQ1Next() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  ev.q1 = document.getElementById('q1Text').value;
+  currentStep++; renderStep();
+}
+
+async function saveQ2() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  ev.q2 = document.getElementById('q2Text').value;
+  const ok = await saveDB(window._db);
+  showToast(ok?'💾 保存しました':'⚠️ ローカルに保存しました');
+  renderStep();
+}
+
+async function saveQ2AndNext() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const text = document.getElementById('q2Text')?.value || '';
+  ev.q2 = text;
+  const ok = await saveDB(window._db);
+  showToast(ok?'💾 保存しました':'⚠️ ローカルに保存しました');
+  currentStep++;
+  renderStep();
+}
+
+async function saveEvalDraft() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const q1El=document.getElementById('q1Text'), q2El=document.getElementById('q2Text');
+  if(q1El) ev.q1=q1El.value;
+  if(q2El) ev.q2=q2El.value;
+  if(ev.status==='none') ev.status='draft';
+  const ok = await saveDB(window._db);
+  showToast(ok?'💾 途中保存しました':'⚠️ ローカルに保存しました');
+}
+
+function showSubmitConfirm() {
+  const items = getItemsFlat(currentUser.role);
+  const scores = getMemberEval(currentViewingPeriod, currentUser.id).scores || {};
+  const missing = items.filter(i=>scores[i.id]===undefined).length;
+  currentStep = items.length+2;
+  renderStep();
+}
+
+async function submitEval() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const q1El=document.getElementById('q1Text'), q2El=document.getElementById('q2Text');
+  if(q1El) ev.q1=q1El.value;
+  if(q2El) ev.q2=q2El.value;
+  const items=getItemsFlat(currentUser.role), scores=ev.scores||{};
+  const missing=items.filter(i=>scores[i.id]===undefined).length;
+  if(missing>0 && !confirm(`まだ${missing}項目が未入力です。このまま提出しますか？`)) return;
+  ev.status='submitted';
+  ev.submittedAt=new Date().toISOString();
+  const ok=await saveDB(window._db);
+  showToast(ok?'✅ 提出しました！':'✅ ローカルに提出保存しました');
+  showView('homeView'); renderStaffHome();
+}
+
+// ============================================================
+// PAST EVAL / PDF VIEW (スタッフ)
+// ============================================================
+function showPastEval() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  const member = currentUser;
+  renderEvalDetail(member, ev, currentViewingPeriod, false);
+  setHeader(`${currentViewingPeriod} の評価`);
+  showView('pastEvalView');
+}
+
+function renderEvalDetail(member, ev, periodKey, isAdmin) {
+  const scores = (ev||{}).scores || {};
+  const roleData = ALL_ITEMS[member.role] || ALL_ITEMS.STAFF;
+  const colorMap = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
+  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+
+  let html = `<div class="home-greeting">
+    <div class="hg-role">${getRoleLabel(member.role)}</div>
+    <div class="hg-name">${member.name}</div>
+    <div class="hg-store">${member.store}</div>
+    <div class="hg-period">${periodKey}</div>
+    ${ev ? getStatusBadge(ev.status, hasFeedback) : '<span class="status-badge s-none">未入力</span>'}
+    ${ev&&ev.submittedAt?`<div style="font-size:11px;color:var(--c-gray);margin-top:4px;">提出日時: ${new Date(ev.submittedAt).toLocaleString('ja-JP')}</div>`:''}
+  </div>`;
+
+  roleData.categories.forEach(cat => {
+    let rows = '';
+    cat.items.forEach(item => {
+      const s = scores[item.id];
+      rows += `<div class="detail-score-row">
+        <span style="flex:1;">${item.name}</span>
+        ${s!==undefined?`<div class="score-chip" style="background:${colorMap[s]}">${s}</div>`:'<div class="score-chip" style="background:var(--c-gray-light);color:var(--c-muted);">-</div>'}
+      </div>`;
+    });
+    html += `<div class="card"><div class="card-title" style="font-size:13px;">📋 ${cat.name}（${cat.allocation}点）</div>${rows}</div>`;
+  });
+
+  html += `<div class="card">
+    <div class="card-title">💬 本人の振り返り・報告</div>
+    <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q1. アピールポイント</div>
+    <div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;margin-bottom:14px;white-space:pre-wrap;line-height:1.6;">${(ev&&ev.q1)||'（未入力）'}</div>
+    <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:6px;">Q2. 課題・チャレンジ</div>
+    <div style="background:var(--c-gray-pale);border-radius:8px;padding:12px;font-size:13px;min-height:60px;white-space:pre-wrap;line-height:1.6;">${(ev&&ev.q2)||'（未入力）'}</div>
+  </div>`;
+
+  if (hasFeedback) {
+    html += `<div class="card">
+      <div class="card-title">💜 評価者からのフィードバック</div>
+      <div class="feedback-box">
+        <div class="feedback-label">フィードバックコメント</div>
+        <div class="feedback-text">${ev.feedback}</div>
+      </div>
+      ${ev.feedbackAt?`<div style="font-size:11px;color:var(--c-muted);text-align:right;">入力日時: ${new Date(ev.feedbackAt).toLocaleString('ja-JP')}</div>`:''}
+    </div>`;
+  } else if (isAdmin || canGiveFeedback(currentUser)) {
+    html += `<div class="card">
+      <div class="card-title">💜 フィードバックコメント</div>
+      <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px;">まだフィードバックが入力されていません。</div>
+      <button class="btn btn-purple" onclick="openFeedbackInput('${member.id}')">✏️ フィードバックを入力する</button>
+    </div>`;
+  }
+
+  // PDF出力ボタンエリア（スタッフ画面用）
+  if (!isAdmin) {
+    const hasFB = ev && ev.feedback && ev.feedback.trim();
+    html += `<div style="padding:0 12px 16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--c-muted);margin-bottom:8px;">📄 PDF出力</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-dark" onclick="printEvalSheet(currentUser, getMemberEval('${periodKey}', currentUser.id), '${periodKey}', false)">
+          🖨️ 面談用PDF（1次・確定欄は空白）
+        </button>
+        ${hasFB ? `<button class="btn btn-sage" onclick="printEvalSheet(currentUser, getMemberEval('${periodKey}', currentUser.id), '${periodKey}', true)">
+          ✅ 確認用PDF（全項目入り）
+        </button>` : `<div style="background:var(--c-gray-pale);border-radius:10px;padding:10px;font-size:12px;color:var(--c-muted);text-align:center;">確認用PDF（全項目入り）はフィードバック入力後に出力できます</div>`}
+      </div>
+    </div>`;
+  }
+
+  const targetEl = isAdmin ? document.getElementById('detailContent') : document.getElementById('pastEvalContent');
+  targetEl.innerHTML = html;
+}
+
+// ============================================================
+// FEEDBACK INPUT
+// ============================================================
+function openFeedbackInput(memberId) {
+  feedbackTargetMember = memberId;
+  const member = getMembers().find(m=>m.id===memberId);
+  const ev = getMemberEval(currentViewingPeriod, memberId);
+  setHeader(`${member.name} へのフィードバック`);
+
+  document.getElementById('feedbackContent').innerHTML = `
+    <div class="home-greeting" style="margin-bottom:0;">
+      <div class="hg-role">${getRoleLabel(member.role)}</div>
+      <div class="hg-name">${member.name}</div>
+      <div class="hg-store">${member.store} ｜ ${currentViewingPeriod}</div>
+    </div>
+    <div class="card" style="margin-top:10px;">
+      <div class="card-title">💜 フィードバックコメント入力</div>
+      <p style="font-size:13px;color:var(--c-muted);margin-bottom:12px;line-height:1.6;">面談しながら入力してください。保存すると面談完了となります。</p>
+      <textarea class="feedback-textarea" id="feedbackText" placeholder="フィードバックコメントを入力してください...">${ev.feedback||''}</textarea>
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button class="step-prev-btn" style="flex:1;" onclick="backFromFeedback()">キャンセル</button>
+        <button class="btn btn-purple" style="flex:2;" onclick="saveFeedback()">💾 保存する（面談完了）</button>
+      </div>
+    </div>`;
+
+  showView('feedbackView');
+}
+
+async function saveFeedback() {
+  const text = document.getElementById('feedbackText')?.value || '';
+  if (!text.trim()) { showToast('コメントを入力してください'); return; }
+  const ev = getMemberEval(currentViewingPeriod, feedbackTargetMember);
+  ev.feedback = text;
+  ev.feedbackAt = new Date().toISOString();
+  const ok = await saveDB(window._db);
+  showToast(ok?'✅ フィードバックを保存しました（面談完了）':'⚠️ ローカルに保存しました');
+  backFromFeedback();
+}
+
+// ============================================================
+// ============================================================
+// PDF GENERATION
+// ============================================================
+
+// PDF①：面談用（自己評価提出後・1次/確定/FB欄は空白）
+function generatePDF() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  printEvalSheet(currentUser, ev, currentViewingPeriod, false);
+}
+
+// PDF②：確認用（全入力完了後・全項目入り）
+function generateFullPDF() {
+  const ev = getMemberEval(currentViewingPeriod, currentUser.id);
+  printEvalSheet(currentUser, ev, currentViewingPeriod, true);
+}
+
+function generateAdminPDF(memberId) {
+  const member = getMembers().find(m=>m.id===memberId);
+  const ev = getMemberEval(currentViewingPeriod, memberId);
+  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+  printEvalSheet(member, ev, currentViewingPeriod, !!hasFeedback);
+}
+
+// PDF共通出力関数
+// showFull=false → 面談用（1次/確定/FB空白）
+// showFull=true  → 確認用（全項目入り）
+function printEvalSheet(member, ev, periodKey, showFull) {
+  const scores = (ev||{}).scores||{};
+  const roleData = ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
+  const hasFeedback = ev && ev.feedback && ev.feedback.trim();
+  const colorMap = ['','#c0392b','#e67e22','#7aa5c8','#6d9e7a','#8e44ad'];
+
+  const pdfTitle = showFull
+    ? `${member.name}　評価シート【確認用・全項目】`
+    : `${member.name}　評価シート【面談用】`;
+
+  const win = window.open('','_blank');
+  let body = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>${pdfTitle}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:9.5pt;color:#000;background:#fff;}
+    .page{padding:10mm 12mm;}
+    .doc-title{font-size:15pt;font-weight:900;margin-bottom:2pt;color:#2c2c2c;}
+    .doc-sub{font-size:9pt;color:#888;margin-bottom:8pt;}
+    .info-table{width:100%;border-collapse:collapse;margin-bottom:10pt;}
+    .info-table td{border:1px solid #bbb;padding:3.5pt 6pt;font-size:8.5pt;}
+    .info-table .lbl{background:#f0ede8;font-weight:700;width:22%;}
+    .section{margin-bottom:10pt;}
+    .section-title{font-size:10pt;font-weight:900;background:#2c2c2c;color:#fff;padding:3.5pt 8pt;margin-bottom:0;letter-spacing:.05em;}
+    .eval-table{width:100%;border-collapse:collapse;margin-bottom:0;}
+    .eval-table th{background:#f5f2ee;font-size:7.5pt;font-weight:700;border:1px solid #bbb;padding:3pt 4pt;text-align:center;color:#444;}
+    .eval-table td{border:1px solid #bbb;padding:3pt 5pt;font-size:8pt;vertical-align:middle;}
+    .item-name{font-weight:700;font-size:8pt;}
+    .criteria-text{font-size:7pt;color:#555;line-height:1.45;}
+    .score-cell{text-align:center;font-weight:900;font-size:11pt;width:8%;}
+    .score-blank{text-align:center;color:#ccc;font-size:8pt;width:8%;}
+    .s1{color:#c0392b;}.s2{color:#e67e22;}.s3{color:#7aa5c8;}.s4{color:#6d9e7a;}.s5{color:#8e44ad;}
+    .text-box{border:1px solid #bbb;padding:5pt 6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:44pt;background:#fafafa;}
+    .feedback-box{border:2px solid #8e44ad;padding:6pt;font-size:8.5pt;white-space:pre-wrap;line-height:1.7;min-height:55pt;background:#f9f3fd;}
+    .q-title{font-size:8.5pt;font-weight:700;color:#2c2c2c;margin:6pt 0 3pt;}
+    .pdf-type-badge{display:inline-block;padding:2pt 10pt;border-radius:3pt;font-size:8pt;font-weight:700;margin-bottom:6pt;}
+    .badge-interview{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+    .badge-final{background:#d4edda;color:#155724;border:1px solid #28a745;}
+    .stamp-area{display:flex;gap:8pt;margin-top:8pt;}
+    .stamp-box{border:1px solid #bbb;width:48pt;height:36pt;text-align:center;font-size:6.5pt;color:#888;padding-top:4pt;}
+    @media print{
+      body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{size:A4 portrait;margin:8mm 10mm;}
+    }
+  </style></head><body><div class="page">
+  <div class="doc-title">${getRoleLabel(member.role)} 評価シート</div>
+  <div class="doc-sub">${periodKey}</div>
+  <div class="pdf-type-badge ${showFull?'badge-final':'badge-interview'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（1次・確定欄は空白）'}</div>
+  <table class="info-table">
+    <tr>
+      <td class="lbl">氏名</td><td style="font-weight:700;font-size:10pt;">${member.name}</td>
+      <td class="lbl">所属店舗</td><td>${member.store}</td>
+    </tr>
+    <tr>
+      <td class="lbl">評価期間</td><td>${periodKey}</td>
+      <td class="lbl">提出日時</td><td style="font-size:7.5pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+    </tr>
+  </table>`;
+
+  // 評価項目テーブル
+  roleData.categories.forEach(cat => {
+    body += `<div class="section">
+      <div class="section-title">${cat.name}　（配点 ${cat.allocation}点）</div>
+      <table class="eval-table">
+        <tr>
+          <th style="width:16%;">評価項目</th>
+          <th style="width:48%;">期待される行動（3点基準）</th>
+          <th style="width:9%;">自己評価</th>
+          <th style="width:9%;">1次評価</th>
+          <th style="width:9%;">確定点数</th>
+          <th style="width:9%;">配点割合</th>
+        </tr>`;
+    cat.items.forEach(item => {
+      const s = scores[item.id];
+      const selfScore = s ? `<span class="s${s}">${s}</span>` : '<span style="color:#ccc;">-</span>';
+      body += `<tr>
+        <td class="item-name">${item.name}</td>
+        <td class="criteria-text">${item.criteria}</td>
+        <td class="score-cell">${selfScore}</td>
+        <td class="score-blank">${showFull?'':''}</td>
+        <td class="score-blank">${showFull?'':''}</td>
+        <td class="score-cell" style="font-size:9pt;font-weight:700;color:#888;">${item.w}</td>
+      </tr>`;
+    });
+    body += '</table></div>';
+  });
+
+  // 振り返り欄
+  body += `<div class="section">
+    <div class="section-title">本人の振り返り・報告</div>
+    <div style="padding:6pt 0 2pt;">
+      <div class="q-title">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+      <div class="text-box">${(ev&&ev.q1)||''}</div>
+      <div class="q-title">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+      <div class="text-box">${(ev&&ev.q2)||''}</div>
+    </div>
+  </div>`;
+
+  // フィードバック欄
+  body += `<div class="section">
+    <div class="section-title">評価者からのフィードバックコメント</div>
+    <div style="padding:4pt 0;">
+      <div class="feedback-box">${(showFull && hasFeedback) ? ev.feedback : ''}</div>
+      ${showFull && ev&&ev.feedbackAt?`<div style="font-size:7pt;color:#888;text-align:right;margin-top:3pt;">入力日時: ${new Date(ev.feedbackAt).toLocaleString('ja-JP')}</div>`:''}
+    </div>
+  </div>`;
+
+  // 押印欄（面談用のみ）
+  if (!showFull) {
+    body += `<div class="stamp-area">
+      <div class="stamp-box">本人</div>
+      <div class="stamp-box">第１評価者</div>
+      <div class="stamp-box">第２評価者</div>
+      <div class="stamp-box">代表取締役</div>
+    </div>`;
+  }
+
+  body += '</div>';
+  body += '<scr'+'ipt>document.addEventListener(\'DOMContentLoaded\',function(){setTimeout(function(){window.print();},600);});</scr'+'ipt>';
+  body += '</body></html>';
+
+  win.document.write(body);
+  win.document.close();
+}
+
+// ============================================================
+// CSV
+// ============================================================
+function downloadCSVForMember(memberId) {
+  const member = getMembers().find(m=>m.id===memberId); if(!member) return;
+  const ev = getMemberEval(currentViewingPeriod, memberId);
+  const scores = ev.scores||{};
+  let rows=[['カテゴリ','評価項目','行動基準','自己評価点']];
+  getItemsFlat(member.role).forEach(item=>rows.push([item.catName,item.name,item.criteria,scores[item.id]??'']));
+  rows.push(['振り返りQ1','','',ev.q1||'']);
+  rows.push(['振り返りQ2','','',ev.q2||'']);
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=`自己評価_${member.name}_${currentViewingPeriod}.csv`;
+  a.click(); URL.revokeObjectURL(url); showToast('📤 CSVをダウンロードしました');
+}
+
+async function downloadAllCSV() {
+  const members=getMembers();
+  let rows=[['氏名','店舗','役職','カテゴリ','評価項目','行動基準','自己評価点']];
+  members.forEach(member=>{
+    const ev=getMemberEval(currentViewingPeriod, member.id), scores=ev.scores||{};
+    getItemsFlat(member.role).forEach(item=>rows.push([member.name,member.store,getRoleLabel(member.role),item.catName,item.name,item.criteria,scores[item.id]??'']));
+    rows.push([member.name,member.store,getRoleLabel(member.role),'振り返りQ1','','',ev.q1||'']);
+    rows.push([member.name,member.store,getRoleLabel(member.role),'振り返りQ2','','',ev.q2||'']);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=`全員自己評価_${currentViewingPeriod}.csv`;
+  a.click(); URL.revokeObjectURL(url); showToast('📤 全員分CSVをダウンロードしました');
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function adminTab(tab, btn) {
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  ['adminOverview','adminFeedback','adminMembers','adminPeriods','adminSettings'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('admin'+tab.charAt(0).toUpperCase()+tab.slice(1)).style.display='';
+  if(tab==='overview') showAdminOverview();
+  if(tab==='feedback') showAdminFeedback();
+  if(tab==='members') showAdminMembers();
+  if(tab==='periods') showAdminPeriods();
+  if(tab==='settings') showAdminSettings();
+}
+
+function showAdminOverview() {
+  const db=getDB(), members=getMembers();
+  const period=currentViewingPeriod||db.currentPeriod||'';
+  const periods=Object.keys(db.periods||{});
+
+  // 期切替タブ
+  const periodTabsHtml = periods.length>0 ? `<div class="period-selector" style="margin:0 0 10px;">
+    <div class="period-selector-label">📅 確認する期を選択</div>
+    <div class="period-tabs">${periods.slice().reverse().map(p=>`<button class="period-tab${p===currentViewingPeriod?' active':''}" onclick="currentViewingPeriod='${p}';showAdminOverview();">${p}</button>`).join('')}</div>
+  </div>` : '<div class="info-banner">まだ評価期が作成されていません。「期管理」タブから作成してください。</div>';
+
+  let submitted=0, meeting=0, notStarted=0;
+  members.forEach(m=>{
+    const ev=getMemberEval(period,m.id);
+    const hasF=ev.feedback&&ev.feedback.trim();
+    if(ev.status==='submitted'&&hasF) meeting++;
+    else if(ev.status==='submitted') submitted++;
+    else notStarted++;
+  });
+
+  let storeGroups={};
+  members.forEach(m=>{if(!storeGroups[m.store])storeGroups[m.store]=[];storeGroups[m.store].push(m);});
+  let membersHtml='';
+  Object.keys(storeGroups).forEach(store=>{
+    membersHtml+=`<div class="section-heading">${store}</div>`;
+    storeGroups[store].forEach(m=>{
+      const ev=getMemberEval(period,m.id);
+      const items=getItemsFlat(m.role), scores=ev.scores||{};
+      const done=items.filter(i=>scores[i.id]!==undefined).length;
+      const pct=items.length>0?Math.round(done/items.length*100):0;
+      const hasF=ev.feedback&&ev.feedback.trim();
+      const badge=getStatusBadge(ev.status,hasF);
+      membersHtml+=`<div class="member-row" onclick="showMemberDetail('${m.id}')" style="cursor:pointer;">
+        <div class="member-avatar">${m.name[0]}</div>
+        <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ${badge}</div>
+        <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar" style="width:${pct}%"></div></div></div>
+        <div style="font-size:11px;color:var(--c-muted);">▶</div>
+      </div>`;
+    });
+  });
+
+  document.getElementById('adminOverview').innerHTML=`${periodTabsHtml}
+    <div class="card"><div class="card-title">📊 ${period||'（期未設定）'}の提出状況</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div class="stat-box" style="background:#d1ecf1;"><div class="stat-num" style="color:#0c5460;">${meeting}</div><div class="stat-label" style="color:#0c5460;">面談完了</div></div>
+        <div class="stat-box" style="background:#d4edda;"><div class="stat-num" style="color:#155724;">${submitted}</div><div class="stat-label" style="color:#155724;">提出済み</div></div>
+        <div class="stat-box" style="background:var(--c-gray-pale);"><div class="stat-num" style="color:var(--c-muted);">${notStarted}</div><div class="stat-label" style="color:var(--c-muted);">未提出</div></div>
+      </div>
+      <button class="btn btn-dark" onclick="downloadAllCSV()">📤 全員分CSVダウンロード</button>
+    </div>
+    <div class="card"><div class="card-title">👥 メンバー別状況</div>${membersHtml}</div>`;
+}
+
+function showMemberDetail(memberId) {
+  currentDetailMember=memberId;
+  const member=getMembers().find(m=>m.id===memberId); if(!member) return;
+  const ev=getMemberEval(currentViewingPeriod,memberId);
+  renderEvalDetail(member, ev, currentViewingPeriod, true);
+  setHeader(member.name+' の詳細');
+  showView('detailView');
+}
+
+function showAdminFeedback() {
+  const members=getMembers();
+  const period=currentViewingPeriod;
+  let html='';
+
+  if (!period) {
+    html='<div class="info-banner" style="margin:12px;">評価期が設定されていません。</div>';
+    document.getElementById('adminFeedback').innerHTML=html; return;
+  }
+
+  // SM以上のユーザーのみ対象
+  const submittedMembers=members.filter(m=>{
+    const ev=getMemberEval(period,m.id);
+    return ev.status==='submitted';
+  });
+
+  if (submittedMembers.length===0) {
+    html='<div class="info-banner" style="margin:12px;">提出済みのスタッフがいません。</div>';
+    document.getElementById('adminFeedback').innerHTML=html; return;
+  }
+
+  let storeGroups={};
+  submittedMembers.forEach(m=>{if(!storeGroups[m.store])storeGroups[m.store]=[];storeGroups[m.store].push(m);});
+
+  html=`<div class="card" style="margin-top:10px;"><div class="card-title">💬 フィードバック入力（${period}）</div>
+    <p class="text-sm text-muted" style="margin-bottom:12px;">提出済みのスタッフに面談しながらフィードバックを入力します。</p></div>`;
+
+  Object.keys(storeGroups).forEach(store=>{
+    html+=`<div class="section-heading">${store}</div>`;
+    storeGroups[store].forEach(m=>{
+      const ev=getMemberEval(period,m.id);
+      const hasF=ev.feedback&&ev.feedback.trim();
+      html+=`<div class="card" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div class="member-avatar">${m.name[0]}</div>
+          <div><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${hasF?'<span style="color:#8e44ad;font-weight:700;">💬 入力済み</span>':'<span style="color:var(--c-muted);">未入力</span>'}</div></div>
+        </div>
+        ${hasF?`<div class="feedback-box"><div class="feedback-label">入力済みフィードバック</div><div class="feedback-text" style="font-size:12px;">${ev.feedback.substring(0,80)}${ev.feedback.length>80?'...':''}</div></div>`:''}
+        <button class="btn ${hasF?'btn-secondary':'btn-purple'} btn-sm" onclick="currentViewingPeriod='${period}';openFeedbackInput('${m.id}')">
+          ${hasF?'✏️ 編集する':'✏️ フィードバックを入力する'}
+        </button>
+      </div>`;
+    });
+  });
+
+  document.getElementById('adminFeedback').innerHTML=html;
+}
+
+function showAdminMembers() {
+  const members=getMembers();
+  let html=`<div class="card"><div class="card-title">👥 メンバー管理</div>
+    <button class="btn btn-primary btn-sm" style="margin-bottom:14px;" onclick="showAddMemberForm()">＋ メンバー追加</button>
+    <div id="addMemberFormArea"></div>`;
+  members.forEach((m,i)=>{
+    html+=`<div class="member-row"><div class="member-avatar">${m.name[0]}</div>
+      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-meta">${getRoleLabel(m.role)} ｜ ${m.store}</div></div>
+      <div class="member-actions"><button class="btn-icon" onclick="editMember(${i})">✏️</button><button class="btn-icon" onclick="deleteMember(${i})">🗑️</button></div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('adminMembers').innerHTML=html;
+}
+
+function showAddMemberForm(ei) {
+  const m=ei!==undefined?getMembers()[ei]:null;
+  document.getElementById('addMemberFormArea').innerHTML=`<div style="background:var(--c-gray-pale);border:1px solid var(--c-gray-light);border-radius:12px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:800;margin-bottom:10px;">${m?'編集':'追加'}</div>
+    <div class="form-group"><label class="form-label">氏名</label><input class="form-input" id="mf_name" value="${m?.name||''}" placeholder="山田 太郎"></div>
+    <div class="form-group"><label class="form-label">役職</label><select class="form-select" id="mf_role">
+      <option value="SM" ${m?.role==='SM'?'selected':''}>SM（店長）</option>
+      <option value="VSM" ${m?.role==='VSM'?'selected':''}>VSM（副店長）</option>
+      <option value="STAFF" ${m?.role==='STAFF'?'selected':''}>一般スタッフ</option>
+      <option value="PART" ${m?.role==='PART'?'selected':''}>アルバイト</option>
+    </select></div>
+    <div class="form-group"><label class="form-label">店舗</label><select class="form-select" id="mf_store">
+      <option value="埼玉入間店" ${m?.store==='埼玉入間店'?'selected':''}>埼玉入間店</option>
+      <option value="川越インター店" ${m?.store==='川越インター店'?'selected':''}>川越インター店</option>
+      <option value="その他">その他</option>
+    </select></div>
+    <div class="form-group"><label class="form-label">PIN（4桁）</label><input class="form-input" type="tel" maxlength="4" id="mf_pin" value="${m?.pin||''}" placeholder="1234"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="saveMember(${ei})">保存</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('addMemberFormArea').innerHTML=''">キャンセル</button>
+    </div>
+  </div>`;
+}
+function editMember(i){showAddMemberForm(i);}
+async function saveMember(ei){
+  const name=document.getElementById('mf_name').value.trim(),role=document.getElementById('mf_role').value,store=document.getElementById('mf_store').value,pin=document.getElementById('mf_pin').value.trim();
+  if(!name||!pin){showToast('氏名とPINを入力してください');return;}
+  if(pin.length!==4||!/^\d+$/.test(pin)){showToast('PINは4桁の数字です');return;}
+  const members=getMembers();
+  if(ei!==undefined) members[ei]={...members[ei],name,role,store,pin};
+  else members.push({id:'m'+Date.now(),name,role,store,pin});
+  saveMembers(members);
+  await saveDB(window._db);
+  showToast('✅ 保存しました');showAdminMembers();initStaffSelect();
+}
+async function deleteMember(i){
+  if(!confirm('削除しますか？'))return;
+  const m=getMembers();m.splice(i,1);saveMembers(m);
+  await saveDB(window._db);
+  showToast('🗑️ 削除しました');showAdminMembers();initStaffSelect();
+}
+
+// 期管理
+function showAdminPeriods() {
+  const db=getDB();
+  const periods=Object.keys(db.periods||{});
+  const suggestion=getCurrentPeriodSuggestion();
+
+  let html=`<div class="settings-card"><h3>📅 新しい評価期を開始</h3>
+    <p class="text-sm text-muted" style="margin-bottom:12px;">新しい期を作成すると、全スタッフの評価入力がリセットされます（過去の期データは保持されます）。</p>
+    <div class="form-group"><label class="form-label">期名（例：2026年上半期）</label>
+      <input class="form-input" id="newPeriodName" value="${suggestion.label}" placeholder="例：2026年上半期">
+    </div>
+    <button class="btn btn-primary" onclick="startNewPeriod()">🆕 この期を開始する</button>
+  </div>`;
+
+  if (periods.length>0) {
+    html+=`<div class="settings-card"><h3>📚 過去の評価期一覧</h3>`;
+    periods.slice().reverse().forEach(p=>{
+      const isCurrent=p===db.currentPeriod;
+      const evCount=Object.keys((db.periods[p]||{}).evals||{}).length;
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-gray-light);">
+        <div><div style="font-size:14px;font-weight:700;">${p} ${isCurrent?'<span style="background:var(--c-salmon);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;">現在の期</span>':''}</div>
+        <div style="font-size:11px;color:var(--c-muted);">${evCount}名のデータ</div></div>
+        ${!isCurrent?`<button class="btn btn-danger btn-sm" onclick="deletePeriod('${p}')">削除</button>`:''}
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  document.getElementById('adminPeriods').innerHTML=html;
+}
+
+async function startNewPeriod() {
+  const name=document.getElementById('newPeriodName').value.trim();
+  if(!name){showToast('期名を入力してください');return;}
+  if(!confirm(`「${name}」を開始しますか？`))return;
+  const db=getDB();
+  if(!db.periods) db.periods={};
+  if(!db.periods[name]) db.periods[name]={evals:{}};
+  db.currentPeriod=name;
+  currentViewingPeriod=name;
+  const ok=await saveDB(db);
+  showToast(ok?`✅ 「${name}」を開始しました`:'⚠️ ローカルに保存しました');
+  showAdminPeriods();
+}
+
+async function deletePeriod(periodKey) {
+  if(!confirm(`「${periodKey}」のデータを削除しますか？この操作は取り消せません。`))return;
+  const db=getDB();
+  delete db.periods[periodKey];
+  await saveDB(db);
+  showToast('🗑️ 削除しました');showAdminPeriods();
+}
+
+function showAdminSettings() {
+  const s=getSettings();
+  document.getElementById('adminSettings').innerHTML=`
+    <div class="settings-card"><h3>📅 提出期限設定</h3>
+      <div class="form-group"><label class="form-label">締め切り日</label><input class="form-input" type="date" id="st_deadline" value="${s.deadline||''}"></div>
+      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">保存</button>
+    </div>
+    <div class="settings-card"><h3>🔑 管理者PIN変更</h3>
+      <div class="form-group"><label class="form-label">新しいPIN（4桁）</label><input class="form-input" type="tel" maxlength="4" id="st_adminPin" placeholder="0000"></div>
+      <button class="btn btn-danger btn-sm" onclick="saveAdminPin()">変更</button>
+    </div>
+    <div class="settings-card"><h3>☁️ データ再読み込み</h3>
+      <button class="btn btn-sage btn-sm" onclick="reloadData()">最新データを取得</button>
+    </div>`;
+}
+function saveDeadline(){const s=getSettings();s.deadline=document.getElementById('st_deadline').value;saveSettings(s);showToast('✅ 保存しました');}
+function saveAdminPin(){const pin=document.getElementById('st_adminPin').value.trim();if(pin.length!==4||!/^\d+$/.test(pin)){showToast('PINは4桁の数字です');return;}const s=getSettings();s.adminPin=pin;saveSettings(s);showToast('✅ 変更しました');}
+async function reloadData(){window._db=await fetchDB();showToast('✅ 再取得しました');showAdminOverview();}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// INIT
+window.onload = async function() {
+  initStaffSelect(); // まず DEFAULT_MEMBERS で初期化（画面を素早く表示）
+  window._db = await fetchDB();
+  // DBが空の場合は初期化
+  if (!window._db.periods) window._db.periods={};
+  if (!window._db.currentPeriod) window._db.currentPeriod='';
+  // membersが空・未定義の場合はDEFAULT_MEMBERSをDBに書き込む
+  if (!window._db.members || !Array.isArray(window._db.members) || window._db.members.length === 0) {
+    window._db.members = DEFAULT_MEMBERS;
+  }
+  currentViewingPeriod = window._db.currentPeriod || '';
+  // 最新メンバーでセレクトを再描画
+  initStaffSelect();
+};
+
 </script>
 </body>
 </html>
