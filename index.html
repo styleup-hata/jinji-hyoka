@@ -1198,20 +1198,23 @@ function openFeedbackInput(memberId) {
       const first = firstScores[item.id];
       const second = secondScores[item.id];
       const selfDisp = self !== undefined ? `<div class="score-chip" style="background:${colorMap2[self]};margin:0 auto;">${self}</div>` : '<span style="color:var(--c-muted);">-</span>';
-      const scoreOpts = (current) => [1,2,3,4,5].map(n =>
-        `<option value="${n}" ${current===n?'selected':''}>${n}</option>`
-      ).join('');
+      const scoreOpts = (current, selfVal) => [1,2,3,4,5].map(n => {
+        // currentが未設定の場合は自己評価をデフォルトに
+        const defaultVal = current !== undefined ? current : selfVal;
+        return `<option value="${n}" ${defaultVal===n?'selected':''}>${n}</option>`;
+      }).join('');
+      const selfVal = selfScores[item.id];
       scoreInputHtml += `<tr>
         <td style="padding:5px 6px;border:1px solid var(--c-gray-light);font-size:11px;">${item.name}</td>
         <td style="padding:5px;border:1px solid var(--c-gray-light);text-align:center;">${selfDisp}</td>
         <td style="padding:3px;border:1px solid var(--c-gray-light);text-align:center;">
           <select id="first_${item.id}" style="width:100%;padding:3px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;">
-            <option value="">-</option>${scoreOpts(first)}
+            <option value="">-</option>${scoreOpts(first, selfVal)}
           </select>
         </td>
         <td style="padding:3px;border:1px solid var(--c-gray-light);text-align:center;">
           <select id="second_${item.id}" style="width:100%;padding:3px;border:1px solid var(--c-gray-light);border-radius:4px;font-size:12px;">
-            <option value="">-</option>${scoreOpts(second)}
+            <option value="">-</option>${scoreOpts(second, selfVal)}
           </select>
         </td>
       </tr>`;
@@ -1308,9 +1311,9 @@ function printEvalSheet(member, ev, periodKey, showFull) {
   const secondScores = (ev||{}).secondScores||{};
   const roleData = ALL_ITEMS[member.role]||ALL_ITEMS.STAFF;
   const hasFeedback = ev && ev.feedback && ev.feedback.trim();
-  const colorMap = {1:'#c0392b',2:'#e67e22',3:'#7aa5c8',4:'#6d9e7a',5:'#8e44ad'};
+  const cm = {1:'#c0392b',2:'#e67e22',3:'#7aa5c8',4:'#6d9e7a',5:'#8e44ad'};
 
-  // 定量評価データ
+  // 定量評価
   const sq = getStoreQuant(periodKey, member.store);
   const quantScores = QUANT_ITEMS.map(item => calcQuantScore(
     parseFloat(sq[item.id+'_target'])||0,
@@ -1318,158 +1321,165 @@ function printEvalSheet(member, ev, periodKey, showFull) {
   ));
   const quantTotal = calcQuantTotal(member.role, quantScores);
 
-  // 定性得点（確定>1次>自己の優先順位）
+  // 定性得点：確認用は2次>1次>自己、面談用は空白
   const effectiveScores = {};
-  getItemsFlat(member.role).forEach(item => {
-    if (secondScores[item.id] !== undefined) effectiveScores[item.id] = secondScores[item.id];
-    else if (firstScores[item.id] !== undefined) effectiveScores[item.id] = firstScores[item.id];
-    else if (scores[item.id] !== undefined) effectiveScores[item.id] = scores[item.id];
-  });
-  const qualSelf = calcQualTotal(member.role, scores);
-  const qualTotal = calcQualTotal(member.role, effectiveScores);
-  const totalScore = Math.round((quantTotal + (showFull ? qualTotal : qualSelf)) * 10) / 10;
-  const rankResult = showFull ? calcRank(member.role, totalScore) : '';
-
-  const pdfTitle = showFull ? `${member.name} 評価シート【確認用】` : `${member.name} 評価シート【面談用】`;
+  if (showFull) {
+    getItemsFlat(member.role).forEach(item => {
+      if (secondScores[item.id] !== undefined) effectiveScores[item.id] = secondScores[item.id];
+      else if (firstScores[item.id] !== undefined) effectiveScores[item.id] = firstScores[item.id];
+      else if (scores[item.id] !== undefined) effectiveScores[item.id] = scores[item.id];
+    });
+  }
+  const qualTotal = showFull ? calcQualTotal(member.role, effectiveScores) : null;
+  const totalScore = showFull ? Math.round((quantTotal + qualTotal) * 10) / 10 : null;
+  const rankResult = showFull && totalScore ? calcRank(member.role, totalScore) : null;
 
   const win = window.open('','_blank');
   let body = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-  <title>${pdfTitle}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${member.name} 評価シート</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:9pt;color:#000;background:#fff;}
-    .page{padding:8mm 10mm;}
-    .doc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6pt;border-bottom:2px solid #2c2c2c;padding-bottom:4pt;}
-    .doc-title{font-size:14pt;font-weight:900;color:#2c2c2c;}
-    .badge{display:inline-block;padding:2pt 8pt;border-radius:3pt;font-size:7.5pt;font-weight:700;}
+    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:10pt;color:#000;background:#fff;}
+    .page{padding:6mm 7mm;}
+    .back-btn{display:block;margin-bottom:6pt;padding:6pt 14pt;background:#2c2c2c;color:#fff;border:none;border-radius:6pt;font-size:10pt;cursor:pointer;font-family:inherit;}
+    @media print{.back-btn,.no-print{display:none;}}
+    .doc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:5pt;border-bottom:2.5px solid #2c2c2c;padding-bottom:3pt;}
+    .doc-title{font-size:16pt;font-weight:900;color:#2c2c2c;}
+    .badge{display:inline-block;padding:2pt 8pt;border-radius:3pt;font-size:8pt;font-weight:700;}
     .badge-i{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
     .badge-f{background:#d4edda;color:#155724;border:1px solid #28a745;}
-    table{width:100%;border-collapse:collapse;}
-    th,td{border:1px solid #bbb;padding:3pt 4pt;font-size:8pt;vertical-align:middle;}
+    table{width:100%;border-collapse:collapse;margin-bottom:5pt;}
+    th,td{border:1px solid #aaa;padding:3.5pt 5pt;font-size:9pt;vertical-align:middle;}
     th{background:#f0ede8;font-weight:700;text-align:center;}
-    .lbl{background:#f0ede8;font-weight:700;width:18%;}
-    .sec-title{background:#2c2c2c;color:#fff;font-size:9.5pt;font-weight:900;padding:3pt 7pt;margin:7pt 0 0;letter-spacing:.04em;}
-    .item-name{font-weight:700;font-size:7.5pt;}
-    .criteria{font-size:6.5pt;color:#555;line-height:1.4;}
-    .score-c{text-align:center;font-weight:900;font-size:10pt;width:7%;}
-    .score-blank{text-align:center;color:#ddd;font-size:7pt;width:7%;}
-    .w-col{text-align:center;color:#888;font-size:7.5pt;width:5%;}
-    .num-r{text-align:right;}
-    .rate-cell{text-align:center;font-weight:700;}
-    .text-box{border:1px solid #bbb;padding:4pt 5pt;font-size:8pt;white-space:pre-wrap;line-height:1.7;min-height:38pt;background:#fafafa;}
-    .fb-box{border:2px solid #8e44ad;padding:5pt;font-size:8pt;white-space:pre-wrap;line-height:1.7;min-height:45pt;background:#f9f3fd;}
-    .total-table td{padding:4pt 6pt;font-size:9pt;}
-    .rank-box{background:#2c2c2c;color:#fff;font-size:12pt;font-weight:900;padding:4pt 12pt;border-radius:4pt;display:inline-block;}
-    .stamp-row{display:flex;gap:6pt;margin-top:6pt;}
-    .stamp-box{border:1px solid #bbb;width:44pt;height:34pt;text-align:center;font-size:6pt;color:#888;padding-top:3pt;}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}@page{size:A4 portrait;margin:7mm 8mm;}}
+    .lbl{background:#f0ede8;font-weight:700;}
+    .sec{background:#2c2c2c;color:#fff;font-size:10pt;font-weight:900;padding:3pt 7pt;letter-spacing:.04em;margin:5pt 0 0;}
+    .item-n{font-weight:700;font-size:9pt;}
+    .crit{font-size:7.5pt;color:#555;line-height:1.45;}
+    .sc{text-align:center;font-weight:900;font-size:11pt;}
+    .sc-blank{text-align:center;color:#ccc;font-size:8pt;}
+    .w-c{text-align:center;color:#888;font-size:8pt;}
+    .nr{text-align:right;}
+    .rate{text-align:center;font-weight:700;}
+    .tbox{border:1px solid #aaa;padding:4pt 5pt;font-size:9pt;white-space:pre-wrap;line-height:1.7;min-height:36pt;background:#fafafa;}
+    .fbbox{border:2px solid #8e44ad;padding:5pt;font-size:9pt;white-space:pre-wrap;line-height:1.7;min-height:42pt;background:#f9f3fd;}
+    .rank-box{background:#2c2c2c;color:#fff;font-size:13pt;font-weight:900;padding:3pt 14pt;border-radius:4pt;display:inline-block;}
+    @media print{
+      body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{size:A4 portrait;margin:6mm 7mm;}
+    }
   </style></head><body><div class="page">
+  <button class="back-btn" onclick="window.close()">◀ 閉じる</button>
 
   <div class="doc-header">
     <div class="doc-title">${getRoleLabel(member.role)} 評価シート</div>
-    <div>
-      <span class="badge ${showFull?'badge-f':'badge-i'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（1次・確定欄は空白）'}</span>
-    </div>
+    <span class="badge ${showFull?'badge-f':'badge-i'}">${showFull?'✅ 確認用（全項目）':'📋 面談用（得点・ランクは面談後確定）'}</span>
   </div>
 
-  <table style="margin-bottom:6pt;">
+  <table style="margin-bottom:5pt;">
     <tr>
-      <td class="lbl">氏名</td><td style="font-weight:700;font-size:10pt;" colspan="3">${member.name}</td>
-      <td class="lbl">評価期間</td><td colspan="3">${periodKey}</td>
+      <td class="lbl" style="width:12%;">氏名</td>
+      <td style="font-weight:700;font-size:11pt;width:28%;">${member.name}</td>
+      <td class="lbl" style="width:12%;">評価期間</td>
+      <td style="width:28%;">${periodKey}</td>
     </tr>
     <tr>
-      <td class="lbl">所属店舗</td><td colspan="3">${member.store}</td>
-      <td class="lbl">提出日時</td><td colspan="3" style="font-size:7pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
+      <td class="lbl">所属店舗</td><td>${member.store}</td>
+      <td class="lbl">提出日時</td>
+      <td style="font-size:8pt;">${ev&&ev.submittedAt?new Date(ev.submittedAt).toLocaleString('ja-JP'):'-'}</td>
     </tr>
   </table>
 
   <!-- 定量評価 -->
-  <div class="sec-title">▼ 定量評価（数字の目標）　配点: ${roleData.quantitative}点</div>
+  <div class="sec">▼ 定量評価（数字の目標）　配点: ${roleData.quantitative}点</div>
   <table>
     <tr>
-      <th style="width:22%;">項目</th>
-      <th style="width:18%;">目標</th>
-      <th style="width:18%;">実績</th>
-      <th style="width:12%;">達成率</th>
-      <th style="width:20%;">達成率→評価得点</th>
-      <th style="width:10%;">評価得点</th>
+      <th style="width:20%;">項目</th>
+      <th style="width:17%;">目標</th>
+      <th style="width:17%;">実績</th>
+      <th style="width:11%;">達成率</th>
+      <th style="width:26%;">達成率→評価得点</th>
+      <th style="width:9%;">評価得点</th>
     </tr>`;
 
+  // 達成率→評価得点セルを結合
   QUANT_ITEMS.forEach((item, idx) => {
     const target = sq[item.id+'_target'] || '';
     const actual = sq[item.id+'_actual'] || '';
     const rate = formatRate(target, actual);
-    const qscore = quantScores[idx];
-    const scoreDisp = qscore !== null ? `<span style="font-weight:900;color:${colorMap[qscore]||'#000'}">${qscore}</span>` : '-';
+    const qs = quantScores[idx];
+    const scoreDisp = qs !== null ? `<span style="font-weight:900;color:${cm[qs]||'#000'}">${qs}</span>` : '-';
+    const rateCell = idx === 0
+      ? `<td class="crit" rowspan="${QUANT_ITEMS.length}" style="text-align:center;line-height:1.8;">110%以上 ＝ 5<br>105〜109% ＝ 4<br>100〜104% ＝ 3<br>95〜99% ＝ 2<br>94%以下 ＝ 1</td>`
+      : '';
     body += `<tr>
-      <td class="item-name">${item.name}</td>
-      <td class="num-r">${formatQuantValue(target, item.format)}</td>
-      <td class="num-r">${formatQuantValue(actual, item.format)}</td>
-      <td class="rate-cell">${rate}</td>
-      <td style="font-size:6.5pt;color:#555;">${idx===0?'110%以上=5、105〜109%=4、100〜104%=3、95〜99%=2、94%以下=1':''}</td>
-      <td class="score-c">${scoreDisp}</td>
+      <td class="item-n">${item.name}</td>
+      <td class="nr">${formatQuantValue(target, item.format)}</td>
+      <td class="nr">${formatQuantValue(actual, item.format)}</td>
+      <td class="rate">${rate}</td>
+      ${rateCell}
+      <td class="sc">${scoreDisp}</td>
     </tr>`;
   });
 
   body += `<tr>
-    <td colspan="5" style="text-align:right;font-weight:700;background:#f5f2ee;">定量得点:</td>
-    <td class="score-c" style="font-weight:900;font-size:11pt;">${quantTotal||'-'}</td>
+    <td colspan="4" style="text-align:right;font-weight:700;background:#f5f2ee;border:1px solid #aaa;">定量得点:</td>
+    <td class="sc" style="font-size:12pt;background:#f5f2ee;border:1px solid #aaa;" colspan="2">${quantTotal||'-'}</td>
   </tr></table>`;
 
   // 定性評価
-  body += `<div class="sec-title">▼ 定性評価（行動マトリクス）　配点: ${roleData.qualitative}点</div>
+  body += `<div class="sec">▼ 定性評価（行動マトリクス）　配点: ${roleData.qualitative}点</div>
   <table>
     <tr>
-      <th style="width:15%;">カテゴリ</th>
-      <th style="width:16%;">評価項目</th>
-      <th style="width:42%;">具体的な行動基準 (期待レベル＝3点)</th>
+      <th style="width:13%;">カテゴリ</th>
+      <th style="width:14%;">評価項目</th>
+      <th style="width:43%;">期待される行動（3点基準）</th>
       <th style="width:5%;">配点</th>
-      <th style="width:7%;">自己</th>
-      <th style="width:7%;">1次</th>
-      <th style="width:8%;">確定(2次)</th>
+      <th style="width:8%;">自己</th>
+      <th style="width:8%;">1次</th>
+      <th style="width:9%;">確定(2次)</th>
     </tr>`;
 
-  roleData.categories.forEach((cat, ci) => {
+  let qualSelfTotal = 0;
+  roleData.categories.forEach((cat) => {
+    // カテゴリ自己小計
+    const wSum = cat.items.reduce((a,b)=>a+b.w,0);
+    let wSelf = 0; let cntSelf = 0;
+    cat.items.forEach(item=>{if(scores[item.id]!==undefined){wSelf+=scores[item.id]*item.w;cntSelf++;}});
+    const catSelf = cntSelf>0 ? Math.round((wSelf/wSum)/5*cat.allocation*10)/10 : null;
+    if (catSelf) qualSelfTotal += catSelf;
+
     cat.items.forEach((item, ii) => {
       const s = scores[item.id];
       const fs = firstScores[item.id];
       const ss = secondScores[item.id];
-      const selfDisp = s!==undefined ? `<span style="font-weight:900;color:${colorMap[s]||'#000'}">${s}</span>` : '-';
-      const firstDisp = fs!==undefined ? `<span style="font-weight:900;color:${colorMap[fs]||'#000'}">${fs}</span>` : '';
-      const secondDisp = ss!==undefined ? `<span style="font-weight:900;color:${colorMap[ss]||'#000'}">${ss}</span>` : '';
+      const sd = s!==undefined?`<span style="font-weight:900;color:${cm[s]||'#000'}">${s}</span>`:'-';
+      const fd = showFull&&fs!==undefined?`<span style="font-weight:900;color:${cm[fs]||'#000'}">${fs}</span>`:'';
+      const ssd = showFull&&ss!==undefined?`<span style="font-weight:900;color:${cm[ss]||'#000'}">${ss}</span>`:'';
       body += `<tr>
-        ${ii===0?`<td class="item-name" rowspan="${cat.items.length}" style="text-align:center;background:#faf8f5;">${cat.name}<br><span style="font-size:6.5pt;color:#888;">(${cat.allocation}点)</span></td>`:''}
-        <td class="item-name">${item.name}</td>
-        <td class="criteria">${item.criteria}</td>
-        <td class="w-col">${item.w}</td>
-        <td class="score-c">${selfDisp}</td>
-        <td class="score-c">${showFull?firstDisp:''}</td>
-        <td class="score-c">${showFull?secondDisp:''}</td>
+        ${ii===0?`<td class="item-n" rowspan="${cat.items.length}" style="text-align:center;background:#faf8f5;font-size:8.5pt;">${cat.name}<br><span style="font-size:7.5pt;color:#888;font-weight:400;">(${cat.allocation}点)</span></td>`:''}
+        <td class="item-n" style="font-size:8.5pt;">${item.name}</td>
+        <td class="crit">${item.criteria}</td>
+        <td class="w-c">${item.w}</td>
+        <td class="sc">${sd}</td>
+        <td class="sc">${fd}</td>
+        <td class="sc">${ssd}</td>
       </tr>`;
     });
-    // カテゴリ小計行
-    const catSelfScore = (() => {
-      const items = cat.items;
-      const wSum = items.reduce((a,b)=>a+b.w,0);
-      let wScoreSum = 0; let cnt = 0;
-      items.forEach(item=>{ if(scores[item.id]!==undefined){wScoreSum+=scores[item.id]*item.w;cnt++;} });
-      if(cnt===0) return '-';
-      return Math.round((wScoreSum/wSum)/5*cat.allocation*10)/10;
-    })();
     body += `<tr style="background:#f5f2ee;">
-      <td colspan="6" style="text-align:right;font-weight:700;font-size:7.5pt;">${cat.name} 小計（${cat.allocation}点）</td>
-      <td class="score-c" style="font-weight:900;">${catSelfScore}</td>
+      <td colspan="5" style="text-align:right;font-weight:700;font-size:8.5pt;border:1px solid #aaa;">${cat.name} 小計（${cat.allocation}点）</td>
+      <td class="sc" style="border:1px solid #aaa;" colspan="2">${catSelf||'-'}</td>
     </tr>`;
   });
 
   body += `<tr>
-    <td colspan="6" style="text-align:right;font-weight:700;background:#f0ede8;">定性得点:</td>
-    <td class="score-c" style="font-weight:900;font-size:11pt;">${showFull?(qualTotal||'-'):(qualSelf||'-')}</td>
+    <td colspan="5" style="text-align:right;font-weight:700;background:#f0ede8;border:1px solid #aaa;">定性得点:</td>
+    <td class="sc" style="font-size:12pt;background:#f0ede8;border:1px solid #aaa;" colspan="2">${showFull?(qualTotal||'-'):'-'}</td>
   </tr></table>`;
 
   // 総合評価
-  body += `<div class="sec-title">▼ 総合評価結果</div>
-  <table class="total-table" style="margin-bottom:6pt;">
+  body += `<div class="sec">▼ 総合評価結果</div>
+  <table style="margin-bottom:5pt;">
     <tr>
       <th style="width:25%;">定量得点（${roleData.quantitative}点）</th>
       <th style="width:25%;">定性得点（${roleData.qualitative}点）</th>
@@ -1477,34 +1487,26 @@ function printEvalSheet(member, ev, periodKey, showFull) {
       <th style="width:25%;">評価ランク</th>
     </tr>
     <tr>
-      <td style="text-align:center;font-weight:900;font-size:12pt;">${quantTotal||'-'}</td>
-      <td style="text-align:center;font-weight:900;font-size:12pt;">${showFull?(qualTotal||'-'):(qualSelf||'-')}</td>
-      <td style="text-align:center;font-weight:900;font-size:13pt;">${totalScore||'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:13pt;">${quantTotal||'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:13pt;">${showFull?(qualTotal||'-'):'-'}</td>
+      <td style="text-align:center;font-weight:900;font-size:13pt;">${showFull?(totalScore||'-'):'-'}</td>
       <td style="text-align:center;">${showFull&&rankResult?`<span class="rank-box">${rankResult}</span>`:'-'}</td>
     </tr>
   </table>`;
 
-  // 振り返り欄
-  body += `<div class="sec-title">▼ 本人の振り返り・報告</div>
+  // 振り返り
+  body += `<div class="sec">▼ 本人の振り返り・報告</div>
   <div style="padding:3pt 0 3pt;">
-    <div style="font-size:7.5pt;font-weight:700;margin:4pt 0 2pt;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
-    <div class="text-box">${(ev&&ev.q1)||''}</div>
-    <div style="font-size:7.5pt;font-weight:700;margin:4pt 0 2pt;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
-    <div class="text-box">${(ev&&ev.q2)||''}</div>
+    <div style="font-size:8.5pt;font-weight:700;margin:3pt 0 2pt;">Q1. この半期で、自分が一番貢献した・頑張ったと思う具体的なエピソード（アピールポイント）</div>
+    <div class="tbox">${(ev&&ev.q1)||''}</div>
+    <div style="font-size:8.5pt;font-weight:700;margin:4pt 0 2pt;">Q2. 次の半期で、点数を上げるために克服したい課題・チャレンジしたいこと</div>
+    <div class="tbox">${(ev&&ev.q2)||''}</div>
   </div>`;
 
-  // フィードバック欄
-  body += `<div class="sec-title">▼ 評価者からのフィードバックコメント</div>
-  <div style="padding:3pt 0;">
-    <div class="fb-box">${(showFull&&hasFeedback)?ev.feedback:''}</div>
-  </div>`;
-
-  // 押印欄
-  body += `<div class="stamp-row">
-    <div class="stamp-box">本人</div>
-    <div class="stamp-box">第１評価者</div>
-    <div class="stamp-box">第２評価者</div>
-    <div class="stamp-box">代表取締役</div>
+  // フィードバック
+  body += `<div class="sec">▼ 評価者からのフィードバックコメント</div>
+  <div style="padding:3pt 0 2pt;">
+    <div class="fbbox">${(showFull&&hasFeedback)?ev.feedback:''}</div>
   </div>`;
 
   body += `</div>`;
@@ -1863,7 +1865,7 @@ function saveDeadline(){const s=getSettings();s.deadline=document.getElementById
 function saveAdminPin(){const pin=document.getElementById('st_adminPin').value.trim();if(pin.length!==4||!/^\d+$/.test(pin)){showToast('PINは4桁の数字です');return;}const s=getSettings();s.adminPin=pin;saveSettings(s);showToast('✅ 変更しました');}
 async function reloadData(){window._db=await fetchDB();showToast('✅ 再取得しました');showAdminOverview();}
 
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
 // INIT
 window.onload = async function() {
