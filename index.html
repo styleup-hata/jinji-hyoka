@@ -836,9 +836,27 @@ function startEvaluation() {
   const items = getItemsFlat(currentUser.role);
   const ev = getMemberEval(currentViewingPeriod, currentUser.id);
   const scores = ev.scores || {};
-  let first = items.length;
-  for (let i=0; i<items.length; i++) { if (scores[items[i].id]===undefined) { first=i; break; } }
-  currentStep = first < items.length ? first : 0;
+
+  // 未入力の最初の項目を探す
+  let firstMissing = -1;
+  for (let i=0; i<items.length; i++) {
+    if (scores[items[i].id]===undefined) { firstMissing=i; break; }
+  }
+
+  if (firstMissing >= 0) {
+    // 未入力項目がある → その項目から再開
+    currentStep = firstMissing;
+  } else if (!ev.q1) {
+    // 全項目入力済みだがQ1未入力
+    currentStep = items.length;
+  } else if (!ev.q2) {
+    // Q1済みだがQ2未入力
+    currentStep = items.length + 1;
+  } else {
+    // 全部入力済み → 確認・提出画面へ
+    currentStep = items.length + 2;
+  }
+
   setHeader('自己評価入力');
   showView('evalView'); renderStep();
 }
