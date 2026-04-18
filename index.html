@@ -697,7 +697,7 @@ async function doLogin() {
 }
 function showLoginError() { document.getElementById('loginError').style.display='block'; currentPin=''; updatePinDisplay(); setTimeout(()=>{document.getElementById('loginError').style.display='none';},2000); }
 
-function afterLogin() {
+async function afterLogin() {
   document.getElementById('appHeader').style.display='flex';
   const db=getDB();
   // 現在の期を設定
