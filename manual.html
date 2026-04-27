@@ -407,7 +407,7 @@ strong { color: var(--ink); }
 <!-- NAV -->
 <div class="topbar">
   <div class="topbar-logo">
-    <div class="logo-sq">SU</div>
+    <div class="logo-sq" style="background:none;padding:0;overflow:hidden;"><img src="logo.jpg" alt="SU" style="height:32px;width:32px;object-fit:cover;border-radius:8px;display:block;"></div>
     <div class="topbar-title">人事評価<span>システム</span></div>
   </div>
   <button class="toc-btn" onclick="toggleToc()">目次 ☰</button>
@@ -427,8 +427,7 @@ strong { color: var(--ink); }
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge">2026年度版 スタッフマニュアル</div>
-  <div class="hero-logo-mark">SU</div>
+  <div class="hero-logo-mark" style="background:none;box-shadow:none;border-radius:0;width:auto;height:auto;padding:0;"><img src="logo.jpg" alt="スタイルアップ" style="height:72px;width:auto;display:block;margin:0 auto;border-radius:14px;"></div>
   <h1>人事評価<em>システム</em></h1>
   <div class="hero-sub">株式会社スタイルアップ<br>アップガレージ 埼玉入間店・川越インター店</div>
   <div class="hero-chips">
@@ -618,16 +617,16 @@ strong { color: var(--ink); }
     <div class="weight-row">
       <div class="weight-top">
         <div class="weight-role">⭐ VSM（副店長）</div>
-        <div class="weight-nums">定量 <strong>60点</strong> ／ 定性 40点</div>
+        <div class="weight-nums">定量 <strong>50点</strong> ／ 定性 50点</div>
       </div>
-      <div class="weight-bar"><div class="weight-fill" style="width:60%"></div></div>
+      <div class="weight-bar"><div class="weight-fill" style="width:50%"></div></div>
     </div>
     <div class="weight-row">
       <div class="weight-top">
         <div class="weight-role">👤 一般スタッフ</div>
-        <div class="weight-nums">定量 <strong>50点</strong> ／ 定性 50点</div>
+        <div class="weight-nums">定量 <strong>30点</strong> ／ 定性 70点</div>
       </div>
-      <div class="weight-bar"><div class="weight-fill" style="width:50%"></div></div>
+      <div class="weight-bar"><div class="weight-fill" style="width:30%"></div></div>
     </div>
     <div class="weight-row">
       <div class="weight-top">
@@ -731,13 +730,12 @@ strong { color: var(--ink); }
   <div class="chap-tag">CHAPTER 05</div>
   <h2 class="chap-title">ランクと<span>処遇</span></h2>
 
-  <p>定量＋定性の合計を100点換算し、以下のランクで処遇を決定します。</p>
+  <p>評価結果は以下のランクで判定し、処遇を決定します。点数基準は役職によって異なります。</p>
 
   <div class="rank-list">
     <div class="rank-row">
       <div class="rank-badge rs">S</div>
       <div class="rank-info">
-        <div class="ri-range">79点以上</div>
         <div class="ri-label">昇格推薦</div>
         <div class="ri-sub">2期連続でSまたはAで昇格審査対象</div>
       </div>
@@ -746,7 +744,6 @@ strong { color: var(--ink); }
     <div class="rank-row">
       <div class="rank-badge ra">A</div>
       <div class="rank-info">
-        <div class="ri-range">69〜78点</div>
         <div class="ri-label">昇格候補</div>
         <div class="ri-sub">次期の昇格に向けた重点評価対象</div>
       </div>
@@ -755,7 +752,6 @@ strong { color: var(--ink); }
     <div class="rank-row">
       <div class="rank-badge rb">B</div>
       <div class="rank-info">
-        <div class="ri-range">59〜68点</div>
         <div class="ri-label">現状維持</div>
         <div class="ri-sub">期待水準を満たしている</div>
       </div>
@@ -764,7 +760,6 @@ strong { color: var(--ink); }
     <div class="rank-row">
       <div class="rank-badge rc">C</div>
       <div class="rank-info">
-        <div class="ri-range">49〜58点</div>
         <div class="ri-label">要改善</div>
         <div class="ri-sub">改善計画を立てて取り組む</div>
       </div>
@@ -773,7 +768,6 @@ strong { color: var(--ink); }
     <div class="rank-row">
       <div class="rank-badge rd">D</div>
       <div class="rank-info">
-        <div class="ri-range">48点以下</div>
         <div class="ri-label">降格検討</div>
         <div class="ri-sub">早急な改善が必要</div>
       </div>
