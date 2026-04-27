@@ -265,9 +265,7 @@ body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;backgroun
 // スタイルアップ 人事評価アプリ - データ定義
 // ============================================================
 
-const JSONBIN_BIN_ID = '69d9c94d856a6821891f9b46';
-const JSONBIN_API_KEY = '$2a$10$zfIhYk9PeF8bhcMeD5PC/O4KAFyZbtQqwXA2/ts0Whj8qtVI3.keC';
-const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID;
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbywhdwBv3bE493vpyq4te1lVB2dYEzS5mm211ShxHgz4PW6lznv9ji0q6QLKRV0olk4/exec';
 
 const DEFAULT_MEMBERS = [
   {id:'isaka',    name:'伊坂 邦明',  role:'SM',    store:'埼玉入間店',    pin:'0810'},
@@ -597,12 +595,16 @@ async function fetchDB() {
   // バックグラウンドでクラウドと同期
   showLoading(true);
   try {
-    const r = await fetch(JSONBIN_URL+'/latest', {headers:{'X-Master-Key':JSONBIN_API_KEY,'X-Bin-Meta':'false'}});
-    const d = await r.json();
+const res = await fetch(GAS_URL + '?action=hyoka_load', { cache: 'no-store' });
+    const json = await res.json();
     showLoading(false);
-    // クラウドデータをキャッシュに保存
-    try { localStorage.setItem('ug_db', JSON.stringify(d)); } catch(e) {}
-    return d;
+    if (json.status !== 'ok' || !json.data) throw new Error('GASエラー');
+    const cloudData = json.data;
+    const localTime = new Date(cached?._savedAt || 0).getTime();
+    const cloudTime = new Date(cloudData._savedAt || 0).getTime();
+    const winner = cloudTime >= localTime ? cloudData : cached;
+    try { localStorage.setItem('ug_db', JSON.stringify(winner)); } catch(e) {}
+    return winner;
   } catch(e) {
     showLoading(false);
     showToast('⚠️ オフライン：ローカルデータを使用中');
@@ -615,9 +617,11 @@ async function saveDB(db) {
   // バックグラウンドでクラウドに保存
   showLoading(true);
   try {
-    const r = await fetch(JSONBIN_URL, {method:'PUT', headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY}, body:JSON.stringify(db)});
+const res = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hyoka_save', db }) });
+    const json = await res.json();
     showLoading(false);
-    if(!r.ok) throw new Error();
+    if (json.status !== 'ok') throw new Error(json.message || '保存エラー');
+    if (json.savedAt) { db._savedAt = json.savedAt; try { localStorage.setItem('ug_db', JSON.stringify(db)); } catch(e) {} }
     return true;
   } catch(e) {
     showLoading(false);
