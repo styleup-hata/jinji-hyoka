@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>人事評価システム マニュアル｜スタイルアップ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+:root {
+  --bg: #f5f4f0;
+  --white: #ffffff;
+  --ink: #1a1a1a;
+  --ink2: #444444;
+  --ink3: #888888;
+  --accent: #e8755a;   /* SU オレンジ */
+  --accent-d: #c45a3f;
+  --accent-l: #fdf0ec;
+  --dark: #1e1e2e;
+  --dark2: #2a2a3e;
+  --green: #3db87a;
+  --green-l: #e8f8f0;
+  --blue: #3a7bd5;
+  --blue-l: #eaf0fb;
+  --amber: #e8a020;
+  --amber-l: #fef4e0;
+  --red: #e05050;
+  --red-l: #fdeaea;
+  --border: #e8e6e0;
+  --r: 16px;
+  --r-sm: 10px;
+  --shadow: 0 2px 10px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── STICKY NAV ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; height: 50px;
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-sq {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #fff; letter-spacing: -1px;
+}
+.topbar-title { font-size: 13px; font-weight: 700; color: #fff; }
+.topbar-title span { color: var(--accent); }
+.toc-btn {
+  background: rgba(255,255,255,0.1); border: none; color: #fff;
+  border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; cursor: pointer;
+}
+
+/* ── TOC ── */
+#toc {
+  position: fixed; inset: 0; top: 50px; background: var(--dark);
+  z-index: 99; overflow-y: auto; padding: 16px;
+  transform: translateX(100%); transition: transform .3s ease;
+}
+#toc.open { transform: translateX(0); }
+.toc-section { margin-bottom: 6px; }
+.toc-a {
+  display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+  color: rgba(255,255,255,.75); text-decoration: none; border-radius: var(--r-sm);
+  font-size: 14px; transition: background .15s;
+}
+.toc-a:hover, .toc-a:active { background: rgba(255,255,255,.08); color: #fff; }
+.toc-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.toc-lbl { font-size: 11px; color: rgba(255,255,255,.4); letter-spacing: .08em; margin: 12px 14px 6px; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--dark);
+  padding: 40px 20px 36px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 24px;
+  background: var(--bg);
+  border-radius: 24px 24px 0 0;
+}
+.hero-badge {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  background: var(--accent); color: #fff;
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 18px;
+}
+.hero-logo-mark {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--accent), #f0a080);
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -2px;
+  box-shadow: 0 8px 24px rgba(232,117,90,.4);
+}
+.hero h1 {
+  font-size: 24px; font-weight: 900; color: #fff; line-height: 1.25;
+  margin-bottom: 8px;
+}
+.hero h1 em { color: var(--accent); font-style: normal; display: block; font-size: 28px; }
+.hero-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-bottom: 20px; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.chip {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  border-radius: 20px; padding: 5px 12px; font-size: 11px; color: rgba(255,255,255,.8);
+}
+
+/* ── CONTENT WRAPPER ── */
+.content { padding: 0 14px 60px; }
+
+/* ── CHAPTER HEADER ── */
+.chap {
+  margin-top: 36px;
+  scroll-margin-top: 60px;
+}
+.chap-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  color: var(--accent); margin-bottom: 8px;
+}
+.chap-tag::before {
+  content: '';
+  display: inline-block; width: 16px; height: 2px; background: var(--accent); border-radius: 1px;
+}
+.chap-title {
+  font-size: 22px; font-weight: 900; color: var(--ink); line-height: 1.25; margin-bottom: 14px;
+}
+.chap-title span { color: var(--accent); }
+.chap-desc { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 20px; }
+
+/* ── SECTION LABEL ── */
+.sec-label {
+  font-size: 12px; font-weight: 700; color: var(--ink3);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin: 20px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 18px 16px; margin-bottom: 12px;
+}
+.card.accent { border-left: 4px solid var(--accent); border-radius: 4px var(--r) var(--r) 4px; }
+.card.green  { border-left: 4px solid var(--green);  border-radius: 4px var(--r) var(--r) 4px; }
+.card.blue   { border-left: 4px solid var(--blue);   border-radius: 4px var(--r) var(--r) 4px; }
+.card.amber  { border-left: 4px solid var(--amber);  border-radius: 4px var(--r) var(--r) 4px; }
+.card.dark { background: var(--dark); }
+.card-label { font-size: 12px; font-weight: 700; color: var(--ink3); margin-bottom: 6px; }
+.card-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-body { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+
+/* ── CALLOUT ── */
+.callout {
+  border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 12px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.callout.info { background: var(--blue-l); }
+.callout.warn { background: var(--amber-l); }
+.callout.ok   { background: var(--green-l); }
+.callout.tip  { background: var(--accent-l); }
+.callout-ico { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.callout-text { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+.callout-text strong { color: var(--ink); }
+
+/* ── PURPOSE PILLS ── */
+.purpose-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.purpose-pill {
+  background: var(--white); border-radius: var(--r-sm); box-shadow: var(--shadow);
+  padding: 14px 8px; text-align: center;
+}
+.purpose-pill .pi { font-size: 24px; margin-bottom: 6px; }
+.purpose-pill .pt { font-size: 11px; font-weight: 700; color: var(--ink2); line-height: 1.3; }
+
+/* ── FLOW STEPS ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+.flow-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--white); border-radius: var(--r); box-shadow: var(--shadow);
+  padding: 14px 16px; position: relative;
+}
+.flow-item:not(:last-child)::after {
+  content: '';
+  position: absolute; left: 30px; bottom: -14px;
+  width: 2px; height: 14px; background: var(--accent); opacity: .3;
+  z-index: 1;
+}
+.flow-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; margin-top: 1px;
+}
+.flow-num.done { background: var(--green); }
+.flow-num.end  { background: var(--dark); }
+.flow-body { flex: 1; }
+.flow-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.flow-desc { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+.flow-gap { height: 14px; }
+
+/* ── SCORE GRID ── */
+.score-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.score-row-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--white); border-radius: var(--r-sm); box-shadow: var(--shadow);
+  padding: 12px 14px;
+}
+.score-badge {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 900;
+}
+.sb5 { background: #ede9fe; color: #7c3aed; }
+.sb4 { background: var(--green-l); color: #16a34a; }
+.sb3 { background: #fef9c3; color: #92400e; border: 2px solid #fbbf24; }
+.sb2 { background: var(--amber-l); color: #92400e; }
+.sb1 { background: var(--red-l); color: #b91c1c; }
+.score-info .si-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.score-info .si-desc { font-size: 12px; color: var(--ink3); line-height: 1.5; }
+.score-info .si-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 1px 8px; border-radius: 10px; margin-left: 6px;
+  background: var(--accent); color: #fff;
+}
+
+/* ── WEIGHT VIS ── */
+.weight-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.weight-row { background: var(--white); border-radius: var(--r-sm); box-shadow: var(--shadow); padding: 12px 14px; }
+.weight-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.weight-role { font-size: 13px; font-weight: 700; color: var(--ink); }
+.weight-nums { font-size: 11px; color: var(--ink3); }
+.weight-bar { height: 10px; border-radius: 5px; background: var(--border); overflow: hidden; }
+.weight-fill { height: 100%; border-radius: 5px; background: var(--accent); transition: width .6s; }
+
+/* ── CAT GRID ── */
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.cat-card {
+  background: var(--white); border-radius: var(--r-sm); box-shadow: var(--shadow);
+  padding: 14px 12px;
+}
+.cat-icon { font-size: 22px; margin-bottom: 6px; }
+.cat-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+.cat-items { font-size: 11px; color: var(--ink3); line-height: 1.6; }
+.cat-count { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+/* ── RANK TABLE ── */
+.rank-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.rank-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--white); border-radius: var(--r-sm); box-shadow: var(--shadow);
+  padding: 12px 14px;
+}
+.rank-badge {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900; color: #fff;
+}
+.rs { background: #7c3aed; }
+.ra { background: #16a34a; }
+.rb { background: #2563eb; }
+.rc { background: #d97706; }
+.rd { background: #dc2626; }
+.rank-info .ri-range { font-size: 12px; color: var(--ink3); margin-bottom: 2px; }
+.rank-info .ri-label { font-size: 14px; font-weight: 700; color: var(--ink); }
+.rank-info .ri-sub { font-size: 11px; color: var(--ink3); }
+.rank-arrow { margin-left: auto; font-size: 18px; }
+
+/* ── PHONE MOCK ── */
+.mock-wrap { margin: 0 auto 16px; max-width: 280px; }
+.mock-frame {
+  background: var(--dark); border-radius: 24px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25); border: 2px solid #3a3a4e;
+}
+.mock-bar {
+  background: var(--dark2); padding: 8px 16px;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.mock-logo { font-size: 13px; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.mock-logo span { color: var(--accent); }
+.mock-period {
+  background: var(--accent); color: #fff; border-radius: 10px;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+}
+.mock-logout {
+  margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.6);
+  border-radius: 6px; font-size: 9px; padding: 2px 6px;
+}
+.mock-body { padding: 14px 12px; }
+
+/* ── STEP INSTRUCTION ── */
+.step-block {
+  background: var(--white); border-radius: var(--r); box-shadow: var(--shadow);
+  padding: 18px 16px; margin-bottom: 12px;
+}
+.step-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.step-label {
+  background: var(--accent); color: #fff; border-radius: 8px;
+  font-size: 11px; font-weight: 900; padding: 4px 10px; letter-spacing: .05em;
+}
+.step-head-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+.step-body { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+.step-body p { margin-bottom: 8px; }
+.step-body ul { padding-left: 18px; }
+.step-body li { margin-bottom: 4px; font-size: 14px; }
+.step-url {
+  background: var(--accent-l); border-radius: var(--r-sm);
+  padding: 12px 14px; margin: 10px 0; font-size: 13px;
+  word-break: break-all;
+}
+.step-url strong { color: var(--accent-d); font-weight: 700; display: block; margin-bottom: 4px; font-size: 11px; }
+.step-url a { color: var(--accent-d); font-weight: 700; text-decoration: none; }
+.hint {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 12px; color: var(--ink3); margin-top: 8px; line-height: 1.6;
+}
+.hint::before { content: '💡'; flex-shrink: 0; }
+
+/* ── SCREEN DEMO (SVG-based UI mock) ── */
+.screen-label {
+  text-align: center; font-size: 11px; color: var(--ink3); margin: 8px 0 4px; letter-spacing: .06em;
+}
+
+/* ── FAQ ── */
+.faq { margin-bottom: 10px; }
+.faq-q {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--accent-l); border-radius: var(--r-sm) var(--r-sm) 0 0;
+  padding: 12px 14px;
+}
+.faq-q-mark { font-size: 15px; font-weight: 900; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.faq-q-text { font-size: 14px; font-weight: 700; color: var(--ink); }
+.faq-a {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--white); border-radius: 0 0 var(--r-sm) var(--r-sm);
+  padding: 12px 14px; border: 1px solid var(--border); border-top: none;
+}
+.faq-a-mark { font-size: 15px; font-weight: 900; color: var(--green); flex-shrink: 0; margin-top: 1px; }
+.faq-a-text { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+/* ── PIN VISUAL ── */
+.pin-wrap { display: flex; justify-content: center; gap: 8px; margin: 12px 0; }
+.pin-box {
+  width: 44px; height: 52px; border-radius: 10px;
+  background: var(--dark2); border: 2px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--dark); color: rgba(255,255,255,.5);
+  text-align: center; padding: 32px 16px;
+  font-size: 12px; line-height: 1.8;
+}
+footer .f-logo { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+footer .f-logo span { color: var(--accent); }
+
+/* ── UTIL ── */
+p { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 10px; }
+strong { color: var(--ink); }
+.mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.center { text-align: center; }
+.tag {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+}
+.tag-imp { background: var(--red-l); color: var(--red); }
+.tag-note { background: var(--blue-l); color: var(--blue); }
+
+@media print {
+  .topbar, #toc, .toc-btn { display: none !important; }
+  body { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-sq">SU</div>
+    <div class="topbar-title">人事評価<span>システム</span></div>
+  </div>
+  <button class="toc-btn" onclick="toggleToc()">目次 ☰</button>
+</div>
+
+<!-- TOC -->
+<div id="toc">
+  <div class="toc-lbl">CONTENTS</div>
+  <a class="toc-a" href="#ch1" onclick="closeToc()"><div class="toc-num">1</div>この制度について</a>
+  <a class="toc-a" href="#ch2" onclick="closeToc()"><div class="toc-num">2</div>5段階スコアの意味</a>
+  <a class="toc-a" href="#ch3" onclick="closeToc()"><div class="toc-num">3</div>評価の種類と配点</a>
+  <a class="toc-a" href="#ch4" onclick="closeToc()"><div class="toc-num">4</div>評価項目・4カテゴリ</a>
+  <a class="toc-a" href="#ch5" onclick="closeToc()"><div class="toc-num">5</div>ランクと処遇</a>
+  <a class="toc-a" href="#ch6" onclick="closeToc()"><div class="toc-num">6</div>アプリの使い方 STEP1〜5</a>
+  <a class="toc-a" href="#ch7" onclick="closeToc()"><div class="toc-num">7</div>よくある質問</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">2026年度版 スタッフマニュアル</div>
+  <div class="hero-logo-mark">SU</div>
+  <h1>人事評価<em>システム</em></h1>
+  <div class="hero-sub">株式会社スタイルアップ<br>アップガレージ 埼玉入間店・川越インター店</div>
+  <div class="hero-chips">
+    <span class="chip">📱 スマホアプリで完結</span>
+    <span class="chip">🔢 24項目の行動基準評価</span>
+    <span class="chip">📄 面談用PDF自動出力</span>
+    <span class="chip">💾 途中保存あり</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ═══════════════ CH1 この制度について ═══════════════ -->
+<div class="chap" id="ch1">
+  <div class="chap-tag">CHAPTER 01</div>
+  <h2 class="chap-title">この制度<span>について</span></h2>
+
+  <p>人事評価の目的は<strong>「マイナスを探すこと」ではありません</strong>。みなさんの成長を応援し、頑張りを正当に評価するための仕組みです。</p>
+
+  <div class="purpose-grid">
+    <div class="purpose-pill">
+      <div class="pi">🎯</div>
+      <div class="pt">評価基準を<br>明確にする</div>
+    </div>
+    <div class="purpose-pill">
+      <div class="pi">🌱</div>
+      <div class="pt">自分の成長を<br>確認する</div>
+    </div>
+    <div class="purpose-pill">
+      <div class="pi">💬</div>
+      <div class="pt">上司との<br>対話を活性化</div>
+    </div>
+  </div>
+
+  <div class="sec-label">評価スケジュール</div>
+  <div class="card">
+    <div class="card-body">
+      <table style="width:100%;font-size:13px;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="text-align:left;padding:8px 0;color:var(--ink3);font-size:11px;font-weight:700;">期間</th>
+          <th style="text-align:left;padding:8px 0;color:var(--ink3);font-size:11px;font-weight:700;">対象月</th>
+          <th style="text-align:left;padding:8px 0;color:var(--ink3);font-size:11px;font-weight:700;">自己評価 締切</th>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 0;font-weight:700;">上半期</td>
+          <td style="padding:10px 0;color:var(--ink2);">4〜9月</td>
+          <td style="padding:10px 0;color:var(--accent);font-weight:700;">11月中旬</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-weight:700;">下半期</td>
+          <td style="padding:10px 0;color:var(--ink2);">10〜3月</td>
+          <td style="padding:10px 0;color:var(--accent);font-weight:700;">5月中旬</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-label">全体の流れ</div>
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-num">1</div>
+      <div class="flow-body">
+        <div class="flow-title">📱 自己評価（スタッフ本人が入力）</div>
+        <div class="flow-desc">アプリで24項目 + 振り返りQ2問を入力して提出</div>
+      </div>
+    </div>
+    <div class="flow-gap"></div>
+    <div class="flow-item">
+      <div class="flow-num">2</div>
+      <div class="flow-body">
+        <div class="flow-title">👔 1次評価（SM・店長が入力）</div>
+        <div class="flow-desc">直属SMが同じアプリで評価を入力</div>
+      </div>
+    </div>
+    <div class="flow-gap"></div>
+    <div class="flow-item">
+      <div class="flow-num">3</div>
+      <div class="flow-body">
+        <div class="flow-title">🏢 2次評価（会社が確定）</div>
+        <div class="flow-desc">最終評価スコア・ランクを確定</div>
+      </div>
+    </div>
+    <div class="flow-gap"></div>
+    <div class="flow-item">
+      <div class="flow-num">4</div>
+      <div class="flow-body">
+        <div class="flow-title">💬 面談 → PDF出力</div>
+        <div class="flow-desc">結果をフィードバック。アプリから面談用PDFを出力可能</div>
+      </div>
+    </div>
+    <div class="flow-gap"></div>
+    <div class="flow-item">
+      <div class="flow-num done">✓</div>
+      <div class="flow-body">
+        <div class="flow-title">🎉 処遇反映（昇給・昇格）</div>
+        <div class="flow-desc">評価ランクに応じて給与・役職に反映</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-ico">📌</div>
+    <div class="callout-text"><strong>最重要：</strong>自己評価は「自分を良く見せる場」ではなく、<strong>自分の取り組みを正直に振り返る場</strong>です。背伸びせず、正直に評価することが大切です。</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CH2 5段階スコア ═══════════════ -->
+<div class="chap" id="ch2">
+  <div class="chap-tag">CHAPTER 02</div>
+  <h2 class="chap-title">5段階スコアの<span>意味</span></h2>
+
+  <p>全員共通の最重要ルールです。<strong>3点が「現職能の期待レベル」</strong>であることを必ず覚えてください。</p>
+
+  <div class="callout warn">
+    <div class="callout-ico">⚠️</div>
+    <div class="callout-text"><strong>「3点＝普通・平均」ではありません！</strong><br>3点は「指示なしに一人でできる」という意味です。できていないのに3点をつけると評価の意味がなくなります。</div>
+  </div>
+
+  <div class="score-grid">
+    <div class="score-row-item">
+      <div class="score-badge sb5">5</div>
+      <div class="score-info">
+        <div class="si-title">模範レベル</div>
+        <div class="si-desc">周囲への良い影響・指導ができる。本当に一部の人だけが該当する</div>
+      </div>
+    </div>
+    <div class="score-row-item">
+      <div class="score-badge sb4">4</div>
+      <div class="score-info">
+        <div class="si-title">期待以上のレベル</div>
+        <div class="si-desc">言われたことに＋αの気遣いやり方の改善ができた</div>
+      </div>
+    </div>
+    <div class="score-row-item">
+      <div class="score-badge sb3">3</div>
+      <div class="score-info">
+        <div class="si-title">現職能の期待レベル <span class="si-tag">基準！</span></div>
+        <div class="si-desc">行動基準に書いてあることを、指示されずに一人でミスなく完了した</div>
+      </div>
+    </div>
+    <div class="score-row-item">
+      <div class="score-badge sb2">2</div>
+      <div class="score-info">
+        <div class="si-title">期待を下回るレベル</div>
+        <div class="si-desc">行動はしているが、質が低い・遅い・ミスがある。上司のフォローが必要</div>
+      </div>
+    </div>
+    <div class="score-row-item">
+      <div class="score-badge sb1">1</div>
+      <div class="score-info">
+        <div class="si-title">大幅に期待を下回る</div>
+        <div class="si-desc">やろうとしない、約束を破る、ルール違反がある</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <div class="callout-ico">✅</div>
+    <div class="callout-text"><strong>自己評価のコツ：</strong>現在の自分が「一人でできている」かどうかが3点の判断基準です。2〜3が中心で、得意分野に4〜5、課題分野に1〜2があるのが自然な分布です。</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CH3 評価の種類と配点 ═══════════════ -->
+<div class="chap" id="ch3">
+  <div class="chap-tag">CHAPTER 03</div>
+  <h2 class="chap-title">評価の種類と<span>配点</span></h2>
+
+  <div class="card">
+    <div class="card-title">📊 定量評価（数字の目標）</div>
+    <div class="card-body">売上・営業利益・GBPクチコミ・ミステリーショッパー・粗利率の達成率で自動採点されます。役職によって配点が変わります。</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🌱 定性評価（行動マトリクス）</div>
+    <div class="card-body">24項目の行動基準に対して1〜5点で評価します。自己評価→1次評価→2次（確定）の順で入力します。</div>
+  </div>
+
+  <div class="sec-label">役職別 定量：定性 の割合</div>
+  <div class="weight-wrap">
+    <div class="weight-row">
+      <div class="weight-top">
+        <div class="weight-role">🏆 SM（店長）</div>
+        <div class="weight-nums">定量 <strong>70点</strong> ／ 定性 30点</div>
+      </div>
+      <div class="weight-bar"><div class="weight-fill" style="width:70%"></div></div>
+    </div>
+    <div class="weight-row">
+      <div class="weight-top">
+        <div class="weight-role">⭐ VSM（副店長）</div>
+        <div class="weight-nums">定量 <strong>60点</strong> ／ 定性 40点</div>
+      </div>
+      <div class="weight-bar"><div class="weight-fill" style="width:60%"></div></div>
+    </div>
+    <div class="weight-row">
+      <div class="weight-top">
+        <div class="weight-role">👤 一般スタッフ</div>
+        <div class="weight-nums">定量 <strong>50点</strong> ／ 定性 50点</div>
+      </div>
+      <div class="weight-bar"><div class="weight-fill" style="width:50%"></div></div>
+    </div>
+    <div class="weight-row">
+      <div class="weight-top">
+        <div class="weight-role">🙋 アルバイト</div>
+        <div class="weight-nums">定量 <strong>20点</strong> ／ 定性 80点</div>
+      </div>
+      <div class="weight-bar"><div class="weight-fill" style="width:20%"></div></div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-ico">ℹ️</div>
+    <div class="callout-text"><strong>アルバイトは定性（行動評価）が中心です。</strong>店舗売上よりも日々の行動・態度・成長姿勢が評価の大部分を占めます。</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CH4 4カテゴリ ═══════════════ -->
+<div class="chap" id="ch4">
+  <div class="chap-tag">CHAPTER 04</div>
+  <h2 class="chap-title">評価項目<span>4カテゴリ</span></h2>
+
+  <p>定性評価の24項目は以下の4つのカテゴリに分かれています。各項目には「3点＝期待レベル」の行動基準が記載されています。</p>
+
+  <div class="cat-grid">
+    <div class="cat-card">
+      <div class="cat-icon">🧭</div>
+      <div class="cat-name">スタンス・規律</div>
+      <div class="cat-items">理念・ポリシー<br>協調性 / 前向き<br>挨拶・言葉遣い<br>時間管理<br>報・連・相<br>積極性・自己管理</div>
+      <div class="cat-count">7項目</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🛒</div>
+      <div class="cat-name">接客・販売スキル</div>
+      <div class="cat-items">基本接客（レジ・電話）<br>ゲストトーク<br>買取・査定<br>商品知識・説明<br>商品化・品出し<br>取付・作業</div>
+      <div class="cat-count">6項目</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🏪</div>
+      <div class="cat-name">売場・店舗管理</div>
+      <div class="cat-items">売場づくり<br>在庫管理・棚卸し<br>現金・伝票管理<br>清掃・衛生<br>安全・危機管理</div>
+      <div class="cat-count">5項目</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">📈</div>
+      <div class="cat-name">マネジメント・組織貢献</div>
+      <div class="cat-items">予算・数値管理<br>節約・経費意識<br>人材育成<br>シフト管理<br>クレーム対応<br>折衝・改善提案</div>
+      <div class="cat-count">6項目</div>
+    </div>
+  </div>
+
+  <!-- アンカー例 -->
+  <div class="sec-label">行動基準（アンカー）の読み方</div>
+  <p>アプリでは各項目に<strong>緑色のボックス</strong>で「3点＝期待レベル」の行動記述が表示されます。</p>
+
+  <!-- アプリ内表示の再現 -->
+  <div style="background:var(--dark);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-md);">
+    <div style="background:var(--dark2);padding:8px 12px;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;">アプリ内 評価画面 イメージ</div>
+    <div style="padding:14px 12px;">
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;">スタンス・規律</div>
+      <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:12px;">理念・ポリシー</div>
+      <!-- 3点アンカー -->
+      <div style="background:rgba(61,184,122,.12);border:1.5px solid rgba(61,184,122,.3);border-radius:10px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:10px;color:#3db87a;font-weight:700;margin-bottom:6px;">🌿 期待される行動（3点基準）</div>
+        <div style="font-size:13px;color:#fff;line-height:1.6;">企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。</div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:8px;">▼ 該当するボタンをタップすると次へ進みます</div>
+      <!-- スコアボタン -->
+      <div style="display:flex;gap:6px;">
+        <div style="flex:1;background:#3a1a1a;border-radius:8px;padding:8px 4px;text-align:center;">
+          <div style="width:24px;height:24px;background:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px;margin:0 auto 4px;">1</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.5);">大幅に<br>期待を<br>下回る</div>
+        </div>
+        <div style="flex:1;background:#3a2a1a;border-radius:8px;padding:8px 4px;text-align:center;">
+          <div style="width:24px;height:24px;background:#d97706;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px;margin:0 auto 4px;">2</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.5);">期待を<br>下回る<br>レベル</div>
+        </div>
+        <div style="flex:1;background:rgba(61,184,122,.15);border:1.5px solid #3db87a;border-radius:8px;padding:8px 4px;text-align:center;">
+          <div style="width:24px;height:24px;background:#3db87a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px;margin:0 auto 4px;">3</div>
+          <div style="font-size:9px;color:#3db87a;font-weight:700;">現職能<br>の期待<br>レベル</div>
+        </div>
+        <div style="flex:1;background:#1a2a1a;border-radius:8px;padding:8px 4px;text-align:center;">
+          <div style="width:24px;height:24px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px;margin:0 auto 4px;">4</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.5);">期待<br>以上の<br>レベル</div>
+        </div>
+        <div style="flex:1;background:#1a1a3a;border-radius:8px;padding:8px 4px;text-align:center;">
+          <div style="width:24px;height:24px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px;margin:0 auto 4px;">5</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.5);">模範<br>レベル</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <div class="callout-ico">✅</div>
+    <div class="callout-text">緑のボックス（3点基準）を読んで、自分の行動がそれより上か下かで判断してください。<strong>タップすると自動で次の項目に進みます。</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════════ CH5 ランク ═══════════════ -->
+<div class="chap" id="ch5">
+  <div class="chap-tag">CHAPTER 05</div>
+  <h2 class="chap-title">ランクと<span>処遇</span></h2>
+
+  <p>定量＋定性の合計を100点換算し、以下のランクで処遇を決定します。</p>
+
+  <div class="rank-list">
+    <div class="rank-row">
+      <div class="rank-badge rs">S</div>
+      <div class="rank-info">
+        <div class="ri-range">79点以上</div>
+        <div class="ri-label">昇格推薦</div>
+        <div class="ri-sub">2期連続でSまたはAで昇格審査対象</div>
+      </div>
+      <div class="rank-arrow">🏆</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank-badge ra">A</div>
+      <div class="rank-info">
+        <div class="ri-range">69〜78点</div>
+        <div class="ri-label">昇格候補</div>
+        <div class="ri-sub">次期の昇格に向けた重点評価対象</div>
+      </div>
+      <div class="rank-arrow">⭐</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank-badge rb">B</div>
+      <div class="rank-info">
+        <div class="ri-range">59〜68点</div>
+        <div class="ri-label">現状維持</div>
+        <div class="ri-sub">期待水準を満たしている</div>
+      </div>
+      <div class="rank-arrow">👍</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank-badge rc">C</div>
+      <div class="rank-info">
+        <div class="ri-range">49〜58点</div>
+        <div class="ri-label">要改善</div>
+        <div class="ri-sub">改善計画を立てて取り組む</div>
+      </div>
+      <div class="rank-arrow">📋</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank-badge rd">D</div>
+      <div class="rank-info">
+        <div class="ri-range">48点以下</div>
+        <div class="ri-label">降格検討</div>
+        <div class="ri-sub">早急な改善が必要</div>
+      </div>
+      <div class="rank-arrow">🔄</div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-ico">ℹ️</div>
+    <div class="callout-text">昇給額・賞与倍率の詳細は面談時に上司から個別に説明されます。詳細は給与規程を参照してください。</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CH6 アプリの使い方 ═══════════════ -->
+<div class="chap" id="ch6">
+  <div class="chap-tag">CHAPTER 06</div>
+  <h2 class="chap-title">アプリの<span>使い方</span></h2>
+
+  <div class="callout warn">
+    <div class="callout-ico">⚠️</div>
+    <div class="callout-text"><strong>iPhoneはSafariを使ってください。</strong>ChromeはPWA追加機能に制限があります。Androidは通常のブラウザで利用可能です。</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-block" id="step1">
+    <div class="step-head">
+      <div class="step-label">STEP 1</div>
+      <div class="step-head-title">URLを開いてホーム画面に追加</div>
+    </div>
+    <div class="step-body">
+      <div class="step-url">
+        <strong>🔗 アプリURL（Safariで開く）</strong>
+        <a href="https://styleup-hata.github.io/jinji-hyoka/">https://styleup-hata.github.io/jinji-hyoka/</a>
+      </div>
+      <p>SafariでURLを開いたら、画面下の<strong>共有ボタン（□↑）</strong>をタップして「ホーム画面に追加」を選択します。</p>
+      <div class="hint">ホーム画面から起動すると、フルスクリーンで快適に使えます。</div>
+      <div class="hint">PINコードは数字4桁です。誕生日の月日（例：3月15日→0315）が初期設定です。</div>
+    </div>
+  </div>
+
+  <!-- ログイン画面再現 -->
+  <div style="background:var(--dark);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-md);">
+    <div style="background:var(--dark2);padding:8px 12px;font-size:10px;color:rgba(255,255,255,.4);">ログイン画面</div>
+    <div style="padding:20px 16px;text-align:center;">
+      <div style="width:56px;height:56px;border-radius:14px;background:var(--accent);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;letter-spacing:-2px;">SU</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">人事評価システム</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:20px;">株式会社スタイルアップ</div>
+      <!-- セレクト -->
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;text-align:left;margin-bottom:10px;">
+        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;">ログイン種別</div>
+        <div style="font-size:14px;color:#fff;">スタッフ</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;text-align:left;margin-bottom:14px;">
+        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;">名前を選んでください</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.4);">── 選択してください ──</div>
+      </div>
+      <!-- PIN -->
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:8px;text-align:left;">PINコード（4桁）</div>
+      <div class="pin-wrap">
+        <div class="pin-box"><div class="pin-dot"></div></div>
+        <div class="pin-box"><div class="pin-dot" style="background:rgba(255,255,255,.2)"></div></div>
+        <div class="pin-box"><div class="pin-dot" style="background:rgba(255,255,255,.2)"></div></div>
+        <div class="pin-box"><div class="pin-dot" style="background:rgba(255,255,255,.2)"></div></div>
+      </div>
+      <!-- キーパッド省略表示 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0;">
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px;color:#fff;font-size:16px;font-weight:700;text-align:center;">1</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px;color:#fff;font-size:16px;font-weight:700;text-align:center;">2</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px;color:#fff;font-size:16px;font-weight:700;text-align:center;">3</div>
+      </div>
+      <div style="background:var(--accent);border-radius:10px;padding:13px;color:#fff;font-size:14px;font-weight:700;margin-top:4px;">ログイン</div>
+    </div>
+  </div>
+  <div class="screen-label">▲ 名前選択→PINを入力してログイン</div>
+
+  <!-- STEP 2 -->
+  <div class="step-block mt16" id="step2">
+    <div class="step-head">
+      <div class="step-label">STEP 2</div>
+      <div class="step-head-title">自己評価を入力する</div>
+    </div>
+    <div class="step-body">
+      <p>ログイン後、評価期間を選択すると自己評価が開始されます。<strong>1問ずつ行動基準を読んで1〜5を選択</strong>します。選択すると自動で次の問いに進みます（全24問）。</p>
+      <ul>
+        <li>緑のボックスに<strong>「3点基準」</strong>が表示されます</li>
+        <li>それより上なら4か5、下なら2か1を選択</li>
+        <li><strong>途中保存あり</strong>：中断してもデータは残ります</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 評価入力画面再現 -->
+  <div style="background:var(--dark);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-md);">
+    <div style="background:var(--dark2);padding:8px 12px;display:flex;align-items:center;gap:8px;">
+      <div style="font-size:12px;font-weight:900;color:#fff;letter-spacing:-1px;">S<span style="color:var(--accent)">U</span></div>
+      <div style="background:var(--accent);color:#fff;border-radius:8px;font-size:9px;font-weight:700;padding:2px 7px;">2025年下半期</div>
+      <div style="font-size:11px;color:#fff;font-weight:700;flex:1;">自己評価入力</div>
+      <div style="font-size:9px;color:rgba(255,255,255,.4);">ログアウト</div>
+    </div>
+    <div style="padding:14px 12px;">
+      <div style="background:var(--accent);color:#fff;border-radius:8px;font-size:10px;font-weight:700;padding:3px 10px;display:inline-block;margin-bottom:10px;">STEP 1 / 24</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;">スタンス・規律</div>
+      <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:12px;">理念・ポリシー</div>
+      <div style="background:rgba(61,184,122,.12);border:1.5px solid rgba(61,184,122,.3);border-radius:10px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:10px;color:#3db87a;font-weight:700;margin-bottom:5px;">🌿 期待される行動（3点基準）</div>
+        <div style="font-size:12px;color:#fff;line-height:1.6;">企業理念、アップガレージ魂を理解しており、朝礼等の唱和で大きな声を出している。また具体的な行動ができる。</div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:8px;">▼ 該当するボタンをタップすると次へ進みます</div>
+      <div style="display:flex;gap:5px;">
+        <div style="flex:1;background:#2a1515;border-radius:8px;padding:8px 2px;text-align:center;cursor:pointer;">
+          <div style="width:22px;height:22px;background:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:11px;margin:0 auto 3px;">1</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.45);line-height:1.3;">大幅に<br>期待を<br>下回る</div>
+        </div>
+        <div style="flex:1;background:#2a1e10;border-radius:8px;padding:8px 2px;text-align:center;cursor:pointer;">
+          <div style="width:22px;height:22px;background:#d97706;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:11px;margin:0 auto 3px;">2</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.45);line-height:1.3;">期待を<br>下回る<br>レベル</div>
+        </div>
+        <div style="flex:1;background:rgba(61,184,122,.15);border:1.5px solid #3db87a;border-radius:8px;padding:8px 2px;text-align:center;cursor:pointer;">
+          <div style="width:22px;height:22px;background:#3db87a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:11px;margin:0 auto 3px;">3</div>
+          <div style="font-size:8px;color:#3db87a;font-weight:700;line-height:1.3;">現職能<br>期待<br>レベル</div>
+        </div>
+        <div style="flex:1;background:#101e10;border-radius:8px;padding:8px 2px;text-align:center;cursor:pointer;">
+          <div style="width:22px;height:22px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:11px;margin:0 auto 3px;">4</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.45);line-height:1.3;">期待<br>以上の<br>レベル</div>
+        </div>
+        <div style="flex:1;background:#12102a;border-radius:8px;padding:8px 2px;text-align:center;cursor:pointer;">
+          <div style="width:22px;height:22px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:11px;margin:0 auto 3px;">5</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.45);line-height:1.3;">模範<br>レベル</div>
+        </div>
+      </div>
+      <!-- ボトムバー -->
+      <div style="display:flex;justify-content:space-around;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);">
+        <div style="text-align:center;font-size:9px;color:rgba(255,255,255,.5);">🏠<br>ホーム</div>
+        <div style="text-align:center;font-size:9px;color:var(--accent);">✏️<br>入力中</div>
+        <div style="text-align:center;font-size:9px;color:rgba(255,255,255,.5);">💾<br>途中保存</div>
+        <div style="text-align:center;font-size:9px;color:rgba(255,255,255,.5);">✅<br>提出</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">▲ 評価入力画面（1〜5をタップで次へ自動進行）</div>
+
+  <!-- STEP 3 -->
+  <div class="step-block mt16" id="step3">
+    <div class="step-head">
+      <div class="step-label">STEP 3</div>
+      <div class="step-head-title">振り返りコメントを入力する <span class="tag tag-imp">重要</span></div>
+    </div>
+    <div class="step-body">
+      <p>24問が終わると振り返り入力に進みます。<strong>一般スタッフ以上は必須</strong>です。</p>
+      <div class="card amber" style="margin:8px 0;">
+        <div class="card-title">Q1 アピールポイント</div>
+        <div class="card-body">この半期で自分が一番貢献・頑張ったと思う具体的なエピソード（数字・変化を添えて）</div>
+      </div>
+      <div class="card blue">
+        <div class="card-title">Q2 課題と克服策</div>
+        <div class="card-body">点数が低かった部分について、次の半期に向けての具体的な改善策</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-block mt16" id="step4">
+    <div class="step-head">
+      <div class="step-label">STEP 4</div>
+      <div class="step-head-title">確認して提出する</div>
+    </div>
+    <div class="step-body">
+      <p>24問 + Q1・Q2の入力が完了すると提出画面が表示されます。<strong>「提出する」ボタンをタップ</strong>して完了です。</p>
+      <div class="hint">提出後も内容の確認・見直しができます。</div>
+    </div>
+  </div>
+
+  <!-- 提出完了画面再現 -->
+  <div style="background:var(--dark);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-md);">
+    <div style="background:var(--dark2);padding:8px 12px;font-size:10px;color:rgba(255,255,255,.4);">提出画面</div>
+    <div style="padding:20px 16px;text-align:center;">
+      <div style="background:linear-gradient(135deg,#1a3a5c,#1a5c3a);border-radius:14px;padding:24px 16px;margin-bottom:14px;">
+        <div style="font-size:36px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;margin-bottom:4px;">すべての入力が完了しました！</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.6;">内容を確認して、準備ができたら<br>提出ボタンを押してください。<br>提出後も内容の確認・見直しができます。</div>
+      </div>
+      <div style="background:#3db87a;border-radius:10px;padding:14px;color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">✅ 提出する</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;color:rgba(255,255,255,.6);font-size:13px;">🔍 最初から見直す</div>
+    </div>
+  </div>
+  <div class="screen-label">▲ 全入力完了後に提出画面が表示される</div>
+
+  <!-- STEP 5 -->
+  <div class="step-block mt16" id="step5">
+    <div class="step-head">
+      <div class="step-label">STEP 5</div>
+      <div class="step-head-title">面談・評価確定後にPDF出力</div>
+    </div>
+    <div class="step-body">
+      <p>面談が完了すると、アプリのホーム画面に<strong>「面談完了」</strong>と表示されます。ホーム画面から以下のPDFを出力できます。</p>
+      <ul>
+        <li><strong>📄 面談用PDF：</strong>自己評価＋上司評価を並べて確認できるシート</li>
+        <li><strong>✅ 確認用PDF（全項目）：</strong>SMのみ。定量・定性の全項目を一覧確認できるシート</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ホーム画面比較 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <!-- 提出済み -->
+    <div style="background:var(--dark);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow);">
+      <div style="background:var(--dark2);padding:6px 10px;font-size:9px;color:rgba(255,255,255,.4);">一般スタッフ</div>
+      <div style="padding:10px;">
+        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:2px;">川越インター店</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:8px;">評価期間: 2025年下半期</div>
+        <div style="background:var(--accent);color:#fff;border-radius:8px;font-size:9px;font-weight:700;padding:3px 8px;display:inline-block;margin-bottom:8px;">📤 提出済み</div>
+        <div style="background:var(--dark2);border-radius:8px;padding:8px;text-align:center;margin-bottom:6px;">
+          <div style="font-size:24px;margin-bottom:2px;">✅</div>
+          <div style="font-size:10px;color:#fff;font-weight:700;">提出済み</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.4);">2026/4/18 20:40:31</div>
+        </div>
+        <div style="background:#1a1a2e;border-radius:8px;padding:8px;text-align:center;font-size:10px;color:#fff;font-weight:700;margin-bottom:4px;">🖨 面談用PDF出力</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:rgba(255,255,255,.6);">内容を見直す</div>
+      </div>
+    </div>
+    <!-- 面談完了 -->
+    <div style="background:var(--dark);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow);">
+      <div style="background:var(--dark2);padding:6px 10px;font-size:9px;color:rgba(255,255,255,.4);">SM（店長）</div>
+      <div style="padding:10px;">
+        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:2px;">埼玉入間店</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:8px;">評価期間: 2025年下半期</div>
+        <div style="background:var(--green);color:#fff;border-radius:8px;font-size:9px;font-weight:700;padding:3px 8px;display:inline-block;margin-bottom:8px;">✅ 面談完了</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.6);margin-bottom:6px;">フィードバックが入力されています。「確認・PDF出力」から確認できます。</div>
+        <div style="background:#1a1a2e;border-radius:8px;padding:8px;text-align:center;font-size:10px;color:#fff;font-weight:700;margin-bottom:4px;">🖨 面談用PDF出力</div>
+        <div style="background:var(--green);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:#fff;font-weight:700;margin-bottom:4px;">✅ 確認PDF出力（全項目）</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:rgba(255,255,255,.6);">内容を見直す</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">▲ 左：提出済み状態 ／ 右：面談完了状態（SM）</div>
+</div>
+
+<!-- ═══════════════ CH7 FAQ ═══════════════ -->
+<div class="chap" id="ch7">
+  <div class="chap-tag">CHAPTER 07</div>
+  <h2 class="chap-title">よくある<span>質問</span></h2>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">途中でアプリを閉じたらデータが消える？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">データは自動保存されます。途中で閉じても、再度ログインすれば続きから再開できます。</div></div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">PINコードを忘れてしまった場合は？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">PINは数字4桁です。初期設定は誕生日の月日（例：3月15日→0315）です。不明な場合は管理者にお問い合わせください。</div></div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">提出後に内容を修正できる？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">提出後も「内容を見直す」から確認・修正できます。ただし面談確定後は修正できません。</div></div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">全部3点にすればいい？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">それは適切ではありません。2〜3が中心で、自分の得意・不得意を正直に反映させることが大切です。謙遜しすぎず、背伸びもせず、正直に評価しましょう。</div></div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">提出期限を過ぎてしまったら？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">アプリのホーム画面に残りの日数が表示されます。期限内に提出できなかった場合は速やかに上司に連絡してください。</div></div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-q"><div class="faq-q-mark">Q</div><div class="faq-q-text">iPhoneのChromeで使える？</div></div>
+    <div class="faq-a"><div class="faq-a-mark">A</div><div class="faq-a-text">iPhoneはSafariを使ってください。ChromeはPWAのホーム画面追加機能に制限があります。</div></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">STYLE<span>UP</span></div>
+  <div>株式会社スタイルアップ</div>
+  <div>アップガレージ 埼玉入間店・川越インター店</div>
+  <div style="margin-top:8px;font-size:11px;opacity:.5;">人事評価システムマニュアル 2026年度版</div>
+</footer>
+
+<script>
+function toggleToc() {
+  document.getElementById('toc').classList.toggle('open');
+}
+function closeToc() {
+  document.getElementById('toc').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const toc = document.getElementById('toc');
+  if (toc.classList.contains('open') && !toc.contains(e.target) && !e.target.closest('.toc-btn')) {
+    toc.classList.remove('open');
+  }
+});
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
