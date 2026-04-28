@@ -617,7 +617,7 @@ async function saveDB(db) {
   // バックグラウンドでクラウドに保存
   showLoading(true);
   try {
-const res = await fetch(GAS_URL, { method: 'POST', headers: { ''Content-Type': 'text/plain'' }, body: JSON.stringify({ action: 'hyoka_save', db }), redirect: 'follow' });
+const res  = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'hyoka_save', db }), redirect: 'follow' });
     const json = await res.json();
     showLoading(false);
     if (json.status !== 'ok') throw new Error(json.message || '保存エラー');
