@@ -725,7 +725,9 @@ function onLoginTypeChange() {
 function initStaffSelect() {
   const sel=document.getElementById('staffSelect');
   sel.innerHTML='<option value="">-- 選択してください --</option>';
-  getMembers().forEach(m=>{ sel.innerHTML+=`<option value="${m.id}">${m.name}（${m.store}）</option>`; });
+  const storeOrder=['埼玉入間店','川越インター店'];
+  const sorted=getMembers().slice().sort((a,b)=>storeOrder.indexOf(a.store)-storeOrder.indexOf(b.store));
+  sorted.forEach(m=>{ sel.innerHTML+=`<option value="${m.id}">${m.name}（${m.store}）</option>`; });
 }
 
 async function doLogin() {
