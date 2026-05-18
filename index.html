@@ -1542,8 +1542,8 @@ function printEvalSheet(member, ev, periodKey, showFull) {
   body+=`</table></div>
 
   <!-- ===== PAGE 2: 定性後半 + 総合 + 振り返り + FB ===== -->
-  <div class="a4page">
-  ${mkHeader('2 / 3')}
+  <div class="a4page" ${showFull ? '' : 'style="height:auto;overflow:visible;"'}>
+  ${mkHeader(showFull ? '2 / 3' : '2 / 2')}
 
   <div class="sec">▼ 定性評価（行動マトリクス）　― 後半（${page2Cats.map(c=>c.name).join('・')}）</div>
   <table>${tableHeader}`;
@@ -1567,7 +1567,7 @@ function printEvalSheet(member, ev, periodKey, showFull) {
       <td style="text-align:center;">${showFull&&rankResult?`<span class="rank-box">${rankResult}</span>`:'-'}</td>
     </tr>
 </table>
-  ${showFull ? `</div><div class="a4page" style="height:auto;overflow:visible;">${mkHeader('3 / 3')}` : ''}
+  </div><div class="a4page" style="height:auto;overflow:visible;">${mkHeader(showFull ? '3 / 3' : '2 / 2')}
 
   <div class="sec">▼ 本人の振り返り・報告</div>
   <div style="padding:4px 0 5px;">
