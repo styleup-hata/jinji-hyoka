@@ -1346,11 +1346,13 @@ const ok = await saveDB(window._db);
       try {
         await fetch(GAS_URL, {
           method:'POST',
+          headers:{'Content-Type':'text/plain'},
           body: JSON.stringify({
             action: 'hyoka_feedback_line',
             memberName: member?.name || '',
             period: currentViewingPeriod
-          })
+          }),
+          redirect:'follow'
         });
       } catch(e){ console.warn('LINE通知失敗:', e); }
     }
