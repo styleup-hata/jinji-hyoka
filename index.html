@@ -1341,9 +1341,21 @@ async function saveFeedback() {
     ev.status = 'submitted'; // 提出済みのまま維持
   }
 
-  const ok = await saveDB(window._db);
-  showToast(ok?'✅ 保存しました':'⚠️ ローカルに保存しました');
-  backFromFeedback();
+const ok = await saveDB(window._db);
+    if (ok) {
+      try {
+        await fetch(GAS_URL, {
+          method:'POST',
+          body: JSON.stringify({
+            action: 'hyoka_feedback_line',
+            memberName: member?.name || '',
+            period: currentViewingPeriod
+          })
+        });
+      } catch(e){ console.warn('LINE通知失敗:', e); }
+    }
+    showToast(ok?'💾 保存しました':'⚠️ ローカルに保存しました');
+    backFromFeedback();
 }
 
 // ============================================================
