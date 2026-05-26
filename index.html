@@ -152,6 +152,7 @@ body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;backgroun
       <label class="form-label">ログイン種別</label>
       <select class="form-select" id="loginType" onchange="onLoginTypeChange()">
         <option value="staff">スタッフ</option>
+        <option value="manager">店長</option>
         <option value="admin">管理者</option>
       </select>
     </div>
@@ -240,8 +241,8 @@ body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;backgroun
     <button class="admin-tab active" onclick="adminTab('overview',this)">一覧</button>
     <button class="admin-tab" onclick="adminTab('feedback',this)">FB入力</button>
     <button class="admin-tab" onclick="adminTab('members',this)">メンバー</button>
-    <button class="admin-tab" onclick="adminTab('periods',this)">期管理</button>
-    <button class="admin-tab" onclick="adminTab('settings',this)">設定</button>
+   <button class="admin-tab" data-mgr-hide onclick="adminTab('periods',this)">期管理</button>
+   <button class="admin-tab" data-mgr-hide onclick="adminTab('settings',this)">設定</button>
   </div>
   <div id="adminOverview" class="pb-nav"></div>
   <div id="adminFeedback" style="display:none;" class="pb-nav"></div>
@@ -718,7 +719,7 @@ function pinDelete() { currentPin=currentPin.slice(0,-1); updatePinDisplay(); }
 function updatePinDisplay() { for(let i=0;i<4;i++){const dot=document.getElementById('pd'+i);dot.classList.toggle('filled',i<currentPin.length);dot.textContent=i<currentPin.length?'●':'';} }
 function onLoginTypeChange() {
   const t=document.getElementById('loginType').value;
-  document.getElementById('staffLoginArea').style.display=t==='staff'?'':'none';
+  document.getElementById('staffLoginArea').style.display=(t==='staff'||t==='manager')?'':'none';
   document.getElementById('adminLoginArea').style.display=t==='admin'?'':'none';
   currentPin=''; updatePinDisplay(); document.getElementById('loginError').style.display='none';
 }
@@ -744,8 +745,12 @@ async function doLogin() {
     if (!memberId) { showToast('名前を選んでください'); currentPin=''; updatePinDisplay(); return; }
     const member=getMembers().find(m=>m.id===memberId);
     if (!member) { showLoginError(); return; }
-    if (currentPin===member.pin) {
-      currentUser={type:'staff',...member};
+  if (currentPin===member.pin) {
+      if(type==='manager' && member.role!=='SM'){
+        showToast('店長（SM）のみログインできます');
+        currentPin=''; updatePinDisplay(); return;
+      }
+      currentUser={type:(type==='manager'?'manager':'staff'),...member};
       afterLogin();
     } else showLoginError();
   }
@@ -759,6 +764,11 @@ async function afterLogin() {
   currentViewingPeriod = db.currentPeriod || '';
   if (currentUser.type==='admin') {
     setHeader('管理者ダッシュボード');
+    document.querySelectorAll('[data-mgr-hide]').forEach(el=>el.style.display='');
+    showView('adminView'); showAdminOverview();
+  } else if (currentUser.type==='manager') {
+    setHeader('店長ダッシュボード（'+currentUser.store+'）');
+    document.querySelectorAll('[data-mgr-hide]').forEach(el=>el.style.display='none');
     showView('adminView'); showAdminOverview();
   } else {
     setHeader('自己評価入力');
@@ -766,7 +776,8 @@ async function afterLogin() {
   }
 }
 
-function logout() {
+  function logout() {
+  document.querySelectorAll('[data-mgr-hide]').forEach(el=>el.style.display='');
   currentUser=null; currentPin=''; currentViewingPeriod='';
   updatePinDisplay();
   document.getElementById('appHeader').style.display='none';
@@ -1041,7 +1052,7 @@ function renderStep() {
     <div class="submit-action-area">
       ${!allScoresDone ? `<button class="btn btn-secondary" onclick="goToFirstMissing()">⬅️ 未入力の項目へ戻る</button>` : ''}
       <button class="btn btn-submit-final" onclick="submitEval()">✅ 提出する</button>
-      <button class="btn btn-review" onclick="currentStep=0;renderStep();">🔍 最初から見直す</button>
+      <button class="btn btn-review" onclick="currentStep=0;renderStep();">🔍 最初から見直す</button>         <button class="btn btn-review" style="margin-top:8px;" onclick="goToQReview()">📝 本人の振り返り・報告を見直す</button>
     </div>`;
   }
 
@@ -1065,6 +1076,11 @@ function selectScoreAndNext(itemId, score, btn) {
   setTimeout(()=>{ currentStep++; renderStep(); }, 350);
 }
 
+function goToQReview(){
+  // Q1（振り返り入力画面）へ直接ジャンプ
+  currentStep = getItemsFlat(currentUser.role).length;
+  renderStep();
+}  
 function prevStep() { if(currentStep>0){currentStep--;renderStep();} }
 
 function saveQ1Next() {
