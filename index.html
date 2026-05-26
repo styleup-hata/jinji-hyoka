@@ -1342,20 +1342,18 @@ async function saveFeedback() {
   }
 
 const ok = await saveDB(window._db);
-    if (ok) {
-      try {
-        await fetch(GAS_URL, {
-          method:'POST',
-          headers:{'Content-Type':'text/plain'},
-          body: JSON.stringify({
-            action: 'hyoka_feedback_line',
-            memberName: member?.name || '',
-            period: currentViewingPeriod
-          }),
-          redirect:'follow'
-        });
-      } catch(e){ console.warn('LINE通知失敗:', e); }
-    }
+    try {
+      await fetch(GAS_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({
+          action: 'hyoka_feedback_line',
+          memberName: member?.name || '',
+          period: currentViewingPeriod
+        }),
+        redirect:'follow'
+      });
+    } catch(e){ console.warn('LINE通知失敗:', e); }
     showToast(ok?'💾 保存しました':'⚠️ ローカルに保存しました');
     backFromFeedback();
 }
