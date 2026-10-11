@@ -600,12 +600,11 @@ const res = await fetch(GAS_URL + '?action=hyoka_load', { cache: 'no-store' });
     const json = await res.json();
     showLoading(false);
     if (json.status !== 'ok' || !json.data) throw new Error('GASエラー');
+    // クラウド取得に成功したら常にクラウドを正とする
+    // （以前は保存時刻の比較でスマホ側の古いキャッシュが勝ち、新しい期が表示されない不具合があった）
     const cloudData = json.data;
-    const localTime = new Date(cached?._savedAt || 0).getTime();
-    const cloudTime = new Date(cloudData._savedAt || 0).getTime();
-    const winner = cloudTime >= localTime ? cloudData : cached;
-    try { localStorage.setItem('ug_db', JSON.stringify(winner)); } catch(e) {}
-    return winner;
+    try { localStorage.setItem('ug_db', JSON.stringify(cloudData)); } catch(e) {}
+    return cloudData;
   } catch(e) {
     showLoading(false);
     showToast('⚠️ オフライン：ローカルデータを使用中');
@@ -759,6 +758,7 @@ function showLoginError() { document.getElementById('loginError').style.display=
 
 async function afterLogin() {
   document.getElementById('appHeader').style.display='flex';
+  if (window._dbReady) { try { await window._dbReady; } catch(e) {} }
   const db=getDB();
   // 現在の期を設定
   currentViewingPeriod = db.currentPeriod || '';
@@ -826,10 +826,15 @@ async function renderStaffHome() {
   _renderStaffHomeContent();
 
   // バックグラウンドでクラウドと同期して再描画
+  const prevCurrent = window._db.currentPeriod || '';
   const fresh = await fetchDB();
   if (JSON.stringify(fresh) !== JSON.stringify(window._db)) {
     window._db = fresh;
     if (!window._db.periods) window._db.periods={};
+    // 現在の期が切り替わっていたら表示も追従
+    if (!currentViewingPeriod || currentViewingPeriod === prevCurrent || !window._db.periods[currentViewingPeriod]) {
+      currentViewingPeriod = window._db.currentPeriod || '';
+    }
     _renderStaffHomeContent();
   }
 }
@@ -1899,7 +1904,7 @@ function showAdminPeriods() {
       html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-gray-light);">
         <div><div style="font-size:14px;font-weight:700;">${p} ${isCurrent?'<span style="background:var(--c-salmon);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;">現在の期</span>':''}</div>
         <div style="font-size:11px;color:var(--c-muted);">${evCount}名のデータ</div></div>
-        ${!isCurrent?`<button class="btn btn-danger btn-sm" onclick="deletePeriod('${p}')">削除</button>`:''}
+        ${!isCurrent?`<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-secondary btn-sm" onclick="setCurrentPeriod('${p}')">現在の期にする</button><button class="btn btn-danger btn-sm" onclick="deletePeriod('${p}')">削除</button></div>`:''}
       </div>`;
     });
     html+='</div>';
@@ -1941,6 +1946,16 @@ async function startNewPeriod() {
   showAdminPeriods();
 }
 
+async function setCurrentPeriod(periodKey) {
+  if(!confirm(`「${periodKey}」を現在の期に切り替えますか？`))return;
+  const db=getDB();
+  db.currentPeriod=periodKey;
+  currentViewingPeriod=periodKey;
+  const ok=await saveDB(db);
+  showToast(ok?`✅ 「${periodKey}」を現在の期にしました`:'⚠️ ローカルに保存しました');
+  showAdminPeriods();
+}
+
 async function deletePeriod(periodKey) {
   if(!confirm(`「${periodKey}」のデータを削除しますか？この操作は取り消せません。`))return;
   const db=getDB();
@@ -1966,14 +1981,20 @@ function showAdminSettings() {
 }
 function saveDeadline(){const s=getSettings();s.deadline=document.getElementById('st_deadline').value;saveSettings(s);showToast('✅ 保存しました');}
 function saveAdminPin(){const pin=document.getElementById('st_adminPin').value.trim();if(pin.length!==4||!/^\d+$/.test(pin)){showToast('PINは4桁の数字です');return;}const s=getSettings();s.adminPin=pin;saveSettings(s);showToast('✅ 変更しました');}
-async function reloadData(){window._db=await fetchDB();showToast('✅ 再取得しました');showAdminOverview();}
+async function reloadData(){
+  window._db=await fetchDB();
+  if(!window._db.periods) window._db.periods={};
+  currentViewingPeriod=window._db.currentPeriod||'';
+  showToast('✅ 再取得しました');showAdminOverview();
+}
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
 // INIT
 window.onload = async function() {
   initStaffSelect(); // まず DEFAULT_MEMBERS で初期化（画面を素早く表示）
-  window._db = await fetchDB();
+  window._dbReady = fetchDB();
+  window._db = await window._dbReady;
   // DBが空の場合は初期化
   if (!window._db.periods) window._db.periods={};
   if (!window._db.currentPeriod) window._db.currentPeriod='';
